@@ -1,7 +1,7 @@
 <template>
   <div class="p-8">
     <h1 class="text-3xl font-semibold">
-      pavi2410's toolkit
+      <span class="text-5xl">🧰</span> pavi2410's toolkit
     </h1>
     <p>
       Here you can find a collection of tools that I have created to help you with your daily tasks.
@@ -55,6 +55,15 @@ const tools = [
     link: '/tools/ditext',
   }
 ]
+
+useHead({
+  link: [
+    {
+      rel: 'icon',
+      href: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🧰</text></svg>`
+    }
+  ]
+})
 </script>
 
 <style></style>

@@ -1,10 +1,8 @@
 <template>
-  <div class="flex flex-col gap-4">
-    <ULink to="/" class="pl-2">⬅️ pavi2410's toolkit</ULink>
-
-    <h1 class="text-2xl font-sembold pl-4">
+  <NuxtLayout name="tool-layout">
+    <template #header>
       🕵️ URL Inspector
-    </h1>
+    </template>
 
     <UInput v-model="url" placeholder="Type an URL here...">
       <template #trailing v-if="url.length > 0">
@@ -19,13 +17,22 @@
         </template>
       </UTable>
     </div>
-  </div>
+  </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
+definePageMeta({
+  layout: false,
+})
 
 useHead({
   title: 'URL Inspector',
+  link: [
+    {
+      rel: 'icon',
+      href: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕵️</text></svg>`
+    }
+  ]
 })
 
 const route = useRoute();
