@@ -23,6 +23,11 @@
 </template>
 
 <script lang="ts" setup>
+
+useHead({
+  title: 'URL Inspector',
+})
+
 const route = useRoute();
 
 const url = ref<string>(route.hash.slice(1));
