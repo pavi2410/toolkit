@@ -3,7 +3,28 @@
     <template #header>
       🔠 Ditext
     </template>
-    lol
+
+    <div class="flex flex-col gap-2 p-4">
+      <div class="flex gap-4 items-center">
+        <USelect v-model="strategy" :options="strategyOptions" />
+        <UCheckbox v-model="ignoreCase" label="Ignore Case" />
+      </div>
+      <div class="flex gap-2 *:flex-1 *:items-stretch">
+        <diff-textarea v-model="textA" placeholder="Text A" />
+        <diff-textarea v-model="textB" placeholder="Text B" />
+        <div>
+          <p class="opacity-50 text-sm uppercase px-1">
+            Changes {{ diff.length }} &bullet; Added {{ diffAdded }} &bullet; Removed {{ diffRemoved }}
+          </p>
+          <div class="whitespace-pre overflow-x-scroll border rounded p-2">
+            <span v-for="(part, index) in diff" :key="index"
+              :style="{ backgroundColor: part.added ? '#0f07' : part.removed ? '#f007' : 'transparent' }">
+              {{ part.value }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   </NuxtLayout>
 </template>
 
@@ -21,6 +42,38 @@ useHead({
     }
   ]
 })
+
+import { diffChars, diffLines, diffWords } from 'diff';
+
+const strategyOptions = [
+  { label: 'Character', value: 'char' },
+  { label: 'Word', value: 'word' },
+  { label: 'Line', value: 'line' }
+] as const;
+
+const strategy = ref<typeof strategyOptions[number]['value']>('char')
+const ignoreCase = ref(false)
+
+const textA = ref('detect\ndiff text')
+const textB = ref('ditext\nditext')
+
+const diff = computed(() => {
+  const options = {
+    ignoreCase: ignoreCase.value
+  }
+
+  switch (strategy.value) {
+    case 'line':
+      return diffLines(textA.value, textB.value, options)
+    case 'word':
+      return diffWords(textA.value, textB.value, options)
+    default:
+      return diffChars(textA.value, textB.value, options)
+  }
+})
+
+const diffAdded = computed(() => diff.value.filter(part => part.added).length)
+const diffRemoved = computed(() => diff.value.filter(part => part.removed).length)
 </script>
 
 <style></style>

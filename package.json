@@ -12,7 +12,12 @@
   "dependencies": {
     "@nuxt/ui": "^2.18.4",
     "@nuxtjs/tailwindcss": "^6.12.1",
+    "diff": "^5.2.0",
     "nuxt": "^3.12.4",
+    "pretty-bytes": "^6.1.1",
     "vue": "latest"
+  },
+  "devDependencies": {
+    "@types/diff": "^5.2.1"
   }
 }
