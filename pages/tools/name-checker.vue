@@ -116,7 +116,7 @@ const searchNames = async () => {
 <template>
   <NuxtLayout name="tool-layout">
     <template #header>
-      🔍 IP Inspector
+      ™️ Name Checker
     </template>
 
     <div class="flex flex-col items-center justify-center p-4">
