@@ -13,10 +13,10 @@
       <h2 class="text-2xl font-semibold">
         Tools
       </h2>
-      <ul class="flex gap-8 *:flex-1">
+      <ul class="flex gap-8 flex-wrap *:flex-1">
         <li v-for="tool in tools" :key="tool.name">
           <ULink :to="tool.link">
-            <div class="flex flex-col border rounded p-4">
+            <UCard>
               <div class="text-5xl mb-2">
                 {{ tool.icon }}
               </div>
@@ -26,7 +26,7 @@
               <div class="text-sm">
                 {{ tool.summary }}
               </div>
-            </div>
+            </UCard>
           </ULink>
         </li>
       </ul>
@@ -53,7 +53,13 @@ const tools = [
     summary: 'Convert text to different cases',
     icon: '🔠',
     link: '/tools/ditext',
-  }
+  },
+  {
+    name: 'Name Checker',
+    summary: 'Check if a name is available on various platforms',
+    icon: '™️',
+    link: '/tools/name-checker',
+  },
 ]
 
 useHead({
