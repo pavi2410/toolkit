@@ -114,60 +114,67 @@ const searchNames = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-    <h1 class="text-3xl font-bold mb-2">Name Checker</h1>
-    <p class="mb-6">Find out if your project name is taken</p>
+  <NuxtLayout name="tool-layout">
+    <template #header>
+      🔍 IP Inspector
+    </template>
 
-    <div class="flex flex-col gap-4">
-      <UButtonGroup size="lg" class="w-full">
-        <UInput v-model.trim="searchName" @keyup.enter="searchNames" placeholder="Type some name..." class="w-full" />
-        <UButton icon="i-heroicons-magnifying-glass" color="gray" :loading="isLoading" @click="searchNames" />
-      </UButtonGroup>
+    <div class="flex flex-col items-center justify-center p-4">
+      <h1 class="text-3xl font-bold mb-2">Name Checker</h1>
+      <p class="mb-6">Find out if your project name is taken</p>
 
-      <p v-if="error" class="text-red-500">{{ error }}</p>
+      <div class="flex flex-col gap-4">
+        <UButtonGroup size="lg" class="w-full">
+          <UInput v-model.trim="searchName" @keyup.enter="searchNames" placeholder="Type some name..." class="w-full" />
+          <UButton icon="i-heroicons-magnifying-glass" color="gray" :loading="isLoading" @click="searchNames" />
+        </UButtonGroup>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div v-if="results.length > 0" class="flex flex-col gap-2">
-          <h2 class="text-xl font-bold mb-2">Name Availability</h2>
-          <div v-for="(result, index) in results" :key="index" class="flex items-center">
-            <span :class="result.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
-              {{ result.available ? '✓' : '✗' }}
-            </span>
-            <span>
-              <a :href="getPlatformLink(result.name, result.platform)" target="_blank"
-                class="text-blue-400 hover:underline">
-                {{ result.platform }}
-              </a>
-            </span>
-            <span v-if="!result.available" class="ml-1 text-gray-400">
-              already exists
-            </span>
-            <span v-else class="ml-1 text-gray-400">
-              is available!
-            </span>
+        <p v-if="error" class="text-red-500">{{ error }}</p>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div v-if="results.length > 0" class="flex flex-col gap-2">
+            <h2 class="text-xl font-bold mb-2">Name Availability</h2>
+            <div v-for="(result, index) in results" :key="index" class="flex items-center">
+              <span :class="result.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
+                {{ result.available ? '✓' : '✗' }}
+              </span>
+              <span>
+                <a :href="getPlatformLink(result.name, result.platform)" target="_blank"
+                  class="text-blue-400 hover:underline">
+                  {{ result.platform }}
+                </a>
+              </span>
+              <span v-if="!result.available" class="ml-1 text-gray-400">
+                already exists
+              </span>
+              <span v-else class="ml-1 text-gray-400">
+                is available!
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div v-if="domainResults.length > 0" class="flex flex-col gap-2">
-          <h2 class="text-xl font-bold mb-2">Domain Availability</h2>
-          <div v-for="(result, index) in domainResults" :key="index" class="flex items-center">
-            <span :class="result.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
-              {{ result.available ? '✓' : '✗' }}
-            </span>
-            <span>
-              <a :href="`https://${result.name}.${result.domain}`" target="_blank" class="text-blue-400 hover:underline">
-              {{ result.name }}.{{ result.domain }}
-              </a>
-            </span>
-            <span v-if="!result.available" class="ml-1 text-gray-400">
-              already exists
-            </span>
-            <span v-else class="ml-1 text-gray-400">
-              is available for ${{ (result.priceInCents / 100).toFixed(2) }}!
-            </span>
+          <div v-if="domainResults.length > 0" class="flex flex-col gap-2">
+            <h2 class="text-xl font-bold mb-2">Domain Availability</h2>
+            <div v-for="(result, index) in domainResults" :key="index" class="flex items-center">
+              <span :class="result.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
+                {{ result.available ? '✓' : '✗' }}
+              </span>
+              <span>
+                <a :href="`https://${result.name}.${result.domain}`" target="_blank"
+                  class="text-blue-400 hover:underline">
+                  {{ result.name }}.{{ result.domain }}
+                </a>
+              </span>
+              <span v-if="!result.available" class="ml-1 text-gray-400">
+                already exists
+              </span>
+              <span v-else class="ml-1 text-gray-400">
+                is available for ${{ (result.priceInCents / 100).toFixed(2) }}!
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </NuxtLayout>
 </template>
