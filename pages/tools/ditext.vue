@@ -1,27 +1,27 @@
 <template>
   <NuxtLayout name="tool-layout">
     <template #header>
-      🔠 Ditext
+      <div class="flex justify-between">
+        <span>🔠 Ditext</span>
+        <div class="flex gap-4 items-center pr-4">
+          <USelect v-model="strategy" :options="strategyOptions" size="xs" />
+          <UCheckbox v-model="ignoreCase" label="Ignore Case" />
+        </div>
+      </div>
     </template>
 
-    <div class="flex flex-col gap-2 px-4 py-2">
-      <div class="flex gap-4 items-center">
-        <USelect v-model="strategy" :options="strategyOptions" />
-        <UCheckbox v-model="ignoreCase" label="Ignore Case" />
-      </div>
-      <div class="flex gap-2 *:flex-shrink-0 *:items-stretch">
-        <diff-textarea v-model="textA" placeholder="Text A" />
-        <diff-textarea v-model="textB" placeholder="Text B" />
-        <div>
-          <p class="opacity-50 text-sm uppercase px-1">
-            Changes {{ diff.length }} &bullet; Added {{ diffAdded }} &bullet; Removed {{ diffRemoved }}
-          </p>
-          <div class="whitespace-pre overflow-x-scroll border rounded p-2">
-            <span v-for="(part, index) in diff" :key="index"
-              :style="{ backgroundColor: part.added ? '#0f07' : part.removed ? '#f007' : 'transparent' }">
-              {{ part.value }}
-            </span>
-          </div>
+    <div class="flex gap-2 *:flex-shrink-0 items-stretch px-4">
+      <diff-textarea v-model="textA" placeholder="Text A" />
+      <diff-textarea v-model="textB" placeholder="Text B" />
+      <div>
+        <p class="opacity-50 text-xs uppercase px-1">
+          Changes {{ diff.length }} &bullet; Added {{ diffAdded }} &bullet; Removed {{ diffRemoved }}
+        </p>
+        <div class="whitespace-pre overflow-x-scroll border rounded p-2 text-sm font-mono">
+          <span v-for="(part, index) in diff" :key="index"
+            :style="{ backgroundColor: part.added ? '#0f07' : part.removed ? '#f007' : 'transparent' }">
+            {{ part.value }}
+          </span>
         </div>
       </div>
     </div>

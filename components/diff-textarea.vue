@@ -1,9 +1,9 @@
 <template>
   <div>
-    <p class="opacity-50 text-sm uppercase px-1">
+    <p class="opacity-50 text-xs uppercase px-1">
       Chars {{ text.length }} &bullet; Words {{ words }} &bullet; Lines {{ lines }} &bullet; Size {{ size }}
     </p>
-    <UTextarea autoresize v-model="text" :placeholder="$props.placeholder" />
+    <UTextarea autoresize v-model="text" :placeholder="$props.placeholder" class="font-mono min-w-[640px]" />
   </div>
 </template>
 
