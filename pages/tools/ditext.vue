@@ -4,12 +4,12 @@
       🔠 Ditext
     </template>
 
-    <div class="flex flex-col gap-2 p-4">
+    <div class="flex flex-col gap-2 px-4 py-2">
       <div class="flex gap-4 items-center">
         <USelect v-model="strategy" :options="strategyOptions" />
         <UCheckbox v-model="ignoreCase" label="Ignore Case" />
       </div>
-      <div class="flex gap-2 *:flex-1 *:items-stretch">
+      <div class="flex gap-2 *:flex-shrink-0 *:items-stretch">
         <diff-textarea v-model="textA" placeholder="Text A" />
         <diff-textarea v-model="textB" placeholder="Text B" />
         <div>
