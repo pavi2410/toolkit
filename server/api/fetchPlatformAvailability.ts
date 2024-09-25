@@ -35,13 +35,23 @@ const getPlatformLink = (platform: typeof platforms[number], name: string): stri
 async function fetchPlatformAvailability(platform: typeof platforms[number], name: string) {
   switch (platform) {
     case 'GitHub repo': {
-      const res = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(`/${name}$/`)}+in:name`)
+      const res = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(name)}+in:name`, {
+        headers: {
+          'User-Agent': 'toolkit.pavi2410.me'
+        }
+      })
       const data = await res.json()
-      return data.total_count === 0
+      return data.items.filter((item: any) => name.localeCompare(item.name, undefined, {
+        sensitivity: 'base'
+      })).length > 0
     }
 
     case 'GitHub org/user': {
-      const res = await fetch(`https://api.github.com/users/${name}`)
+      const res = await fetch(`https://api.github.com/users/${name}`, {
+        headers: {
+          'User-Agent': 'toolkit.pavi2410.me'
+        }
+      })
       return res.status === 404
     }
 
@@ -100,13 +110,8 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
   return Promise.all(platforms.map(async (platform) => {
-    try {
-      const platformLink = getPlatformLink(platform, query.name as string)
-      const available = await fetchPlatformAvailability(platform, query.name as string)
-      return { platform, available, link: platformLink }
-    } catch (e) {
-      const res = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(`/pavi2410$/`)}+in:name`)
-      return { platform: await res.text(), available: false, link: '#' }
-    }
+    const platformLink = getPlatformLink(platform, query.name as string)
+    const available = await fetchPlatformAvailability(platform, query.name as string)
+    return { platform, available, link: platformLink }
   }))
 })
