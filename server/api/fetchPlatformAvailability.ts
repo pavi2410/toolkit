@@ -105,7 +105,8 @@ export default defineEventHandler(async (event) => {
       const available = await fetchPlatformAvailability(platform, query.name as string)
       return { platform, available, link: platformLink }
     } catch (e) {
-      return { platform: JSON.stringify({ name: e.name, message: e.message, e }), available: false, link: '#' }
+      const res = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(`/${name}$/`)}+in:name`)
+      return { platform: await res.text(), available: false, link: '#' }
     }
   }))
 })
