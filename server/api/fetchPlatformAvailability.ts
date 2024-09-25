@@ -1,6 +1,5 @@
 const platforms = [
-  'GitHub repo', 'GitHub org/user', 'GitLab project', 'PyPI package',
-  'Homebrew cask/formula', 'apt package', 'Rust crate', 'Maven package',
+  'GitHub repo', 'GitHub org/user', 'PyPI package', 'Homebrew cask/formula', 'Rust crate',
   'npm package', 'npm org', 'Ruby gem', 'Nuget package', 'Packagist package', 'Go package'
 ] as const
 
@@ -10,18 +9,12 @@ const getPlatformLink = (platform: typeof platforms[number], name: string): stri
       return `https://github.com/${name}`;
     case 'GitHub org/user':
       return `https://github.com/${name}`;
-    case 'GitLab project':
-      return `https://gitlab.com/${name}`;
     case 'PyPI package':
       return `https://pypi.org/project/${name}`;
     case 'Homebrew cask/formula':
       return `https://formulae.brew.sh/formula/${name}`;
-    case 'apt package':
-      return `https://packages.ubuntu.com/search?keywords=${name}`;
     case 'Rust crate':
       return `https://crates.io/crates/${name}`;
-    case 'Maven package':
-      return `https://search.maven.org/search?q=g:${name}`;
     case 'npm package':
       return `https://www.npmjs.com/package/${name}`;
     case 'npm org':
@@ -52,11 +45,6 @@ async function fetchPlatformAvailability(platform: typeof platforms[number], nam
       return res.status === 404
     }
 
-    case 'GitLab project': {
-      const res = await fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(name)}`)
-      return res.status === 404
-    }
-
     case 'PyPI package': {
       const res = await fetch(`https://pypi.org/pypi/${name}/json`)
       return res.status === 404
@@ -67,19 +55,9 @@ async function fetchPlatformAvailability(platform: typeof platforms[number], nam
       return res.status === 404
     }
 
-    case 'apt package': {
-      // Note: There is no direct API for checking apt package availability
-      return Math.random() > 0.5
-    }
-
     case 'Rust crate': {
       const res = await fetch(`https://crates.io/api/v1/crates/${name}`)
       return res.status === 404
-    }
-
-    case 'Maven package': {
-      // Note: Maven Central does not provide a direct API for checking package availability
-      return Math.random() > 0.5
     }
 
     case 'npm package': {
