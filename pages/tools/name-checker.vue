@@ -16,19 +16,8 @@ useHead({
 import { useUrlSearchParams } from '@vueuse/core';
 import { ref } from 'vue';
 
-interface SearchResult {
-  name: string;
-  available: boolean | null;
-  platform: string;
-  link: string;
-}
-
-interface DomainResult {
-  name: string;
-  available: boolean;
-  domain: string;
-  priceInCents: number;
-  url: string;
+const formatUrl = (url: string) => {
+  return new URL(url).hostname
 }
 
 const searchParams = useUrlSearchParams('history', {
@@ -36,105 +25,36 @@ const searchParams = useUrlSearchParams('history', {
     name: '',
   }
 })
-const results = ref<SearchResult[]>([])
-const domainResults = ref<DomainResult[]>([])
-const isLoading = ref(false)
+
+const paQuery = useAsyncData(
+  `platformsAvailability:${searchParams.name}`,
+  () => $fetch('/api/fetchPlatformAvailability', { query: { name: searchParams.name } }),
+  {
+    immediate: searchParams.name !== '',
+  }
+)
+
+const daQuery = useAsyncData(
+  `domainsAvailability:${searchParams.name}`,
+  () => $fetch('/api/fetchDomainAvailability', { query: { name: searchParams.name } }),
+  {
+    immediate: searchParams.name !== '',
+  }
+)
+
+const isLoading = computed(() => paQuery.status.value === 'pending' || daQuery.status.value === 'pending')
 const error = ref('')
 
-const platforms = [
-  'GitHub repo', 'GitHub org/user', 'GitLab project', 'PyPI package',
-  'Homebrew cask/formula', 'apt package', 'Rust crate', 'Maven package',
-  'npm package', 'npm org', 'Ruby gem', 'Nuget package', 'Packagist package', 'Go package'
-] as const
-
-const checkAvailability = async (name: string, platform: typeof platforms[number]): Promise<boolean> => {
-  const { data } = await useFetch(`/api/fetchNameAvailability?name=${name}&platform=${platform}`);
-  return data.value ?? false
-}
-
-const getPlatformLink = (name: string, platform: typeof platforms[number]): string => {
-  switch (platform) {
-    case 'GitHub repo':
-      return `https://github.com/${name}`;
-    case 'GitHub org/user':
-      return `https://github.com/${name}`;
-    case 'GitLab project':
-      return `https://gitlab.com/${name}`;
-    case 'PyPI package':
-      return `https://pypi.org/project/${name}`;
-    case 'Homebrew cask/formula':
-      return `https://formulae.brew.sh/formula/${name}`;
-    case 'apt package':
-      return `https://packages.ubuntu.com/search?keywords=${name}`;
-    case 'Rust crate':
-      return `https://crates.io/crates/${name}`;
-    case 'Maven package':
-      return `https://search.maven.org/search?q=g:${name}`;
-    case 'npm package':
-      return `https://www.npmjs.com/package/${name}`;
-    case 'npm org':
-      return `https://www.npmjs.com/org/${name}`;
-    case 'Ruby gem':
-      return `https://rubygems.org/gems/${name}`;
-    case 'Nuget package':
-      return `https://www.nuget.org/packages/${name}`;
-    case 'Packagist package':
-      return `https://packagist.org/packages/${name}`;
-    case 'Go package':
-      return `https://pkg.go.dev/${name}`;
-    default:
-      return '#';
-  }
-}
-
-const domains = [
-  'com', 'net', 'org', 'io', 'dev', 'app', 'in',
-  'tech', 'co', 'ai', 'xyz', 'me', 'ing',
-] as const
-
-const checkDomainAvailability = async (name: string, domain: typeof domains[number]): Promise<{
-  available: boolean,
-  priceInCents: number,
-}> => {
-  const { data } = await useFetch(`/api/fetchDomainAvailability?name=${name}&domain=${domain}`);
-
-  return data.value ?? ({ available: false, priceInCents: 0 })
-}
-
-const searchNames = async () => {
+function doSearch() {
   if (!searchParams.name) {
-    error.value = 'Please enter a name to search.'
+    error.value = 'Please enter a name'
     return
   }
 
-  isLoading.value = true
   error.value = ''
-  results.value = []
-  domainResults.value = []
 
-  try {
-    const platformChecks = platforms.map(async (platform) => {
-      const available = await checkAvailability(searchParams.name, platform)
-      return { name: searchParams.name, available, platform, link: getPlatformLink(searchParams.name, platform) }
-    })
-
-    const domainChecks = domains.map(async (domain) => {
-      const { available, priceInCents } = await checkDomainAvailability(searchParams.name, domain)
-      return { name: searchParams.name, available, domain, priceInCents, url: `https://${searchParams.name}.${domain}` }
-    })
-
-    results.value = await Promise.all(platformChecks)
-    domainResults.value = await Promise.all(domainChecks)
-  } catch (err) {
-    error.value = 'An error occurred while fetching results. Please try again.'
-    console.error(err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const formatUrl = (url: string) => {
-  return new URL(url).hostname
+  paQuery.refresh()
+  daQuery.refresh()
 }
 </script>
 
@@ -150,54 +70,79 @@ const formatUrl = (url: string) => {
 
       <div class="flex flex-col gap-4">
         <UButtonGroup size="lg" class="w-full">
-          <UInput v-model.trim="searchParams.name" @keyup.enter="searchNames" placeholder="Type some name..."
+          <UInput v-model.trim="searchParams.name" @keyup.enter="doSearch" placeholder="Type some name..."
             class="w-full" />
-          <UButton icon="i-heroicons-magnifying-glass" color="gray" :loading="isLoading" @click="searchNames" />
+          <UButton icon="i-heroicons-magnifying-glass" color="gray" :loading="isLoading" @click="doSearch" />
         </UButtonGroup>
 
-        <p v-if="error" class="text-red-500">{{ error }}</p>
+        <UAlert v-if="error" icon="i-heroicons-exclaimation-circle" color="red" variant="subtle" title="Heads up!"
+          :description="error" />
 
-        <div class="grid grid-cols-2 gap-4">
-          <div v-if="results.length > 0" class="flex flex-col gap-2">
-            <h2 class="text-xl font-bold mb-2">Name Availability</h2>
-            <div v-for="(result, index) in results" :key="index" class="flex items-center">
-              <span :class="result.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
-                {{ result.available ? '✓' : '✗' }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-2">
+            <h2 class="text-xl font-bold mb-2" v-if="paQuery.status.value !== 'idle'">
+              Platform Availability
+            </h2>
+            <div v-for="(platform, index) in paQuery.data.value" :key="index" class="flex items-center"
+              v-if="paQuery.status.value === 'success'">
+              <span :class="platform.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
+                {{ platform.available ? '✓' : '✗' }}
               </span>
               <span>
-                <a :href="result.link" target="_blank"
-                  class="text-blue-400 hover:underline">
-                  {{ result.platform }}
+                <a :href="platform.link" target="_blank" class="text-blue-400 hover:underline">
+                  {{ platform.platform }}
                 </a>
               </span>
-              <span v-if="!result.available" class="ml-1 text-gray-400">
-                already exists
-              </span>
-              <span v-else class="ml-1 text-gray-400">
-                is available!
+              <span class="ml-1 text-gray-400">
+                <template v-if="platform.available">
+                  already exists
+                </template>
+                <template v-else>
+                  is available!
+                </template>
               </span>
             </div>
+            <template v-else-if="paQuery.status.value === 'pending'">
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-2" v-for="i in 10" :key="i">
+                  <USkeleton class="size-5" :ui="{ rounded: 'rounded-full' }" />
+                  <USkeleton class="h-4 w-48" />
+                </div>
+              </div>
+            </template>
           </div>
 
-          <div v-if="domainResults.length > 0" class="flex flex-col gap-2">
-            <h2 class="text-xl font-bold mb-2">Domain Availability</h2>
-            <div v-for="(result, index) in domainResults" :key="index" class="flex items-center">
-              <span :class="result.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
-                {{ result.available ? '✓' : '✗' }}
+          <div class="flex flex-col gap-2">
+            <h2 class="text-xl font-bold mb-2" v-if="daQuery.status.value !== 'idle'">
+              Domain Availability
+            </h2>
+            <div v-for="(domain, index) in daQuery.data.value" :key="index" class="flex items-center"
+              v-if="daQuery.status.value === 'success'">
+              <span :class="domain.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
+                {{ domain.available ? '✓' : '✗' }}
               </span>
               <span>
-                <a :href="result.url" target="_blank"
-                  class="text-blue-400 hover:underline">
-                  {{ formatUrl(result.url) }}
+                <a :href="domain.url" target="_blank" class="text-blue-400 hover:underline">
+                  {{ formatUrl(domain.url) }}
                 </a>
               </span>
-              <span v-if="!result.available" class="ml-1 text-gray-400">
-                already exists
-              </span>
-              <span v-else class="ml-1 text-gray-400">
-                is available for ${{ (result.priceInCents / 100).toFixed(2) }}!
+              <span class="ml-1 text-gray-400">
+                <template v-if="domain.available">
+                  already exists
+                </template>
+                <template v-else>
+                  is available for ${{ (domain.priceInCents / 100).toFixed(2) }}!
+                </template>
               </span>
             </div>
+            <template v-else-if="daQuery.status.value === 'pending'">
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-2" v-for="i in 10" :key="i">
+                  <USkeleton class="size-5" :ui="{ rounded: 'rounded-full' }" />
+                  <USkeleton class="h-4 w-48" />
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>

@@ -1,6 +1,45 @@
-export default defineEventHandler(async (event) => {
-  const { name, platform } = getQuery(event)
+const platforms = [
+  'GitHub repo', 'GitHub org/user', 'GitLab project', 'PyPI package',
+  'Homebrew cask/formula', 'apt package', 'Rust crate', 'Maven package',
+  'npm package', 'npm org', 'Ruby gem', 'Nuget package', 'Packagist package', 'Go package'
+] as const
 
+const getPlatformLink = (platform: typeof platforms[number], name: string): string => {
+  switch (platform) {
+    case 'GitHub repo':
+      return `https://github.com/${name}`;
+    case 'GitHub org/user':
+      return `https://github.com/${name}`;
+    case 'GitLab project':
+      return `https://gitlab.com/${name}`;
+    case 'PyPI package':
+      return `https://pypi.org/project/${name}`;
+    case 'Homebrew cask/formula':
+      return `https://formulae.brew.sh/formula/${name}`;
+    case 'apt package':
+      return `https://packages.ubuntu.com/search?keywords=${name}`;
+    case 'Rust crate':
+      return `https://crates.io/crates/${name}`;
+    case 'Maven package':
+      return `https://search.maven.org/search?q=g:${name}`;
+    case 'npm package':
+      return `https://www.npmjs.com/package/${name}`;
+    case 'npm org':
+      return `https://www.npmjs.com/org/${name}`;
+    case 'Ruby gem':
+      return `https://rubygems.org/gems/${name}`;
+    case 'Nuget package':
+      return `https://www.nuget.org/packages/${name}`;
+    case 'Packagist package':
+      return `https://packagist.org/packages/${name}`;
+    case 'Go package':
+      return `https://pkg.go.dev/${name}`;
+    default:
+      return '#';
+  }
+}
+
+async function fetchPlatformAvailability(platform: typeof platforms[number], name: string) {
   switch (platform) {
     case 'GitHub repo': {
       const res = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(`/${name}$/`)}+in:name`)
@@ -77,4 +116,14 @@ export default defineEventHandler(async (event) => {
       return false
     }
   }
+}
+
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+
+  return Promise.all(platforms.map(async (platform) => {
+    const platformLink = getPlatformLink(platform, query.name as string)
+    const available = await fetchPlatformAvailability(platform, query.name as string)
+    return { platform, available, link: platformLink }
+  }))
 })
