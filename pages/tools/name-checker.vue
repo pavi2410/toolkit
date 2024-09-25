@@ -13,6 +13,7 @@ useHead({
   ]
 })
 
+import { useUrlSearchParams } from '@vueuse/core';
 import { ref } from 'vue';
 
 interface SearchResult {
@@ -28,7 +29,11 @@ interface DomainResult {
   priceInCents: number;
 }
 
-const searchName = ref('')
+const searchParams = useUrlSearchParams('history', {
+  initialValue: {
+    name: '',
+  }
+})
 const results = ref<SearchResult[]>([])
 const domainResults = ref<DomainResult[]>([])
 const isLoading = ref(false)
@@ -95,7 +100,7 @@ const checkDomainAvailability = async (name: string, domain: typeof domains[numb
 }
 
 const searchNames = async () => {
-  if (!searchName.value.trim()) {
+  if (!searchParams.name) {
     error.value = 'Please enter a name to search.'
     return
   }
@@ -107,13 +112,13 @@ const searchNames = async () => {
 
   try {
     const platformChecks = platforms.map(async (platform) => {
-      const available = await checkAvailability(searchName.value, platform)
-      return { name: searchName.value, available, platform }
+      const available = await checkAvailability(searchParams.name, platform)
+      return { name: searchParams.name, available, platform }
     })
 
     const domainChecks = domains.map(async (domain) => {
-      const { available, priceInCents } = await checkDomainAvailability(searchName.value, domain)
-      return { name: searchName.value, available, domain, priceInCents }
+      const { available, priceInCents } = await checkDomainAvailability(searchParams.name, domain)
+      return { name: searchParams.name, available, domain, priceInCents }
     })
 
     results.value = await Promise.all(platformChecks)
@@ -139,7 +144,8 @@ const searchNames = async () => {
 
       <div class="flex flex-col gap-4">
         <UButtonGroup size="lg" class="w-full">
-          <UInput v-model.trim="searchName" @keyup.enter="searchNames" placeholder="Type some name..." class="w-full" />
+          <UInput v-model.trim="searchParams.name" @keyup.enter="searchNames" placeholder="Type some name..."
+            class="w-full" />
           <UButton icon="i-heroicons-magnifying-glass" color="gray" :loading="isLoading" @click="searchNames" />
         </UButtonGroup>
 
