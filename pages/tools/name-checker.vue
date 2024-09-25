@@ -3,16 +3,6 @@ definePageMeta({
   layout: false,
 })
 
-useHead({
-  title: 'Name Checker',
-  link: [
-    {
-      rel: 'icon',
-      href: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">™️</text></svg>`
-    }
-  ]
-})
-
 import { useUrlSearchParams } from '@vueuse/core';
 import { ref } from 'vue';
 
@@ -59,11 +49,7 @@ function doSearch() {
 </script>
 
 <template>
-  <NuxtLayout name="tool-layout">
-    <template #header>
-      ™️ Name Checker
-    </template>
-
+  <NuxtLayout name="tool-layout" emoji="™️" toolName="Name Checker">
     <div class="flex flex-col items-center justify-center p-4">
       <h1 class="text-3xl font-bold mb-2">Name Checker</h1>
       <p class="mb-6">Find out if your project name is taken</p>

@@ -1,28 +1,24 @@
 <template>
-  <NuxtLayout name="tool-layout">
+  <NuxtLayout name="tool-layout" emoji="🔠" toolName="Ditext">
     <template #header>
-      <div class="flex justify-between">
-        <span>🔠 Ditext</span>
-        <div class="flex gap-4 items-center pr-4">
-          <USelect v-model="strategy" :options="strategyOptions" size="xs" />
-          <UCheckbox v-model="ignoreCase" label="Ignore Case" />
-        </div>
+      <div class="flex gap-4 items-center">
+        <USelect v-model="strategy" :options="strategyOptions" size="xs" />
+        <UCheckbox v-model="ignoreCase" label="Ignore Case" />
       </div>
     </template>
 
-    <div class="flex gap-2 *:flex-shrink-0 items-stretch px-4">
+    <div class="flex gap-2 *:flex-grow *:flex-shrink-0 items-stretch p-4">
       <diff-textarea v-model="textA" placeholder="Text A" />
       <diff-textarea v-model="textB" placeholder="Text B" />
       <div>
         <p class="opacity-50 text-xs uppercase px-1">
           Changes {{ diff.length }} &bullet; Added {{ diffAdded }} &bullet; Removed {{ diffRemoved }}
         </p>
-        <div class="whitespace-pre overflow-x-scroll border rounded p-2 text-sm font-mono">
+        <UCard class="text-sm font-mono" :ui="{ body: { padding: '!p-2' } }">
           <span v-for="(part, index) in diff" :key="index"
-            :style="{ backgroundColor: part.added ? '#0f07' : part.removed ? '#f007' : 'transparent' }">
-            {{ part.value }}
-          </span>
-        </div>
+            :style="{ backgroundColor: part.added ? '#0f07' : part.removed ? '#f007' : 'transparent' }"
+            class="whitespace-pre" v-text="part.value" />
+        </UCard>
       </div>
     </div>
   </NuxtLayout>
@@ -31,16 +27,6 @@
 <script lang="ts" setup>
 definePageMeta({
   layout: false,
-})
-
-useHead({
-  title: 'Ditext',
-  link: [
-    {
-      rel: 'icon',
-      href: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔠</text></svg>`
-    }
-  ]
 })
 
 import { diffChars, diffLines, diffWords } from 'diff';

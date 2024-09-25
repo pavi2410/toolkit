@@ -1,38 +1,22 @@
 <template>
-  <NuxtLayout name="tool-layout">
-    <template #header>
-      🕵️ URL Inspector
-    </template>
-
-    <UInput v-model="url" placeholder="Type an URL here...">
+  <NuxtLayout name="tool-layout" emoji="🕵️" toolName="URL Inspector">
+    <UInput v-model="url" placeholder="Type an URL here..." :ui="{wrapper:'m-4'}">
       <template #trailing v-if="url.length > 0">
         {{ valid ? '✅' : '❌' }}
       </template>
     </UInput>
 
-    <div>
-      <UTable v-if="valid" :columns="tableData.columns" :rows="tableData.rows">
-        <template #expand="{ row }">
-          <UTable :columns="row.expand.columns" :rows="row.expand.rows" v-if="row.property === 'search'" />
-        </template>
-      </UTable>
-    </div>
+    <UTable v-if="valid" :columns="tableData.columns" :rows="tableData.rows">
+      <template #expand="{ row }">
+        <UTable :columns="row.expand.columns" :rows="row.expand.rows" v-if="row.property === 'search'" />
+      </template>
+    </UTable>
   </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
 definePageMeta({
   layout: false,
-})
-
-useHead({
-  title: 'URL Inspector',
-  link: [
-    {
-      rel: 'icon',
-      href: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🕵️</text></svg>`
-    }
-  ]
 })
 
 const route = useRoute();

@@ -1,10 +1,6 @@
 <template>
-  <NuxtLayout name="tool-layout">
-    <template #header>
-      🔍 IP Inspector
-    </template>
-
-    <div class="flex flex-col gap-8 px-4 items-center">
+  <NuxtLayout name="tool-layout" emoji="🔍" toolName="IP Inspector">
+    <div class="flex flex-col gap-8 p-4 items-center">
       <Ipv4DecimalInput v-model="ipAddr" />
       <Ipv4BinaryInput v-model="ipAddr" />
 
@@ -54,16 +50,6 @@ import Ipv4DecimalInput from '~/components/ipv4-decimal-input.vue';
 
 definePageMeta({
   layout: false,
-})
-
-useHead({
-  title: 'IP Inspector',
-  link: [
-    {
-      rel: 'icon',
-      href: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔍</text></svg>`
-    }
-  ]
 })
 
 const route = useRoute()
