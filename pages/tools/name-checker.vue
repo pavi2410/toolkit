@@ -20,6 +20,7 @@ interface SearchResult {
   name: string;
   available: boolean | null;
   platform: string;
+  link: string;
 }
 
 interface DomainResult {
@@ -27,6 +28,7 @@ interface DomainResult {
   available: boolean;
   domain: string;
   priceInCents: number;
+  url: string;
 }
 
 const searchParams = useUrlSearchParams('history', {
@@ -113,12 +115,12 @@ const searchNames = async () => {
   try {
     const platformChecks = platforms.map(async (platform) => {
       const available = await checkAvailability(searchParams.name, platform)
-      return { name: searchParams.name, available, platform }
+      return { name: searchParams.name, available, platform, link: getPlatformLink(searchParams.name, platform) }
     })
 
     const domainChecks = domains.map(async (domain) => {
       const { available, priceInCents } = await checkDomainAvailability(searchParams.name, domain)
-      return { name: searchParams.name, available, domain, priceInCents }
+      return { name: searchParams.name, available, domain, priceInCents, url: `https://${searchParams.name}.${domain}` }
     })
 
     results.value = await Promise.all(platformChecks)
@@ -129,6 +131,10 @@ const searchNames = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const formatUrl = (url: string) => {
+  return new URL(url).hostname
 }
 </script>
 
@@ -159,7 +165,7 @@ const searchNames = async () => {
                 {{ result.available ? '✓' : '✗' }}
               </span>
               <span>
-                <a :href="getPlatformLink(result.name, result.platform)" target="_blank"
+                <a :href="result.link" target="_blank"
                   class="text-blue-400 hover:underline">
                   {{ result.platform }}
                 </a>
@@ -180,9 +186,9 @@ const searchNames = async () => {
                 {{ result.available ? '✓' : '✗' }}
               </span>
               <span>
-                <a :href="`https://${result.name}.${result.domain}`" target="_blank"
+                <a :href="result.url" target="_blank"
                   class="text-blue-400 hover:underline">
-                  {{ result.name }}.{{ result.domain }}
+                  {{ formatUrl(result.url) }}
                 </a>
               </span>
               <span v-if="!result.available" class="ml-1 text-gray-400">
