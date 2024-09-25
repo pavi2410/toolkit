@@ -29,7 +29,7 @@ useHead({
 </script>
 
 <template>
-  <header class="flex justify-between px-4 py-2 border-b dark:border-neutral-700">
+  <header class="flex flex-wrap justify-between px-4 py-2 border-b dark:border-neutral-700">
     <UBreadcrumb :links>
       <template #icon="{ link }">
         {{ link.emoji }}
