@@ -100,8 +100,12 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
   return Promise.all(platforms.map(async (platform) => {
-    const platformLink = getPlatformLink(platform, query.name as string)
-    const available = await fetchPlatformAvailability(platform, query.name as string)
-    return { platform, available, link: platformLink }
+    try {
+      const platformLink = getPlatformLink(platform, query.name as string)
+      const available = await fetchPlatformAvailability(platform, query.name as string)
+      return { platform, available, link: platformLink }
+    } catch (e) {
+      return { platform: JSON.stringify({ name: e.name, message: e.message, e }), available: false, link: '#' }
+    }
   }))
 })
