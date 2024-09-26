@@ -16,9 +16,18 @@ async function fetchDomainAvailability(url: string) {
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
-  return Promise.all(domains.map(async (domain) => {
-    const url = `https://${query.name}.${domain}`
-    const available = await fetchDomainAvailability(url)
-    return { domain, available, priceInCents: 0, url }
-  }))
+  const websiteVariations = domains.map((domain) => [
+    `https://${query.name}.${domain}`,
+    `https://get${query.name}.${domain}`,
+    `https://try${query.name}.${domain}`,
+    `https://${query.name}app.${domain}`,
+    `https://${query.name}ly.${domain}`,
+  ])
+
+  return Promise.all(websiteVariations.map(async (websites) =>
+    Promise.all(websites.map(async (url) => {
+      const available = await fetchDomainAvailability(url)
+      return { url, available, priceInCents: 0 }
+    }))
+  ))
 })

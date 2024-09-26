@@ -64,29 +64,19 @@ function doSearch() {
         <UAlert v-if="error" icon="i-heroicons-exclaimation-circle" color="red" variant="subtle" title="Heads up!"
           :description="error" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <h2 class="text-xl font-bold mb-2" v-if="paQuery.status.value !== 'idle'">
+        <div class="flex flex-wrap gap-4">
+          <UCard v-if="paQuery.status.value !== 'idle'">
+            <template #header>
               Platform Availability
-            </h2>
-            <div v-for="(platform, index) in paQuery.data.value" :key="index" class="flex items-center"
+            </template>
+            <div v-for="(platform, index) in paQuery.data.value" :key="index" class="flex items-center gap-2"
               v-if="paQuery.status.value === 'success'">
-              <span :class="platform.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
+              <span :class="platform.available ? 'text-green-500' : 'text-red-500'">
                 {{ platform.available ? '✓' : '✗' }}
               </span>
-              <span>
-                <a :href="platform.link" target="_blank" class="text-blue-400 hover:underline">
-                  {{ platform.platform }}
-                </a>
-              </span>
-              <span class="ml-1 text-gray-400">
-                <template v-if="platform.available">
-                  already exists
-                </template>
-                <template v-else>
-                  is available!
-                </template>
-              </span>
+              <a :href="platform.link" target="_blank" class="text-blue-400 hover:underline">
+                {{ platform.platform }}
+              </a>
             </div>
             <template v-else-if="paQuery.status.value === 'pending'">
               <div class="flex flex-col gap-4">
@@ -96,30 +86,23 @@ function doSearch() {
                 </div>
               </div>
             </template>
-          </div>
+          </UCard>
 
-          <div class="flex flex-col gap-2">
-            <h2 class="text-xl font-bold mb-2" v-if="daQuery.status.value !== 'idle'">
+          <UCard v-if="daQuery.status.value !== 'idle'">
+            <template #header>
               Domain Availability
-            </h2>
-            <div v-for="(domain, index) in daQuery.data.value" :key="index" class="flex items-center"
-              v-if="daQuery.status.value === 'success'">
-              <span :class="domain.available ? 'text-green-500' : 'text-red-500'" class="mr-2">
-                {{ domain.available ? '✓' : '✗' }}
-              </span>
-              <span>
-                <a :href="domain.url" target="_blank" class="text-blue-400 hover:underline">
-                  {{ formatUrl(domain.url) }}
-                </a>
-              </span>
-              <span class="ml-1 text-gray-400">
-                <template v-if="domain.available">
-                  already exists
-                </template>
-                <template v-else>
-                  is available for ${{ (domain.priceInCents / 100).toFixed(2) }}!
-                </template>
-              </span>
+            </template>
+            <div v-if="daQuery.status.value === 'success'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div v-for="(websiteVariations, index) in daQuery.data.value" :key="index" class="flex flex-col gap-2">
+                <div v-for="(website, windex) in websiteVariations" :key="windex" class="flex items-center gap-2">
+                  <span :class="website.available ? 'text-green-500' : 'text-red-500'">
+                    {{ website.available ? '✓' : '✗' }}
+                  </span>
+                  <a :href="website.url" target="_blank" class="text-blue-400 hover:underline">
+                    {{ formatUrl(website.url) }}
+                  </a>
+                </div>
+              </div>
             </div>
             <template v-else-if="daQuery.status.value === 'pending'">
               <div class="flex flex-col gap-4">
@@ -129,7 +112,7 @@ function doSearch() {
                 </div>
               </div>
             </template>
-          </div>
+          </UCard>
         </div>
       </div>
     </div>
