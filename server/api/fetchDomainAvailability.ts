@@ -1,4 +1,4 @@
-const domains = [
+const tlds = [
   'com', 'net', 'org', 'io', 'dev', 'app', 'in',
   'tech', 'co', 'ai', 'xyz', 'me', 'ing',
 ] as const
@@ -16,12 +16,12 @@ async function fetchDomainAvailability(url: string) {
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
-  const websiteVariations = domains.map((domain) => [
-    `https://${query.name}.${domain}`,
-    `https://get${query.name}.${domain}`,
-    `https://try${query.name}.${domain}`,
-    `https://${query.name}app.${domain}`,
-    `https://${query.name}ly.${domain}`,
+  const websiteVariations = tlds.map((tld) => [
+    `https://${query.name}.${tld}`,
+    `https://get${query.name}.${tld}`,
+    `https://try${query.name}.${tld}`,
+    `https://${query.name}app.${tld}`,
+    `https://${query.name}ly.${tld}`,
   ])
 
   return Promise.all(websiteVariations.map(async (websites) =>

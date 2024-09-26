@@ -64,19 +64,21 @@ function doSearch() {
         <UAlert v-if="error" icon="i-heroicons-exclaimation-circle" color="red" variant="subtle" title="Heads up!"
           :description="error" />
 
-        <div class="flex flex-wrap gap-4">
-          <UCard v-if="paQuery.status.value !== 'idle'">
+        <div class="flex flex-col sm:flex-row gap-4 overflow-auto">
+          <UCard v-if="paQuery.status.value !== 'idle'"
+            :ui="{ header: { padding: '!py-2 !px-4' }, body: { padding: '!p-4' } }">
             <template #header>
               Platform Availability
             </template>
-            <div v-for="(platform, index) in paQuery.data.value" :key="index" class="flex items-center gap-2"
-              v-if="paQuery.status.value === 'success'">
-              <span :class="platform.available ? 'text-green-500' : 'text-red-500'">
-                {{ platform.available ? '✓' : '✗' }}
-              </span>
-              <a :href="platform.link" target="_blank" class="text-blue-400 hover:underline">
-                {{ platform.platform }}
-              </a>
+            <div v-if="paQuery.status.value === 'success'" class="flex flex-col gap-2">
+              <div v-for="(platform, index) in paQuery.data.value" :key="index" class="flex items-center gap-2">
+                <span :class="platform.available ? 'text-green-500' : 'text-red-500'">
+                  {{ platform.available ? '✓' : '✗' }}
+                </span>
+                <a :href="platform.link" target="_blank" class="text-blue-400 hover:underline">
+                  {{ platform.platform }}
+                </a>
+              </div>
             </div>
             <template v-else-if="paQuery.status.value === 'pending'">
               <div class="flex flex-col gap-4">
@@ -88,12 +90,13 @@ function doSearch() {
             </template>
           </UCard>
 
-          <UCard v-if="daQuery.status.value !== 'idle'">
+          <UCard v-if="daQuery.status.value !== 'idle'"
+            :ui="{ header: { padding: '!py-2 !px-4' }, body: { padding: '!p-4' } }">
             <template #header>
               Domain Availability
             </template>
-            <div v-if="daQuery.status.value === 'success'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div v-for="(websiteVariations, index) in daQuery.data.value" :key="index" class="flex flex-col gap-2">
+            <div v-if="daQuery.status.value === 'success'" class="grid lg:grid-cols-5 gap-2 w-max">
+              <template v-for="(websiteVariations, index) in daQuery.data.value" :key="index">
                 <div v-for="(website, windex) in websiteVariations" :key="windex" class="flex items-center gap-2">
                   <span :class="website.available ? 'text-green-500' : 'text-red-500'">
                     {{ website.available ? '✓' : '✗' }}
@@ -102,7 +105,7 @@ function doSearch() {
                     {{ formatUrl(website.url) }}
                   </a>
                 </div>
-              </div>
+              </template>
             </div>
             <template v-else-if="daQuery.status.value === 'pending'">
               <div class="flex flex-col gap-4">
