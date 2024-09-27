@@ -60,6 +60,12 @@ const tools = [
     icon: '™️',
     link: '/tools/name-checker',
   },
+  {
+    name: 'Speedrun',
+    summary: 'Benchmark Javascript code',
+    icon: '🏎️',
+    link: '/tools/speedrun',
+  }
 ]
 
 useHead({
