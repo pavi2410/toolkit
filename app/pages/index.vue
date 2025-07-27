@@ -1,36 +1,52 @@
 <template>
-  <div class="p-8">
-    <h1 class="text-3xl font-semibold">
-      <span class="text-5xl">🧰</span> pavi2410's toolkit
-    </h1>
-    <p>
-      Here you can find a collection of tools that I have created to help you with your daily tasks.
-    </p>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 dark:from-blue-400/10 dark:to-purple-400/10"></div>
+      <div class="relative max-w-7xl mx-auto px-6 py-24 sm:py-32">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center p-4 mb-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg">
+            <span class="text-6xl">🧰</span>
+          </div>
+          <h1 class="text-5xl sm:text-6xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
+            pavi2410's
+            <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Developer Toolkit</span>
+          </h1>
+          <p class="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            A curated collection of professional tools designed to streamline your development workflow and boost productivity.
+          </p>
+        </div>
+      </div>
+    </div>
 
-    <UDivider class="my-8" />
+    <!-- Tools Section -->
+    <div class="max-w-7xl mx-auto px-6 py-24">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+          Available Tools
+        </h2>
+        <p class="text-lg text-slate-600 dark:text-slate-300">
+          Choose from our selection of specialized development utilities
+        </p>
+      </div>
 
-    <section class="flex flex-col gap-4">
-      <h2 class="text-2xl font-semibold">
-        Tools
-      </h2>
-      <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <li v-for="tool in tools" :key="tool.name">
-          <ULink :to="tool.link">
-            <UCard>
-              <div class="text-5xl mb-2">
-                {{ tool.icon }}
-              </div>
-              <div class="text-xl font-semibold">
-                {{ tool.name }}
-              </div>
-              <div class="text-sm">
-                {{ tool.summary }}
-              </div>
-            </UCard>
-          </ULink>
-        </li>
-      </ul>
-    </section>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <ToolCard
+          v-for="tool in tools"
+          :key="tool.name"
+          :tool="tool"
+        />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm">
+      <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="text-center text-sm text-slate-500 dark:text-slate-400">
+          Handcrafted and vibe-coded by <a href="https://pavi2410.com" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">pavi2410</a>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -65,6 +81,13 @@ const tools = [
     summary: 'Benchmark Javascript code',
     icon: '🏎️',
     link: '/tools/speedrun',
+  },
+  {
+    name: 'Spaghetti',
+    summary: 'Visual programming tool for creating interactive experiences',
+    icon: '🍝',
+    link: 'http://spaghetti.pavi2410.com/',
+    external: true,
   }
 ]
 
