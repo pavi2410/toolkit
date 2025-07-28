@@ -106,16 +106,46 @@ async function fetchPlatformAvailability(platform: typeof platforms[number], nam
       }
     }
   } catch {
-    return false
+    throw new Error('Failed to check platform availability')
   }
 }
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
+  
+  if (!query.name || !query.platform) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Missing name or platform parameter'
+    })
+  }
 
-  return Promise.all(platforms.map(async (platform) => {
-    const platformLink = getPlatformLink(platform, query.name as string)
-    const available = await fetchPlatformAvailability(platform, query.name as string)
-    return { platform, available, link: platformLink }
-  }))
+  const platform = query.platform as typeof platforms[number]
+  const name = query.name as string
+
+  if (!platforms.includes(platform)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid platform'
+    })
+  }
+
+  try {
+    const available = await fetchPlatformAvailability(platform, name)
+    const link = getPlatformLink(platform, name)
+    
+    return { 
+      platform, 
+      available, 
+      link,
+      status: 'success' as const
+    }
+  } catch (error) {
+    return {
+      platform,
+      available: false,
+      link: getPlatformLink(platform, name),
+      status: 'error' as const
+    }
+  }
 })

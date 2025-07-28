@@ -7,43 +7,40 @@
       </div>
     </template>
     
-    <div v-if="status === 'success' && data" class="flex flex-wrap gap-3">
+    <div v-if="hasResults" class="flex flex-wrap gap-3">
       <a
-        v-for="(platform, index) in data" 
-        :key="index"
-        :href="platform.link"
+        v-for="platform in platforms" 
+        :key="platform"
+        :href="platformResults.get(platform)?.link || '#'"
         target="_blank"
         rel="noopener noreferrer"
         class="relative w-20 h-20 flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all duration-200 hover:scale-105 cursor-pointer"
-        :class="{
-          'border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-950 dark:hover:bg-green-900': platform.available,
-          'border-red-300 bg-red-50 hover:bg-red-100 dark:border-red-600 dark:bg-red-950 dark:hover:bg-red-900': !platform.available
-        }"
+        :class="getPlatformCardClass(platform)"
       >
         <!-- Platform Icon -->
         <UIcon 
-          :name="getPlatformIcon(platform.platform)" 
+          :name="getPlatformIcon(platform)" 
           class="text-2xl mb-1"
-          :class="getPlatformIconColor(platform.platform)"
+          :class="getPlatformIconColor(platform)"
         />
         
         <!-- Platform Name -->
         <span class="text-xs text-center font-medium text-gray-700 dark:text-gray-300 leading-tight">
-          {{ getPlatformDisplayName(platform.platform) }}
+          {{ getPlatformDisplayName(platform) }}
         </span>
         
         <!-- Status Badge -->
         <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center">
           <UIcon 
-            :name="getStatusIcon(platform.available)" 
-            :class="getStatusColor(platform.available)"
+            :name="getPlatformStatusIcon(platform)" 
+            :class="getPlatformStatusColor(platform)"
             class="text-md"
           />
         </div>
       </a>
     </div>
     
-    <div v-else-if="status === 'error'" class="text-center py-8">
+    <div v-else-if="hasError && !isLoading" class="text-center py-8">
       <UIcon name="i-heroicons-exclamation-triangle" class="text-yellow-500 text-2xl mb-2" />
       <p class="text-sm text-gray-600 dark:text-gray-400">Failed to check platform availability</p>
       <UButton @click="$emit('retry')" variant="ghost" size="xs" class="mt-2">
@@ -51,10 +48,32 @@
       </UButton>
     </div>
     
-    <div v-else-if="status === 'pending'" class="flex flex-wrap gap-3">
-      <div v-for="i in 8" :key="i" class="w-20 h-20 rounded-lg border-2 border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center p-2">
+    <div v-else-if="isLoading" class="flex flex-wrap gap-3">
+      <div v-for="platform in platforms" :key="platform" class="relative w-20 h-20 rounded-lg border-2 border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center p-2">
         <USkeleton class="size-8 mb-1" :ui="{ rounded: 'rounded-full' }" />
         <USkeleton class="h-3 w-12" />
+        
+        <!-- Show progressive results -->
+        <template v-if="platformResults.get(platform)">
+          <div class="absolute inset-0 w-20 h-20 flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all duration-200"
+               :class="getPlatformCardClass(platform)">
+            <UIcon 
+              :name="getPlatformIcon(platform)" 
+              class="text-2xl mb-1"
+              :class="getPlatformIconColor(platform)"
+            />
+            <span class="text-xs text-center font-medium text-gray-700 dark:text-gray-300 leading-tight">
+              {{ getPlatformDisplayName(platform) }}
+            </span>
+            <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center">
+              <UIcon 
+                :name="getPlatformStatusIcon(platform)" 
+                :class="getPlatformStatusColor(platform)"
+                class="text-md"
+              />
+            </div>
+          </div>
+        </template>
       </div>
     </div>
     
@@ -65,29 +84,64 @@
 </template>
 
 <script setup lang="ts">
-interface Platform {
+interface PlatformResult {
   platform: string
   available: boolean
   link: string
+  status: 'success' | 'error'
 }
 
-defineProps<{
-  status: 'idle' | 'pending' | 'success' | 'error'
-  data?: Platform[]
+const props = defineProps<{
+  platformResults: Map<string, PlatformResult>
+  isLoading: boolean
 }>()
 
 defineEmits<{
   retry: []
 }>()
 
-const getStatusIcon = (available: boolean, hasError = false) => {
-  if (hasError) return 'i-heroicons-exclamation-triangle'
-  return available ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'
+// Platform configuration
+const platforms = [
+  'GitHub repo', 'GitHub org/user', 'PyPI package', 'Homebrew cask/formula', 'Rust crate',
+  'npm package', 'npm org', 'Ruby gem', 'Nuget package', 'Packagist package', 'Go package'
+]
+
+// Computed status for UI
+const hasResults = computed(() => props.platformResults.size > 0)
+const hasError = computed(() => 
+  Array.from(props.platformResults.values()).some(result => result.status === 'error')
+)
+
+// Platform-specific helper functions
+const getPlatformResult = (platform: string) => props.platformResults.get(platform)
+
+const getPlatformCardClass = (platform: string) => {
+  const result = getPlatformResult(platform)
+  if (!result) return 'border-gray-200 dark:border-gray-700'
+  
+  if (result.status === 'error') {
+    return 'border-yellow-300 bg-yellow-50 hover:bg-yellow-100 dark:border-yellow-600 dark:bg-yellow-950 dark:hover:bg-yellow-900'
+  }
+  
+  return result.available
+    ? 'border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-950 dark:hover:bg-green-900'
+    : 'border-red-300 bg-red-50 hover:bg-red-100 dark:border-red-600 dark:bg-red-950 dark:hover:bg-red-900'
 }
 
-const getStatusColor = (available: boolean, hasError = false) => {
-  if (hasError) return 'text-yellow-600 dark:text-yellow-500'
-  return available ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'
+const getPlatformStatusIcon = (platform: string) => {
+  const result = getPlatformResult(platform)
+  if (!result) return 'i-heroicons-question-mark-circle'
+  
+  if (result.status === 'error') return 'i-heroicons-exclamation-triangle'
+  return result.available ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'
+}
+
+const getPlatformStatusColor = (platform: string) => {
+  const result = getPlatformResult(platform)
+  if (!result) return 'text-gray-400 dark:text-gray-500'
+  
+  if (result.status === 'error') return 'text-yellow-600 dark:text-yellow-500'
+  return result.available ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'
 }
 
 const getPlatformIcon = (platform: string) => {
