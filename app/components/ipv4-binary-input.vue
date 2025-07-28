@@ -1,25 +1,25 @@
 <template>
   <div class="counter">
     <UButtonGroup>
-      <UButton color="gray" variant="solid" class="bit" v-for="i in 8" :key="i" @click="toggleBit(32 - i)">
+      <UButton color="neutral" variant="subtle" class="bit" v-for="i in 8" :key="i" @click="toggleBit(32 - i)">
         {{ getBit(32 - i) }}
       </UButton>
     </UButtonGroup>
     &bullet;
     <UButtonGroup>
-      <UButton color="gray" variant="solid" class="bit" v-for="i in 8" :key="i" @click="toggleBit(24 - i)">
+      <UButton color="neutral" variant="subtle" class="bit" v-for="i in 8" :key="i" @click="toggleBit(24 - i)">
         {{ getBit(24 - i) }}
       </UButton>
     </UButtonGroup>
     &bullet;
     <UButtonGroup>
-      <UButton color="gray" variant="solid" class="bit" v-for="i in 8" :key="i" @click="toggleBit(16 - i)">
+      <UButton color="neutral" variant="subtle" class="bit" v-for="i in 8" :key="i" @click="toggleBit(16 - i)">
         {{ getBit(16 - i) }}
       </UButton>
     </UButtonGroup>
     &bullet;
     <UButtonGroup>
-      <UButton color="gray" variant="solid" class="bit" v-for="i in 8" :key="i" @click="toggleBit(8 - i)">
+      <UButton color="neutral" variant="subtle" class="bit" v-for="i in 8" :key="i" @click="toggleBit(8 - i)">
         {{ getBit(8 - i) }}
       </UButton>
     </UButtonGroup>

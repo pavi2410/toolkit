@@ -2,11 +2,11 @@
   <div class="h-full overflow-auto">
     <div v-for="(line, lineIndex) in processedLines" :key="lineIndex" class="flex">
       <!-- Line number gutters -->
-      <div class="flex bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div class="w-12 px-2 py-0.5 text-xs text-gray-500 text-right border-r border-gray-200 dark:border-gray-700">
+      <div class="flex bg-neutral-50 dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 flex-shrink-0">
+        <div class="w-12 px-2 py-0.5 text-xs text-neutral-500 text-right border-r border-neutral-200 dark:border-neutral-700">
           {{ line.oldLineNumber || '' }}
         </div>
-        <div class="w-12 px-2 py-0.5 text-xs text-gray-500 text-right">
+        <div class="w-12 px-2 py-0.5 text-xs text-neutral-500 text-right">
           {{ line.newLineNumber || '' }}
         </div>
       </div>

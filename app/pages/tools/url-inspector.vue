@@ -1,14 +1,15 @@
 <template>
   <NuxtLayout name="tool-layout" emoji="🕵️" toolName="URL Inspector">
-    <UInput v-model="url" placeholder="Type an URL here..." :ui="{wrapper:'m-4'}">
+    <UInput v-model="url" placeholder="Type an URL here..." :ui="{ root: 'w-full p-8', trailing: 'end-8' }">
       <template #trailing v-if="url.length > 0">
         {{ valid ? '✅' : '❌' }}
       </template>
     </UInput>
 
-    <UTable v-if="valid" :columns="tableData.columns" :rows="tableData.rows">
-      <template #expand="{ row }">
-        <UTable :columns="row.expand.columns" :rows="row.expand.rows" v-if="row.property === 'search'" />
+    <UTable v-if="valid" :columns="columns" :data="tableData">
+      <template #expanded="{ row }">
+        <UTable :columns="row.original.expand.columns" :data="row.original.expand.rows"
+          v-if="row.original.property === 'search'" />
       </template>
     </UTable>
   </NuxtLayout>
@@ -25,8 +26,30 @@ const url = ref<string>(route.hash.slice(1));
 
 const valid = computed(() => URL.canParse(url.value))
 
+const columns = [
+  {
+    accessorKey: 'property',
+    header: 'Property',
+  },
+  {
+    accessorKey: 'value',
+    header: 'Value',
+  },
+]
+
+const searchColumns = [
+  {
+    accessorKey: 'key',
+    header: 'Key',
+  },
+  {
+    accessorKey: 'value',
+    header: 'Value',
+  },
+]
+
 const tableData = computed(() => {
-  if (!valid.value) return null
+  if (!valid.value) return []
 
   const _url = new URL(url.value)
 
@@ -48,36 +71,15 @@ const tableData = computed(() => {
     property: 'search',
     value: _url.search,
     expand: {
-      columns: [
-        {
-          key: 'key',
-          label: 'Key',
-        },
-        {
-          key: 'value',
-          label: 'Value',
-        },
-      ],
+      columns: searchColumns,
       rows: [..._url.searchParams.entries()].map(([key, value]) => ({ key, value })),
     }
   }] : [];
 
-  return {
-    columns: [
-      {
-        key: 'property',
-        label: 'Property',
-      },
-      {
-        key: 'value',
-        label: 'Value',
-      },
-    ],
-    rows: [
-      ...props,
-      ...search,
-    ]
-  }
+  return [
+    ...props,
+    ...search,
+  ]
 })
 </script>
 

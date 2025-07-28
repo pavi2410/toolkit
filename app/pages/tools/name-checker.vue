@@ -193,7 +193,7 @@ onUnmounted(() => {
           <UAlert 
             v-if="error" 
             icon="i-heroicons-exclamation-circle" 
-            color="red" 
+            color="error" 
             variant="subtle" 
             :description="error" 
             class="mt-3"
@@ -221,8 +221,8 @@ onUnmounted(() => {
       <!-- Empty State -->
       <div v-else class="flex items-center justify-center h-full">
         <div class="text-center">
-          <UIcon name="i-heroicons-magnifying-glass" class="text-4xl text-gray-400 mb-4" />
-          <p class="text-gray-500 dark:text-gray-400">Enter a name above to check availability</p>
+          <UIcon name="i-heroicons-magnifying-glass" class="text-4xl text-neutral-400 mb-4" />
+          <p class="text-neutral-500 dark:text-neutral-400">Enter a name above to check availability</p>
         </div>
       </div>
     </div>

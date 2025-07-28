@@ -1,5 +1,5 @@
 <template>
-  <UCard class="h-fit" :ui="{ body: { padding: '!p-6' } }">
+  <UCard class="h-fit" :ui="{ body: '!p-6' }">
     <template #header>
       <div class="flex items-center gap-2">
         <UIcon name="i-heroicons-globe-alt" class="text-lg" />
@@ -10,17 +10,17 @@
     <div v-if="hasResults" class="overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b border-gray-200 dark:border-gray-700">
-            <th class="text-left p-2 font-semibold text-gray-600 dark:text-gray-400">Name</th>
-            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-gray-600 dark:text-gray-400 min-w-[3rem]">
+          <tr class="border-b border-neutral-200 dark:border-neutral-700">
+            <th class="text-left p-2 font-semibold text-neutral-600 dark:text-neutral-400">Name</th>
+            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[3rem]">
               .{{ tld }}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="variation in nameVariations" :key="variation" 
-              class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
-            <td class="p-2 font-mono text-gray-700 dark:text-gray-300 font-medium">
+              class="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800">
+            <td class="p-2 font-mono text-neutral-700 dark:text-neutral-300 font-medium">
               {{ variation }}
             </td>
             <td v-for="tld in tlds" :key="tld" class="text-center p-1">
@@ -47,7 +47,7 @@
     
     <div v-else-if="hasError && !isLoading" class="text-center py-8">
       <UIcon name="i-heroicons-exclamation-triangle" class="text-yellow-500 text-2xl mb-2" />
-      <p class="text-sm text-gray-600 dark:text-gray-400">Failed to check domain availability</p>
+      <p class="text-sm text-neutral-600 dark:text-neutral-400">Failed to check domain availability</p>
       <UButton @click="$emit('retry')" variant="ghost" size="xs" class="mt-2">
         Retry
       </UButton>
@@ -56,17 +56,17 @@
     <div v-else-if="isLoading" class="overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b border-gray-200 dark:border-gray-700">
-            <th class="text-left p-2 font-semibold text-gray-600 dark:text-gray-400 min-w-[4rem]">
+          <tr class="border-b border-neutral-200 dark:border-neutral-700">
+            <th class="text-left p-2 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[4rem]">
               <USkeleton class="h-4 w-16" />
             </th>
-            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-gray-600 dark:text-gray-400 min-w-[3rem]">
+            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[3rem]">
               <USkeleton class="h-4 w-8 mx-auto" />
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="variation in nameVariations" :key="variation" class="border-b border-gray-100 dark:border-gray-800">
+          <tr v-for="variation in nameVariations" :key="variation" class="border-b border-neutral-100 dark:border-neutral-800">
             <td class="p-2">
               <USkeleton class="h-4 w-20" />
             </td>
@@ -101,31 +101,31 @@
     <div v-else class="overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-b border-gray-200 dark:border-gray-700">
-            <th class="text-left p-2 font-semibold text-gray-600 dark:text-gray-400">Name</th>
-            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-gray-600 dark:text-gray-400 min-w-[3rem]">
+          <tr class="border-b border-neutral-200 dark:border-neutral-700">
+            <th class="text-left p-2 font-semibold text-neutral-600 dark:text-neutral-400">Name</th>
+            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[3rem]">
               .{{ tld }}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="variation in nameVariations" :key="variation" 
-              class="border-b border-gray-100 dark:border-gray-800">
-            <td class="p-2 font-mono text-gray-500 dark:text-gray-400 font-medium">
+              class="border-b border-neutral-100 dark:border-neutral-800">
+            <td class="p-2 font-mono text-neutral-500 dark:text-neutral-400 font-medium">
               {{ variation }}
             </td>
             <td v-for="tld in tlds" :key="tld" class="text-center p-1">
               <div class="p-1">
                 <UIcon 
                   name="i-heroicons-question-mark-circle" 
-                  class="text-lg text-gray-300 dark:text-gray-600"
+                  class="text-lg text-neutral-300 dark:text-neutral-600"
                 />
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div class="text-center mt-4 text-gray-500 dark:text-gray-400">
+      <div class="text-center mt-4 text-neutral-500 dark:text-neutral-400">
         <p class="text-sm">Enter a name above to check domain availability</p>
       </div>
     </div>
@@ -190,7 +190,7 @@ const getDomainStatusIcon = (variation: string, tld: string) => {
 
 const getDomainStatusColor = (variation: string, tld: string) => {
   const result = getDomainResult(variation, tld)
-  if (!result) return 'text-gray-400 dark:text-gray-500'
+  if (!result) return 'text-neutral-400 dark:text-neutral-500'
   
   if (result.status === 'error') return 'text-yellow-500 dark:text-yellow-400'
   return result.available ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'

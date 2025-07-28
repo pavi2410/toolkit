@@ -3,10 +3,10 @@
     <p class="opacity-50 text-xs uppercase px-1 mb-2">
       Chars {{ text.length }} &bullet; Words {{ words }} &bullet; Lines {{ lines }} &bullet; Size {{ size }}
     </p>
-    <div class="flex-1 flex border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
+    <div class="flex-1 flex border border-neutral-200 dark:border-neutral-700 rounded-md overflow-hidden">
       <!-- Line numbers -->
-      <div class="bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-w-[3rem] flex-shrink-0">
-        <div class="font-mono text-xs leading-5 text-gray-500 text-right py-2">
+      <div class="bg-neutral-50 dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 min-w-[3rem] flex-shrink-0">
+        <div class="font-mono text-xs leading-5 text-neutral-500 text-right py-2">
           <div v-for="lineNum in lineNumbers" :key="lineNum" class="px-2 h-5">
             {{ lineNum }}
           </div>

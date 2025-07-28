@@ -5,15 +5,15 @@ defineOptions({
 
 const attrs = useAttrs()
 
-const links = [
+const items = [
   {
     label: "pavi2410's toolkit",
-    emoji: '⬅️',
+    icon: '⬅️',
     to: '/'
   },
   {
     label: attrs.toolName as string,
-    emoji: attrs.emoji as string,
+    icon: attrs.emoji as string,
   },
 ]
 
@@ -30,9 +30,9 @@ useHead({
 
 <template>
   <header class="flex flex-wrap justify-between px-4 py-2 border-b dark:border-neutral-700">
-    <UBreadcrumb :links>
-      <template #icon="{ link }">
-        {{ link.emoji }}
+    <UBreadcrumb :items>
+      <template #item-leading="{ item }">
+        {{ item.icon }}
       </template>
     </UBreadcrumb>
 
