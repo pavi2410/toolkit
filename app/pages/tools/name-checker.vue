@@ -1,14 +1,11 @@
 <script setup lang="ts">
+import { useDebounceFn, useUrlSearchParams } from '@vueuse/core'
+import PlatformAvailabilityCard from '~/components/name-checker/PlatformAvailabilityCard.vue'
+import DomainAvailabilityMatrix from '~/components/name-checker/DomainAvailabilityMatrix.vue'
+
 definePageMeta({
   layout: false,
 })
-
-import { useUrlSearchParams } from '@vueuse/core';
-import { ref } from 'vue';
-
-const formatUrl = (url: string) => {
-  return new URL(url).hostname
-}
 
 const searchParams = useUrlSearchParams('history', {
   initialValue: {
@@ -36,86 +33,77 @@ const isLoading = computed(() => paQuery.status.value === 'pending' || daQuery.s
 const error = ref('')
 
 function doSearch() {
-  if (!searchParams.name) {
+  if (!searchParams.name.trim()) {
     error.value = 'Please enter a name'
     return
   }
 
   error.value = ''
-
   paQuery.refresh()
   daQuery.refresh()
 }
+
+const debouncedSearch = useDebounceFn(() => {
+  if (searchParams.name.trim()) {
+    doSearch()
+  }
+}, 500)
+
+watch(() => searchParams.name, debouncedSearch)
+
 </script>
 
 <template>
   <NuxtLayout name="tool-layout" emoji="™️" toolName="Name Checker">
-    <div class="flex flex-col items-center justify-center p-4">
-      <h1 class="text-3xl font-bold mb-2">Name Checker</h1>
-      <p class="mb-6">Find out if your project name is taken</p>
+    <div class="h-[calc(100vh-theme(spacing.12))] p-6 grid grid-rows-[auto_1fr] gap-6">
+      <!-- Header Section -->
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Name Checker</h1>
+        <p class="text-slate-600 dark:text-slate-400 mb-6">Find out if your project name is taken across platforms and domains</p>
+        
+        <div class="max-w-md mx-auto">
+          <UInput 
+            v-model.trim="searchParams.name" 
+            @keyup.enter="doSearch" 
+            placeholder="Enter project name..." 
+            size="lg"
+            :loading="isLoading"
+            class="w-full"
+          />
+          
+          <UAlert 
+            v-if="error" 
+            icon="i-heroicons-exclamation-circle" 
+            color="red" 
+            variant="subtle" 
+            :description="error" 
+            class="mt-3"
+          />
+        </div>
+      </div>
 
-      <div class="flex flex-col gap-4">
-        <UButtonGroup size="lg" class="w-full">
-          <UInput v-model.trim="searchParams.name" @keyup.enter="doSearch" placeholder="Type some name..."
-            class="w-full" />
-          <UButton icon="i-heroicons-magnifying-glass" color="gray" :loading="isLoading" @click="doSearch" />
-        </UButtonGroup>
+      <!-- Results Section -->
+      <div v-if="searchParams.name.trim()" class="space-y-6">
+        
+        <DomainAvailabilityMatrix
+          :status="daQuery.status.value"
+          :data="daQuery.data.value"
+          :search-name="searchParams.name"
+          @retry="daQuery.refresh()"
+        />
 
-        <UAlert v-if="error" icon="i-heroicons-exclaimation-circle" color="red" variant="subtle" title="Heads up!"
-          :description="error" />
-
-        <div class="flex flex-col sm:flex-row gap-4 overflow-auto">
-          <UCard v-if="paQuery.status.value !== 'idle'"
-            :ui="{ header: { padding: '!py-2 !px-4' }, body: { padding: '!p-4' } }">
-            <template #header>
-              Platform Availability
-            </template>
-            <div v-if="paQuery.status.value === 'success'" class="flex flex-col gap-2">
-              <div v-for="(platform, index) in paQuery.data.value" :key="index" class="flex items-center gap-2">
-                <span :class="platform.available ? 'text-green-500' : 'text-red-500'">
-                  {{ platform.available ? '✓' : '✗' }}
-                </span>
-                <a :href="platform.link" target="_blank" class="text-blue-400 hover:underline">
-                  {{ platform.platform }}
-                </a>
-              </div>
-            </div>
-            <template v-else-if="paQuery.status.value === 'pending'">
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-2" v-for="i in 10" :key="i">
-                  <USkeleton class="size-5" :ui="{ rounded: 'rounded-full' }" />
-                  <USkeleton class="h-4 w-48" />
-                </div>
-              </div>
-            </template>
-          </UCard>
-
-          <UCard v-if="daQuery.status.value !== 'idle'"
-            :ui="{ header: { padding: '!py-2 !px-4' }, body: { padding: '!p-4' } }">
-            <template #header>
-              Domain Availability
-            </template>
-            <div v-if="daQuery.status.value === 'success'" class="grid lg:grid-cols-5 gap-2 w-max">
-              <template v-for="(websiteVariations, index) in daQuery.data.value" :key="index">
-                <div v-for="(website, windex) in websiteVariations" :key="windex" class="flex items-center gap-2">
-                  <span :class="website.available ? 'text-green-500' : 'text-red-500'">
-                    {{ website.available ? '✓' : '✗' }}
-                  </span>
-                  <a :href="website.url" target="_blank" class="text-blue-400 hover:underline">
-                    {{ formatUrl(website.url) }}
-                  </a>
-                </div>
-              </template>
-            </div>
-            <template v-else-if="daQuery.status.value === 'pending'">
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-2" v-for="i in 10" :key="i">
-                  <USkeleton class="size-5" :ui="{ rounded: 'rounded-full' }" />
-                  <USkeleton class="h-4 w-48" />
-                </div>
-              </div>
-            </template>
-          </UCard>
+        <PlatformAvailabilityCard
+          :status="paQuery.status.value"
+          :data="paQuery.data.value"
+          @retry="paQuery.refresh()"
+        />
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else class="flex items-center justify-center h-full">
+        <div class="text-center">
+          <UIcon name="i-heroicons-magnifying-glass" class="text-4xl text-gray-400 mb-4" />
+          <p class="text-gray-500 dark:text-gray-400">Enter a name above to check availability</p>
         </div>
       </div>
     </div>
