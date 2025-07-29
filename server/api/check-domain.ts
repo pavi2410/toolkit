@@ -5,13 +5,55 @@ const tlds = [
 
 const variations = ['-', 'get-', 'try-', '-app', '-ly'] as const
 
-async function fetchDomainAvailability(url: string) {
+// RDAP bootstrap mapping for TLDs
+const rdapBootstrap: Record<string, string> = {
+  'com': 'https://rdap.verisign.com/com/v1',
+  'net': 'https://rdap.verisign.com/net/v1', 
+  'org': 'https://rdap.pir.org',
+  'io': 'https://rdap.nic.io',
+  'dev': 'https://rdap.nic.google',
+  'app': 'https://rdap.nic.google',
+  'in': 'https://rdap.registry.in',
+  'tech': 'https://rdap.nic.tech',
+  'co': 'https://rdap.nic.co',
+  'ai': 'https://rdap.nic.ai',
+  'xyz': 'https://rdap.nic.xyz',
+  'me': 'https://rdap.nic.me',
+  'ing': 'https://rdap.nic.google',
+}
+
+function extractTld(domain: string): string {
+  return domain.split('.').pop() || ''
+}
+
+async function checkDomainAvailability(domain: string) {
+  const tld = extractTld(domain)
+  const rdapBase = rdapBootstrap[tld]
+  
+  if (!rdapBase) {
+    throw new Error(`RDAP server not configured for TLD: ${tld}`)
+  }
+
   try {
-    const res = await fetch(url)
-    return !res.ok;
+    const resp = await fetch(`${rdapBase}/domain/${domain}`)
+    
+    if (resp.status === 404) {
+      return { available: true }
+    }
+    
+    if (!resp.ok) {
+      throw new Error(`RDAP request failed with status: ${resp.status}`)
+    }
+
+    const data = await resp.json()
+    const expEvent = data.events?.find((e: any) => e.eventAction === 'expiration')
+    
+    return {
+      available: false,
+      expires: expEvent?.eventDate
+    }
   } catch (error) {
-    // If fetch fails, it means the domain is likely available
-    return false;
+    throw new Error(`RDAP lookup failed: ${error}`)
   }
 }
 
@@ -50,13 +92,15 @@ export default defineEventHandler(async (event) => {
 
   try {
     const url = buildDomainUrl(name, variation, tld)
-    const available = await fetchDomainAvailability(url)
+    const domain = `${name}${variation === '-' ? '' : variation.replace('-', '')}.${tld}`
+    const result = await checkDomainAvailability(domain)
     
     return { 
       url,
       variation,
       tld,
-      available, 
+      available: result.available, 
+      expires: result.expires,
       priceInCents: 0,
       status: 'success' as const
     }
@@ -67,8 +111,10 @@ export default defineEventHandler(async (event) => {
       variation, 
       tld,
       available: false,
+      expires: undefined,
       priceInCents: 0,
-      status: 'error' as const
+      status: 'error' as const,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 })

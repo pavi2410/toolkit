@@ -24,7 +24,7 @@
               {{ variation }}
             </td>
             <td v-for="tld in tlds" :key="tld" class="text-center p-1">
-              <UTooltip :text="getDomainUrl(variation, tld)">
+              <UTooltip :text="getDomainTooltipText(variation, tld)">
                 <UButton
                   :to="getDomainUrl(variation, tld)"
                   target="_blank"
@@ -73,7 +73,7 @@
             <td v-for="tld in tlds" :key="tld" class="text-center p-1">
               <!-- Show progressive results if available -->
               <template v-if="getDomainResult(variation, tld)">
-                <UTooltip :text="getDomainUrl(variation, tld)">
+                <UTooltip :text="getDomainTooltipText(variation, tld)">
                   <UButton
                     :to="getDomainUrl(variation, tld)"
                     target="_blank"
@@ -140,6 +140,8 @@ interface DomainResult {
   available: boolean
   priceInCents: number
   status: 'success' | 'error'
+  expires?: string
+  error?: string
 }
 
 const props = defineProps<{
@@ -194,5 +196,28 @@ const getDomainStatusColor = (variation: string, tld: string) => {
   
   if (result.status === 'error') return 'text-yellow-500 dark:text-yellow-400'
   return result.available ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
+}
+
+const getDomainTooltipText = (variation: string, tld: string) => {
+  const result = getDomainResult(variation, tld)
+  if (!result) return getDomainUrl(variation, tld)
+  
+  if (result.status === 'error') {
+    return result.error || 'Error checking domain'
+  }
+  
+  if (!result.available && result.expires) {
+    const expiryDate = new Date(result.expires)
+    const localExpiry = expiryDate.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    return `Expires: ${localExpiry}`
+  }
+  
+  return result.available ? 'Available' : 'Not available'
 }
 </script>
