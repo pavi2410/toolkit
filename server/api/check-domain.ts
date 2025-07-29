@@ -9,17 +9,17 @@ const variations = ['-', 'get-', 'try-', '-app', '-ly'] as const
 const rdapBootstrap: Record<string, string> = {
   'com': 'https://rdap.verisign.com/com/v1',
   'net': 'https://rdap.verisign.com/net/v1', 
-  'org': 'https://rdap.pir.org',
+  'org': 'https://rdap.publicinterestregistry.org/rdap',
   'io': 'https://rdap.nic.io',
-  'dev': 'https://rdap.nic.google',
-  'app': 'https://rdap.nic.google',
-  'in': 'https://rdap.registry.in',
-  'tech': 'https://rdap.nic.tech',
+  'dev': 'https://pubapi.registry.google/rdap',
+  'app': 'https://pubapi.registry.google/rdap',
+  'in': 'https://rdap.nixiregistry.in/rdap',
+  'tech': 'https://rdap.centralnic.com/tech',
   'co': 'https://rdap.nic.co',
-  'ai': 'https://rdap.nic.ai',
-  'xyz': 'https://rdap.nic.xyz',
+  'ai': 'https://rdap.identitydigital.services/rdap',
+  'xyz': 'https://rdap.centralnic.com/xyz',
   'me': 'https://rdap.nic.me',
-  'ing': 'https://rdap.nic.google',
+  'ing': 'https://pubapi.registry.google/rdap',
 }
 
 function extractTld(domain: string): string {
