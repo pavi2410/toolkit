@@ -161,7 +161,11 @@ const debouncedSearch = useDebounceFn(() => {
   }
 }, 500)
 
-watch(() => searchParams.name, debouncedSearch)
+watch(
+  () => searchParams.name,
+  debouncedSearch,
+  { immediate: true }
+)
 
 // Cleanup on unmount
 onUnmounted(() => {
