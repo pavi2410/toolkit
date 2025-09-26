@@ -6,43 +6,34 @@
         <h3 class="text-lg font-semibold">Domain Availability</h3>
       </div>
     </template>
-    
-    <div v-if="hasResults" class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-neutral-200 dark:border-neutral-700">
-            <th class="text-left p-2 font-semibold text-neutral-600 dark:text-neutral-400">Name</th>
-            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[3rem]">
-              .{{ tld }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="variation in nameVariations" :key="variation" 
-              class="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800">
-            <td class="p-2 font-mono text-neutral-700 dark:text-neutral-300 font-medium">
-              {{ variation }}
-            </td>
-            <td v-for="tld in tlds" :key="tld" class="text-center p-1">
-              <UTooltip :text="getDomainTooltipText(variation, tld)">
-                <UButton
-                  :to="getDomainUrl(variation, tld)"
-                  target="_blank"
-                  variant="ghost"
-                  size="xs"
-                  class="p-1"
-                >
-                  <UIcon 
-                    :name="getDomainStatusIcon(variation, tld)" 
-                    :class="getDomainStatusColor(variation, tld)" 
-                    class="text-lg"
-                  />
-                </UButton>
-              </UTooltip>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div v-if="hasResults">
+      <AdaptiveTable
+        :row-headers="nameVariations"
+        :column-headers="tldHeaders"
+        row-header-label="Name"
+        column-header-label="TLD"
+        :auto-transpose="true"
+        transpose-breakpoint="md"
+      >
+        <template #cell="{ rowHeader: variation, colHeader: tld }">
+          <UTooltip :text="getDomainTooltipText(variation, tld)">
+            <UButton
+              :to="getDomainUrl(variation, tld)"
+              target="_blank"
+              variant="ghost"
+              size="xs"
+              class="p-1"
+            >
+              <UIcon
+                :name="getDomainStatusIcon(variation, tld)"
+                :class="getDomainStatusColor(variation, tld)"
+                class="text-lg"
+              />
+            </UButton>
+          </UTooltip>
+        </template>
+      </AdaptiveTable>
     </div>
     
     <div v-else-if="hasError && !isLoading" class="text-center py-8">
@@ -53,78 +44,59 @@
       </UButton>
     </div>
     
-    <div v-else-if="isLoading" class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-neutral-200 dark:border-neutral-700">
-            <th class="text-left p-2 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[4rem]">
-              <USkeleton class="h-4 w-16" />
-            </th>
-            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[3rem]">
-              <USkeleton class="h-4 w-8 mx-auto" />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="variation in nameVariations" :key="variation" class="border-b border-neutral-100 dark:border-neutral-800">
-            <td class="p-2">
-              <USkeleton class="h-4 w-20" />
-            </td>
-            <td v-for="tld in tlds" :key="tld" class="text-center p-1">
-              <!-- Show progressive results if available -->
-              <template v-if="getDomainResult(variation, tld)">
-                <UTooltip :text="getDomainTooltipText(variation, tld)">
-                  <UButton
-                    :to="getDomainUrl(variation, tld)"
-                    target="_blank"
-                    variant="ghost"
-                    size="xs"
-                    class="p-1"
-                  >
-                    <UIcon 
-                      :name="getDomainStatusIcon(variation, tld)" 
-                      :class="getDomainStatusColor(variation, tld)" 
-                      class="text-lg"
-                    />
-                  </UButton>
-                </UTooltip>
-              </template>
-              <template v-else>
-                <USkeleton class="size-6 mx-auto" :ui="{ rounded: 'rounded-full' }" />
-              </template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else-if="isLoading">
+      <AdaptiveTable
+        :row-headers="nameVariations"
+        :column-headers="tldHeaders"
+        row-header-label="Name"
+        column-header-label="TLD"
+        :auto-transpose="true"
+        transpose-breakpoint="md"
+      >
+        <template #cell="{ rowHeader: variation, colHeader: tld }">
+          <!-- Show progressive results if available -->
+          <template v-if="getDomainResult(variation, tld)">
+            <UTooltip :text="getDomainTooltipText(variation, tld)">
+              <UButton
+                :to="getDomainUrl(variation, tld)"
+                target="_blank"
+                variant="ghost"
+                size="xs"
+                class="p-1"
+              >
+                <UIcon
+                  :name="getDomainStatusIcon(variation, tld)"
+                  :class="getDomainStatusColor(variation, tld)"
+                  class="text-lg"
+                />
+              </UButton>
+            </UTooltip>
+          </template>
+          <template v-else>
+            <USkeleton class="size-6 mx-auto" :ui="{ rounded: 'rounded-full' }" />
+          </template>
+        </template>
+      </AdaptiveTable>
     </div>
     
-    <div v-else class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-neutral-200 dark:border-neutral-700">
-            <th class="text-left p-2 font-semibold text-neutral-600 dark:text-neutral-400">Name</th>
-            <th v-for="tld in tlds" :key="tld" class="text-center p-1 font-semibold text-neutral-600 dark:text-neutral-400 min-w-[3rem]">
-              .{{ tld }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="variation in nameVariations" :key="variation" 
-              class="border-b border-neutral-100 dark:border-neutral-800">
-            <td class="p-2 font-mono text-neutral-500 dark:text-neutral-400 font-medium">
-              {{ variation }}
-            </td>
-            <td v-for="tld in tlds" :key="tld" class="text-center p-1">
-              <div class="p-1">
-                <UIcon 
-                  name="i-heroicons-question-mark-circle" 
-                  class="text-lg text-neutral-300 dark:text-neutral-600"
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else>
+      <AdaptiveTable
+        :row-headers="nameVariations"
+        :column-headers="tldHeaders"
+        row-header-label="Name"
+        column-header-label="TLD"
+        :auto-transpose="true"
+        transpose-breakpoint="md"
+      >
+        <template #cell>
+          <div class="p-1">
+            <UIcon
+              name="i-heroicons-question-mark-circle"
+              class="text-lg text-neutral-300 dark:text-neutral-600"
+            />
+          </div>
+        </template>
+      </AdaptiveTable>
       <div class="text-center mt-4 text-neutral-500 dark:text-neutral-400">
         <p class="text-sm">Enter a name above to check domain availability</p>
       </div>
@@ -133,6 +105,8 @@
 </template>
 
 <script setup lang="ts">
+import AdaptiveTable from '~/components/common/AdaptiveTable.vue'
+
 interface DomainResult {
   url: string
   variation: string
@@ -156,56 +130,61 @@ defineEmits<{
 
 // Computed status for UI
 const hasResults = computed(() => props.domainResults.size > 0)
-const hasError = computed(() => 
+const hasError = computed(() =>
   Array.from(props.domainResults.values()).some(result => result.status === 'error')
 )
 
 // Domain matrix helpers
 const tlds = ['com', 'net', 'org', 'io', 'dev', 'app', 'in', 'tech', 'co', 'ai', 'xyz', 'me', 'ing']
 
+// Headers for AdaptiveTable
+const tldHeaders = computed(() => tlds.map(tld => `.${tld}`))
+
 const nameVariations = computed(() => {
   // Always show dash placeholders for name variations
   return ['-', 'get-', 'try-', '-app', '-ly']
 })
 
-const getDomainUrl = (variation: string, tld: string) => {
+const getDomainUrl = (variation: string, tldHeader: string) => {
+  const tld = tldHeader.replace('.', '') // Remove the dot prefix
   if (!props.searchName) return `https://${variation}.${tld}`
-  
+
   // Replace dash with actual search name
   const actualVariation = variation.replace('-', props.searchName)
   return `https://${actualVariation}.${tld}`
 }
 
 // Domain-specific helper functions
-const getDomainResult = (variation: string, tld: string) => {
+const getDomainResult = (variation: string, tldHeader: string) => {
+  const tld = tldHeader.replace('.', '') // Remove the dot prefix
   const key = `${variation}-${tld}`
   return props.domainResults.get(key)
 }
 
-const getDomainStatusIcon = (variation: string, tld: string) => {
-  const result = getDomainResult(variation, tld)
+const getDomainStatusIcon = (variation: string, tldHeader: string) => {
+  const result = getDomainResult(variation, tldHeader)
   if (!result) return 'i-heroicons-question-mark-circle'
-  
+
   if (result.status === 'error') return 'i-heroicons-exclamation-triangle'
   return result.available ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'
 }
 
-const getDomainStatusColor = (variation: string, tld: string) => {
-  const result = getDomainResult(variation, tld)
+const getDomainStatusColor = (variation: string, tldHeader: string) => {
+  const result = getDomainResult(variation, tldHeader)
   if (!result) return 'text-neutral-400 dark:text-neutral-500'
-  
+
   if (result.status === 'error') return 'text-yellow-500 dark:text-yellow-400'
   return result.available ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
 }
 
-const getDomainTooltipText = (variation: string, tld: string) => {
-  const result = getDomainResult(variation, tld)
-  if (!result) return getDomainUrl(variation, tld)
-  
+const getDomainTooltipText = (variation: string, tldHeader: string) => {
+  const result = getDomainResult(variation, tldHeader)
+  if (!result) return getDomainUrl(variation, tldHeader)
+
   if (result.status === 'error') {
     return result.error || 'Error checking domain'
   }
-  
+
   if (!result.available && result.expires) {
     const expiryDate = new Date(result.expires)
     const localExpiry = expiryDate.toLocaleDateString(undefined, {
@@ -217,7 +196,7 @@ const getDomainTooltipText = (variation: string, tld: string) => {
     })
     return `Expires: ${localExpiry}`
   }
-  
+
   return result.available ? 'Available' : 'Not available'
 }
 </script>
