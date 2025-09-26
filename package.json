@@ -14,7 +14,7 @@
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@vueuse/nuxt": "13.5.0",
     "diff": "^8.0.2",
-    "nuxt": "^4.0.1",
+    "nuxt": "^4.1.2",
     "pretty-bytes": "^7.0.0",
     "vue": "^3.5.10"
   },
