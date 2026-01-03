@@ -8,17 +8,17 @@
       </div>
     </template>
 
-    <div class="h-[calc(100vh-theme(spacing.12))] grid grid-rows-[1fr_auto_1fr] gap-4 p-4">
+    <div class="h-[calc(100vh-theme(spacing.12))] grid grid-rows-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-4 p-4">
       <!-- Top row: Two textareas with swap button -->
-      <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
-        <diff-textarea v-model="textA" placeholder="Text A" class="h-full" />
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center min-h-0">
+        <diff-textarea v-model="textA" placeholder="Text A" class="h-full min-h-0" />
         <div class="flex justify-center md:self-center">
           <UTooltip text="Swap texts">
             <UButton size="sm" variant="outline" icon="i-tabler-arrows-left-right" @click="swapTexts"
               class="rotate-90 md:rotate-0" />
           </UTooltip>
         </div>
-        <diff-textarea v-model="textB" placeholder="Text B" class="h-full" />
+        <diff-textarea v-model="textB" placeholder="Text B" class="h-full min-h-0" />
       </div>
 
       <!-- Middle row: Stats and controls -->
@@ -32,7 +32,7 @@
       </div>
 
       <!-- Bottom row: Unified diff view -->
-      <UCard class="text-sm font-mono overflow-hidden" :ui="{ body: '!p-0' }">
+      <UCard class="text-sm font-mono min-h-0" :ui="{ body: '!p-0 h-full' }">
         <!-- Line-based diff for line strategy -->
         <DiffViewer v-if="strategy === 'line'" :lines="unifiedDiffLines" />
 
