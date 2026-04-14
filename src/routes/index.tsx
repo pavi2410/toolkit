@@ -1,83 +1,41 @@
 import { createFileRoute } from '@tanstack/react-router'
+import Footer from '#/components/Footer'
+import Header from '#/components/Header'
+import { ToolDirectory } from '#/components/ToolDirectory'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({ component: HomePage })
 
-function App() {
+function HomePage() {
   return (
-    <main className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
-        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
-        <p className="island-kicker mb-3">Dedicated Toolkit Website</p>
-        <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-(--sea-ink) sm:text-6xl">
-          Fast tools for everyday dev workflows.
-        </h1>
-        <p className="mb-8 max-w-2xl text-base text-(--sea-ink-soft) sm:text-lg">
-          This site now hosts the toolkit independently from the main website,
-          keeping focused utilities in one place with client-first processing.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="/tools"
-            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-(--lagoon-deep) no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
-          >
-            Open Toolkit
-          </a>
-          <a
-            href="/about"
-            className="rounded-full border border-[rgba(23,58,64,0.2)] bg-white/50 px-5 py-2.5 text-sm font-semibold text-(--sea-ink) no-underline transition hover:-translate-y-0.5 hover:border-[rgba(23,58,64,0.35)]"
-          >
-            About This Site
-          </a>
-        </div>
-      </section>
+    <>
+      <Header />
+      <main className="page-wrap px-4 pb-8 pt-14">
+        <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
+          <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
+          <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
+          <p className="island-kicker mb-3">Dedicated Toolkit Website</p>
+          <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-(--sea-ink) sm:text-6xl">
+            Fast tools for everyday dev workflows.
+          </h1>
+          <p className="mb-8 max-w-2xl text-base text-(--sea-ink-soft) sm:text-lg">
+            This site now hosts the toolkit independently from the main website,
+            keeping focused utilities in one place with client-first processing.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="#tools"
+              className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-(--lagoon-deep) no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
+            >
+              Explore Tools
+            </a>
+          </div>
+        </section>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          [
-            'Diff Checker',
-            'Compare changes by line, word, or character with unified-diff export.',
-          ],
-          [
-            'Image Editor',
-            'Resize, crop, and convert images directly in-browser with no uploads.',
-          ],
-          [
-            'PDF Editor',
-            'Merge, split, rotate, and reorder pages while files stay on-device.',
-          ],
-          [
-            'Name Checker',
-            'Check project and domain availability across key platforms.',
-          ],
-        ].map(([title, desc], index) => (
-          <article
-            key={title}
-            className="island-shell feature-card rise-in rounded-2xl p-5"
-            style={{ animationDelay: `${index * 90 + 80}ms` }}
-          >
-            <h2 className="mb-2 text-base font-semibold text-(--sea-ink)">
-              {title}
-            </h2>
-            <p className="m-0 text-sm text-(--sea-ink-soft)">{desc}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="island-shell mt-8 rounded-2xl p-6">
-        <p className="island-kicker mb-2">Migration Status</p>
-        <ul className="m-0 list-disc space-y-2 pl-5 text-sm text-(--sea-ink-soft)">
-          <li>
-            Tool modules were copied from the main website into this dedicated repo.
-          </li>
-          <li>
-            Routes under <code>/tools</code> now host each utility directly.
-          </li>
-          <li>
-            UI redesign with HeroUI v3 is intentionally deferred to the next step.
-          </li>
-        </ul>
-      </section>
-    </main>
+        <section id="tools" className="mt-8">
+          <ToolDirectory />
+        </section>
+      </main>
+      <Footer />
+    </>
   )
 }

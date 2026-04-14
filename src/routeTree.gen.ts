@@ -9,52 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ToolsRouteImport } from './routes/tools'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as ToolsRouteRouteImport } from './routes/_tools/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ToolsPdfEditorRouteImport } from './routes/tools/pdf-editor'
-import { Route as ToolsNameCheckerRouteImport } from './routes/tools/name-checker'
-import { Route as ToolsImageEditorRouteImport } from './routes/tools/image-editor'
-import { Route as ToolsDiffCheckerRouteImport } from './routes/tools/diff-checker'
 import { Route as ApiCheckPlatformRouteImport } from './routes/api/check-platform'
 import { Route as ApiCheckDomainRouteImport } from './routes/api/check-domain'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
+import { Route as ToolsPdfEditorRouteImport } from './routes/_tools/pdf-editor'
+import { Route as ToolsNameCheckerRouteImport } from './routes/_tools/name-checker'
+import { Route as ToolsImageEditorRouteImport } from './routes/_tools/image-editor'
+import { Route as ToolsDiffCheckerRouteImport } from './routes/_tools/diff-checker'
 import { Route as ApiRpcSplatRouteImport } from './routes/api.rpc.$'
 
-const ToolsRoute = ToolsRouteImport.update({
-  id: '/tools',
-  path: '/tools',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const ToolsRouteRoute = ToolsRouteRouteImport.update({
+  id: '/_tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const ToolsPdfEditorRoute = ToolsPdfEditorRouteImport.update({
-  id: '/pdf-editor',
-  path: '/pdf-editor',
-  getParentRoute: () => ToolsRoute,
-} as any)
-const ToolsNameCheckerRoute = ToolsNameCheckerRouteImport.update({
-  id: '/name-checker',
-  path: '/name-checker',
-  getParentRoute: () => ToolsRoute,
-} as any)
-const ToolsImageEditorRoute = ToolsImageEditorRouteImport.update({
-  id: '/image-editor',
-  path: '/image-editor',
-  getParentRoute: () => ToolsRoute,
-} as any)
-const ToolsDiffCheckerRoute = ToolsDiffCheckerRouteImport.update({
-  id: '/diff-checker',
-  path: '/diff-checker',
-  getParentRoute: () => ToolsRoute,
 } as any)
 const ApiCheckPlatformRoute = ApiCheckPlatformRouteImport.update({
   id: '/api/check-platform',
@@ -71,6 +44,26 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsPdfEditorRoute = ToolsPdfEditorRouteImport.update({
+  id: '/pdf-editor',
+  path: '/pdf-editor',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsNameCheckerRoute = ToolsNameCheckerRouteImport.update({
+  id: '/name-checker',
+  path: '/name-checker',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsImageEditorRoute = ToolsImageEditorRouteImport.update({
+  id: '/image-editor',
+  path: '/image-editor',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
+const ToolsDiffCheckerRoute = ToolsDiffCheckerRouteImport.update({
+  id: '/diff-checker',
+  path: '/diff-checker',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -79,90 +72,79 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/tools': typeof ToolsRouteWithChildren
+  '/diff-checker': typeof ToolsDiffCheckerRoute
+  '/image-editor': typeof ToolsImageEditorRoute
+  '/name-checker': typeof ToolsNameCheckerRoute
+  '/pdf-editor': typeof ToolsPdfEditorRoute
   '/api/$': typeof ApiSplatRoute
   '/api/check-domain': typeof ApiCheckDomainRoute
   '/api/check-platform': typeof ApiCheckPlatformRoute
-  '/tools/diff-checker': typeof ToolsDiffCheckerRoute
-  '/tools/image-editor': typeof ToolsImageEditorRoute
-  '/tools/name-checker': typeof ToolsNameCheckerRoute
-  '/tools/pdf-editor': typeof ToolsPdfEditorRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/tools': typeof ToolsRouteWithChildren
+  '/diff-checker': typeof ToolsDiffCheckerRoute
+  '/image-editor': typeof ToolsImageEditorRoute
+  '/name-checker': typeof ToolsNameCheckerRoute
+  '/pdf-editor': typeof ToolsPdfEditorRoute
   '/api/$': typeof ApiSplatRoute
   '/api/check-domain': typeof ApiCheckDomainRoute
   '/api/check-platform': typeof ApiCheckPlatformRoute
-  '/tools/diff-checker': typeof ToolsDiffCheckerRoute
-  '/tools/image-editor': typeof ToolsImageEditorRoute
-  '/tools/name-checker': typeof ToolsNameCheckerRoute
-  '/tools/pdf-editor': typeof ToolsPdfEditorRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/tools': typeof ToolsRouteWithChildren
+  '/_tools': typeof ToolsRouteRouteWithChildren
+  '/_tools/diff-checker': typeof ToolsDiffCheckerRoute
+  '/_tools/image-editor': typeof ToolsImageEditorRoute
+  '/_tools/name-checker': typeof ToolsNameCheckerRoute
+  '/_tools/pdf-editor': typeof ToolsPdfEditorRoute
   '/api/$': typeof ApiSplatRoute
   '/api/check-domain': typeof ApiCheckDomainRoute
   '/api/check-platform': typeof ApiCheckPlatformRoute
-  '/tools/diff-checker': typeof ToolsDiffCheckerRoute
-  '/tools/image-editor': typeof ToolsImageEditorRoute
-  '/tools/name-checker': typeof ToolsNameCheckerRoute
-  '/tools/pdf-editor': typeof ToolsPdfEditorRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
-    | '/tools'
+    | '/diff-checker'
+    | '/image-editor'
+    | '/name-checker'
+    | '/pdf-editor'
     | '/api/$'
     | '/api/check-domain'
     | '/api/check-platform'
-    | '/tools/diff-checker'
-    | '/tools/image-editor'
-    | '/tools/name-checker'
-    | '/tools/pdf-editor'
     | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
-    | '/tools'
+    | '/diff-checker'
+    | '/image-editor'
+    | '/name-checker'
+    | '/pdf-editor'
     | '/api/$'
     | '/api/check-domain'
     | '/api/check-platform'
-    | '/tools/diff-checker'
-    | '/tools/image-editor'
-    | '/tools/name-checker'
-    | '/tools/pdf-editor'
     | '/api/rpc/$'
   id:
     | '__root__'
     | '/'
-    | '/about'
-    | '/tools'
+    | '/_tools'
+    | '/_tools/diff-checker'
+    | '/_tools/image-editor'
+    | '/_tools/name-checker'
+    | '/_tools/pdf-editor'
     | '/api/$'
     | '/api/check-domain'
     | '/api/check-platform'
-    | '/tools/diff-checker'
-    | '/tools/image-editor'
-    | '/tools/name-checker'
-    | '/tools/pdf-editor'
     | '/api/rpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  ToolsRoute: typeof ToolsRouteWithChildren
+  ToolsRouteRoute: typeof ToolsRouteRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
   ApiCheckDomainRoute: typeof ApiCheckDomainRoute
   ApiCheckPlatformRoute: typeof ApiCheckPlatformRoute
@@ -171,18 +153,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tools': {
-      id: '/tools'
-      path: '/tools'
-      fullPath: '/tools'
-      preLoaderRoute: typeof ToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/_tools': {
+      id: '/_tools'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ToolsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -191,34 +166,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/tools/pdf-editor': {
-      id: '/tools/pdf-editor'
-      path: '/pdf-editor'
-      fullPath: '/tools/pdf-editor'
-      preLoaderRoute: typeof ToolsPdfEditorRouteImport
-      parentRoute: typeof ToolsRoute
-    }
-    '/tools/name-checker': {
-      id: '/tools/name-checker'
-      path: '/name-checker'
-      fullPath: '/tools/name-checker'
-      preLoaderRoute: typeof ToolsNameCheckerRouteImport
-      parentRoute: typeof ToolsRoute
-    }
-    '/tools/image-editor': {
-      id: '/tools/image-editor'
-      path: '/image-editor'
-      fullPath: '/tools/image-editor'
-      preLoaderRoute: typeof ToolsImageEditorRouteImport
-      parentRoute: typeof ToolsRoute
-    }
-    '/tools/diff-checker': {
-      id: '/tools/diff-checker'
-      path: '/diff-checker'
-      fullPath: '/tools/diff-checker'
-      preLoaderRoute: typeof ToolsDiffCheckerRouteImport
-      parentRoute: typeof ToolsRoute
     }
     '/api/check-platform': {
       id: '/api/check-platform'
@@ -241,6 +188,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_tools/pdf-editor': {
+      id: '/_tools/pdf-editor'
+      path: '/pdf-editor'
+      fullPath: '/pdf-editor'
+      preLoaderRoute: typeof ToolsPdfEditorRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/name-checker': {
+      id: '/_tools/name-checker'
+      path: '/name-checker'
+      fullPath: '/name-checker'
+      preLoaderRoute: typeof ToolsNameCheckerRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/image-editor': {
+      id: '/_tools/image-editor'
+      path: '/image-editor'
+      fullPath: '/image-editor'
+      preLoaderRoute: typeof ToolsImageEditorRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
+    '/_tools/diff-checker': {
+      id: '/_tools/diff-checker'
+      path: '/diff-checker'
+      fullPath: '/diff-checker'
+      preLoaderRoute: typeof ToolsDiffCheckerRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -251,26 +226,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ToolsRouteChildren {
+interface ToolsRouteRouteChildren {
   ToolsDiffCheckerRoute: typeof ToolsDiffCheckerRoute
   ToolsImageEditorRoute: typeof ToolsImageEditorRoute
   ToolsNameCheckerRoute: typeof ToolsNameCheckerRoute
   ToolsPdfEditorRoute: typeof ToolsPdfEditorRoute
 }
 
-const ToolsRouteChildren: ToolsRouteChildren = {
+const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsDiffCheckerRoute: ToolsDiffCheckerRoute,
   ToolsImageEditorRoute: ToolsImageEditorRoute,
   ToolsNameCheckerRoute: ToolsNameCheckerRoute,
   ToolsPdfEditorRoute: ToolsPdfEditorRoute,
 }
 
-const ToolsRouteWithChildren = ToolsRoute._addFileChildren(ToolsRouteChildren)
+const ToolsRouteRouteWithChildren = ToolsRouteRoute._addFileChildren(
+  ToolsRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  ToolsRoute: ToolsRouteWithChildren,
+  ToolsRouteRoute: ToolsRouteRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
   ApiCheckDomainRoute: ApiCheckDomainRoute,
   ApiCheckPlatformRoute: ApiCheckPlatformRoute,
