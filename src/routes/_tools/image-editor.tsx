@@ -12,13 +12,5 @@ export const Route = createFileRoute('/_tools/image-editor')({
       },
     ],
   }),
-  component: ImageEditorPage,
+  component: ImageEditorTool,
 })
-
-function ImageEditorPage() {
-  return (
-    <div className="h-full min-h-[75vh] overflow-hidden">
-      <ImageEditorTool />
-    </div>
-  )
-}

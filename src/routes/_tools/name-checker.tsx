@@ -12,13 +12,5 @@ export const Route = createFileRoute('/_tools/name-checker')({
       },
     ],
   }),
-  component: NameCheckerPage,
+  component: NameCheckerTool,
 })
-
-function NameCheckerPage() {
-  return (
-    <div className="h-full min-h-[75vh] overflow-hidden">
-      <NameCheckerTool />
-    </div>
-  )
-}

@@ -12,13 +12,5 @@ export const Route = createFileRoute('/_tools/diff-checker')({
       },
     ],
   }),
-  component: DiffCheckerPage,
+  component: DiffCheckerTool,
 })
-
-function DiffCheckerPage() {
-  return (
-    <div className="h-full min-h-[75vh] overflow-hidden">
-      <DiffCheckerTool />
-    </div>
-  )
-}

@@ -12,13 +12,5 @@ export const Route = createFileRoute('/_tools/pdf-editor')({
       },
     ],
   }),
-  component: PdfEditorPage,
+  component: PdfEditorTool,
 })
-
-function PdfEditorPage() {
-  return (
-    <div className="h-full min-h-[75vh] overflow-hidden">
-      <PdfEditorTool />
-    </div>
-  )
-}
