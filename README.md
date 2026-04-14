@@ -39,15 +39,6 @@ If you prefer not to use Tailwind CSS:
 4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
 
 
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
 ## T3Env
 
 - You can use T3Env to add type safety to your environment variables.

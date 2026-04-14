@@ -14,8 +14,7 @@
   "chosenAddOns": [
     "compiler",
     "oRPC",
-    "shadcn",
-    "tanstack-query",
-    "t3env"
+    "t3env",
+    "tanstack-query"
   ]
 }
