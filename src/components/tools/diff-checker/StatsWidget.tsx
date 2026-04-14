@@ -1,3 +1,5 @@
+import { Chip } from '@heroui/react'
+
 interface StatsWidgetProps {
   text: string
   label?: string
@@ -15,29 +17,19 @@ function calculateStats(text: string) {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
-  return {
-    chars,
-    words,
-    lines,
-    size: formatBytes(bytes)
-  }
+  return { chars, words, lines, size: formatBytes(bytes) }
 }
 
 export default function StatsWidget({ text, label }: StatsWidgetProps) {
   const stats = calculateStats(text)
 
   return (
-    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-      {label && (
-        <>
-          <span className="font-medium">{label}</span>
-          <div className="h-3 w-px bg-gray-300 dark:bg-gray-600" />
-        </>
-      )}
-      <span title="Lines">{stats.lines} lines</span>
-      <span title="Words">{stats.words} words</span>
-      <span title="Characters">{stats.chars} chars</span>
-      <span title="Size">{stats.size}</span>
+    <div className="flex items-center gap-1.5">
+      {label && <span className="text-xs font-medium text-muted mr-1">{label}</span>}
+      <Chip size="sm" variant="soft" title="Lines">{stats.lines}L</Chip>
+      <Chip size="sm" variant="soft" title="Words">{stats.words}W</Chip>
+      <Chip size="sm" variant="soft" title="Characters">{stats.chars}C</Chip>
+      <Chip size="sm" variant="soft" title="Size">{stats.size}</Chip>
     </div>
   )
 }

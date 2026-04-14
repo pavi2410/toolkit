@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { NuqsAdapter } from 'nuqs/adapters/react'
 import { parseAsString, useQueryState } from 'nuqs'
+import { SearchField, Alert } from '@heroui/react'
 import { PLATFORMS, TLDS, NAME_VARIATIONS, type PlatformResult, type DomainResult } from './types'
 import PlatformAvailabilityCard from './PlatformAvailabilityCard'
 import DomainAvailabilityMatrix from './DomainAvailabilityMatrix'
 import IconSearch from '~icons/tabler/search'
-import IconLoader from '~icons/tabler/loader-2'
 
 function NameCheckerContent() {
   const [searchName, setSearchName] = useQueryState(
@@ -147,47 +147,37 @@ function NameCheckerContent() {
     }
   }, [])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchName(e.target.value.trim())
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      doSearch()
-    }
-  }
-
   return (
     <div className="flex flex-col h-full px-6 py-3 gap-6">
       {/* Search Section */}
       <div className="text-center">
-        <p className="text-gray-600 dark:text-gray-400 mb-3">
+        <p className="text-muted mb-3">
           Find out if your project name is taken across platforms and domains
         </p>
 
-        <div className="max-w-md mx-auto">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              {isLoading ? (
-                <IconLoader className="h-5 w-5 text-gray-400 animate-spin" />
-              ) : (
-                <IconSearch className="h-5 w-5 text-gray-400" />
-              )}
-            </div>
-            <input
-              type="text"
-              defaultValue={searchName}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter project name..."
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        <div className="max-w-md mx-auto flex flex-col gap-3">
+          <SearchField
+            value={searchName}
+            onChange={(val) => setSearchName(val.trim())}
+            onSubmit={() => doSearch()}
+            fullWidth
+            variant="secondary"
+            aria-label="Project name"
+          >
+            <SearchField.Group>
+              <SearchField.SearchIcon />
+              <SearchField.Input placeholder="Enter project name..." />
+              <SearchField.ClearButton />
+            </SearchField.Group>
+          </SearchField>
 
           {error && (
-            <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-            </div>
+            <Alert status="danger">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Description>{error}</Alert.Description>
+              </Alert.Content>
+            </Alert>
           )}
         </div>
       </div>
@@ -211,8 +201,8 @@ function NameCheckerContent() {
       ) : (
         <div className="flex items-center justify-center flex-1">
           <div className="text-center">
-            <IconSearch className="text-4xl text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">Enter a name above to check availability</p>
+            <IconSearch className="text-4xl text-muted mx-auto mb-4" />
+            <p className="text-muted">Enter a name above to check availability</p>
           </div>
         </div>
       )}

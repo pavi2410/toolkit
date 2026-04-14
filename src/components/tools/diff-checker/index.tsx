@@ -176,7 +176,7 @@ function DiffCheckerContent() {
       />
 
       {/* Text Input Areas */}
-      <div className="shrink-0 grid grid-cols-1 md:grid-cols-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="shrink-0 grid grid-cols-1 md:grid-cols-2 border-b border-border">
         <TextInputPanel
           label="Text A (Original)"
           value={textA}

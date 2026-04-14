@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useStore } from '@nanostores/react'
 import { $croppedDimensions, $transforms, actions } from '@/stores/image-editor'
+import { Button, NumberField, Slider } from '@heroui/react'
 import IconLink from '~icons/tabler/link'
 import IconLinkOff from '~icons/tabler/link-off'
 
@@ -14,7 +15,6 @@ const PRESETS = [
 ]
 
 export default function ResizePanel() {
-  // Use cropped dimensions as the base (reflects actual image after crop)
   const croppedDims = useStore($croppedDimensions)
   const transforms = useStore($transforms)
 
@@ -24,165 +24,93 @@ export default function ResizePanel() {
   const currentHeight = transforms.resize?.height ?? baseHeight
   const aspectRatio = baseWidth && baseHeight ? baseWidth / baseHeight : 1
 
-  const [width, setWidth] = useState(currentWidth.toString())
-  const [height, setHeight] = useState(currentHeight.toString())
+  const [width, setWidth] = useState(currentWidth)
+  const [height, setHeight] = useState(currentHeight)
   const [lockAspect, setLockAspect] = useState(true)
-  const [percentage, setPercentage] = useState('100')
+  const [percentage, setPercentage] = useState(100)
 
   useEffect(() => {
-    setWidth(currentWidth.toString())
-    setHeight(currentHeight.toString())
-    if (baseWidth) {
-      const pct = Math.round((currentWidth / baseWidth) * 100)
-      setPercentage(pct.toString())
-    }
+    setWidth(currentWidth)
+    setHeight(currentHeight)
+    if (baseWidth) setPercentage(Math.round((currentWidth / baseWidth) * 100))
   }, [currentWidth, currentHeight, baseWidth])
 
-  const handleWidthChange = (value: string) => {
-    setWidth(value)
-    const w = parseInt(value, 10)
+  const handleWidthChange = (w: number) => {
     if (isNaN(w) || w <= 0) return
-
-    if (lockAspect) {
-      const h = Math.round(w / aspectRatio)
-      setHeight(h.toString())
-    }
+    setWidth(w)
+    if (lockAspect) setHeight(Math.round(w / aspectRatio))
+    if (baseWidth) setPercentage(Math.round((w / baseWidth) * 100))
   }
 
-  const handleHeightChange = (value: string) => {
-    setHeight(value)
-    const h = parseInt(value, 10)
+  const handleHeightChange = (h: number) => {
     if (isNaN(h) || h <= 0) return
-
-    if (lockAspect) {
-      const w = Math.round(h * aspectRatio)
-      setWidth(w.toString())
-    }
+    setHeight(h)
+    if (lockAspect) setWidth(Math.round(h * aspectRatio))
   }
 
-  const handlePercentageChange = (value: string) => {
-    setPercentage(value)
-    const pct = parseInt(value, 10)
+  const handlePercentageChange = (pct: number) => {
     if (isNaN(pct) || pct <= 0 || !baseWidth || !baseHeight) return
-
-    const w = Math.round(baseWidth * (pct / 100))
-    const h = Math.round(baseHeight * (pct / 100))
-    setWidth(w.toString())
-    setHeight(h.toString())
+    setPercentage(pct)
+    setWidth(Math.round(baseWidth * (pct / 100)))
+    setHeight(Math.round(baseHeight * (pct / 100)))
   }
 
   const applyResize = () => {
-    const w = parseInt(width, 10)
-    const h = parseInt(height, 10)
-    if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return
-    actions.setResize(w, h)
-  }
-
-  const applyPreset = (preset: typeof PRESETS[0]) => {
-    setWidth(preset.width.toString())
-    setHeight(preset.height.toString())
-    actions.setResize(preset.width, preset.height)
+    if (width > 0 && height > 0) actions.setResize(width, height)
   }
 
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Dimensions (px)
-        </label>
+        <label className="block text-xs font-medium text-foreground mb-2">Dimensions (px)</label>
         <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
-          <div>
-            <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-1">Width</label>
-            <input
-              type="number"
-              value={width}
-              onChange={e => handleWidthChange(e.target.value)}
-              onBlur={applyResize}
-              onKeyDown={e => e.key === 'Enter' && applyResize()}
-              className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100"
-              min={1}
-            />
-          </div>
-          <button
-            onClick={() => setLockAspect(!lockAspect)}
-            className={`p-2 rounded transition-colors ${
-              lockAspect
-                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
-            }`}
-            title={lockAspect ? 'Unlock aspect ratio' : 'Lock aspect ratio'}
-          >
+          <NumberField value={width} onChange={handleWidthChange} onBlur={applyResize} minValue={1} aria-label="Width" variant="secondary">
+            <span className="block text-[10px] text-muted mb-1">Width</span>
+            <NumberField.Group>
+              <NumberField.Input onKeyDown={e => e.key === 'Enter' && applyResize()} />
+            </NumberField.Group>
+          </NumberField>
+
+          <Button isIconOnly size="sm" variant={lockAspect ? 'secondary' : 'tertiary'} onPress={() => setLockAspect(!lockAspect)} aria-label={lockAspect ? 'Unlock aspect ratio' : 'Lock aspect ratio'}>
             {lockAspect ? <IconLink className="w-4 h-4" /> : <IconLinkOff className="w-4 h-4" />}
-          </button>
-          <div>
-            <label className="block text-[10px] text-gray-500 dark:text-gray-400 mb-1">Height</label>
-            <input
-              type="number"
-              value={height}
-              onChange={e => handleHeightChange(e.target.value)}
-              onBlur={applyResize}
-              onKeyDown={e => e.key === 'Enter' && applyResize()}
-              className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100"
-              min={1}
-            />
-          </div>
+          </Button>
+
+          <NumberField value={height} onChange={handleHeightChange} onBlur={applyResize} minValue={1} aria-label="Height" variant="secondary">
+            <span className="block text-[10px] text-muted mb-1">Height</span>
+            <NumberField.Group>
+              <NumberField.Input onKeyDown={e => e.key === 'Enter' && applyResize()} />
+            </NumberField.Group>
+          </NumberField>
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Scale (%)
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type="range"
-            min={10}
-            max={200}
-            value={percentage}
-            onChange={e => handlePercentageChange(e.target.value)}
-            onMouseUp={applyResize}
-            onTouchEnd={applyResize}
-            className="flex-1"
-          />
-          <input
-            type="number"
-            value={percentage}
-            onChange={e => handlePercentageChange(e.target.value)}
-            onBlur={applyResize}
-            onKeyDown={e => e.key === 'Enter' && applyResize()}
-            className="w-16 px-2 py-1.5 text-sm text-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100"
-            min={1}
-          />
-        </div>
+        <label className="block text-xs font-medium text-foreground mb-2">Scale</label>
+        <Slider value={percentage} onChange={handlePercentageChange} onChangeEnd={applyResize} minValue={10} maxValue={200}>
+          <Slider.Output className="block text-xs text-muted tabular-nums mb-1" />
+          <Slider.Track>
+            <Slider.Fill />
+            <Slider.Thumb />
+          </Slider.Track>
+        </Slider>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Presets
-        </label>
+        <label className="block text-xs font-medium text-foreground mb-2">Presets</label>
         <div className="grid grid-cols-2 gap-2">
           {PRESETS.map(preset => (
-            <button
-              key={preset.label}
-              onClick={() => applyPreset(preset)}
-              className="px-3 py-2 text-xs font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300 transition-colors"
-            >
-              {preset.label}
-              <span className="block text-gray-500 dark:text-gray-400 text-[10px]">
-                {preset.width}×{preset.height}
-              </span>
-            </button>
+            <Button key={preset.label} variant="secondary" size="sm" onPress={() => { setWidth(preset.width); setHeight(preset.height); actions.setResize(preset.width, preset.height) }} className="flex flex-col h-auto py-2">
+              <span>{preset.label}</span>
+              <span className="text-[10px] opacity-60">{preset.width}×{preset.height}</span>
+            </Button>
           ))}
         </div>
       </div>
 
       {transforms.resize && (
-        <button
-          onClick={actions.clearResize}
-          className="w-full px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-        >
+        <Button variant="ghost" size="sm" onPress={actions.clearResize} className="w-full text-danger">
           Reset to original size
-        </button>
+        </Button>
       )}
     </div>
   )

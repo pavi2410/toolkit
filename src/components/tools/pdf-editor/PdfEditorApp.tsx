@@ -1,6 +1,8 @@
 import { usePdfEditor } from './usePdfEditor'
-import { DropZone } from './DropZone'
+import DropZone from '@/components/DropZone'
 import { Toolbar } from './Toolbar'
+import { Alert } from '@heroui/react'
+import IconFile from '~icons/tabler/file-type-pdf'
 import { FileList } from './FileList'
 import { PageGrid } from './PageGrid'
 import { UnlockModal, PendingFileModal } from './PasswordModal'
@@ -13,7 +15,6 @@ export default function PdfEditorApp() {
     selectedPages,
     error,
     isProcessing,
-    isDragging,
     draggedPage,
     previewUrl,
     unlockPassword,
@@ -23,9 +24,7 @@ export default function PdfEditorApp() {
     inputRef,
     setUnlockPassword,
     setLockedFileId,
-    handleDrop,
-    handleDragOver,
-    handleDragLeave,
+    handleFiles,
     handleInputChange,
     rotatePage,
     deletePage,
@@ -54,19 +53,20 @@ export default function PdfEditorApp() {
   if (files.length === 0 && !pendingFile) {
     return (
       <DropZone
-        isDragging={isDragging}
+        icon={<IconFile className="w-10 h-10" />}
+        title="Drop PDFs or click to upload"
+        dragTitle="Drop PDFs here"
+        subtitle="Select multiple files to merge • Reorder pages by dragging"
+        accept="application/pdf"
+        multiple
+        onFiles={handleFiles}
         error={error}
-        inputRef={inputRef}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onInputChange={handleInputChange}
       />
     )
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-full bg-surface-secondary">
       <Toolbar
         pagesCount={pages.length}
         selectedCount={selectedPages.size}
@@ -84,8 +84,8 @@ export default function PdfEditorApp() {
 
       {/* Error banner */}
       {error && (
-        <div className="shrink-0 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 px-4 py-2">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <div className="shrink-0 px-4 pt-2">
+          <Alert status="danger">{error}</Alert>
         </div>
       )}
 

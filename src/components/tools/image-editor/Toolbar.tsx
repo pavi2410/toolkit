@@ -5,10 +5,10 @@ import {
   $hasChanges,
   $zoom,
   $isComparing,
-  $originalImage,
   $originalMeta,
   actions,
 } from '@/stores/image-editor'
+import { Button, ButtonGroup, Separator, Select, ListBox } from '@heroui/react'
 import IconArrowBackUp from '~icons/tabler/arrow-back-up'
 import IconArrowForwardUp from '~icons/tabler/arrow-forward-up'
 import IconRefresh from '~icons/tabler/refresh'
@@ -16,6 +16,8 @@ import IconZoomIn from '~icons/tabler/zoom-in'
 import IconZoomOut from '~icons/tabler/zoom-out'
 import IconEye from '~icons/tabler/eye'
 import IconX from '~icons/tabler/x'
+
+const ZOOM_OPTIONS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3]
 
 export default function Toolbar() {
   const canUndo = useStore($canUndo)
@@ -25,115 +27,78 @@ export default function Toolbar() {
   const isComparing = useStore($isComparing)
   const meta = useStore($originalMeta)
 
-  const zoomOptions = [0.25, 0.5, 0.75, 1, 1.5, 2, 3]
-
-  // Truncate filename if too long
   const displayName = meta?.name
-    ? meta.name.length > 24
-      ? meta.name.slice(0, 21) + '...'
-      : meta.name
+    ? meta.name.length > 24 ? meta.name.slice(0, 21) + '...' : meta.name
     : 'Image'
 
   return (
-    <div className="shrink-0 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2">
+    <div className="shrink-0 border-b border-border bg-surface-secondary px-4 py-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Filename */}
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-[150px] truncate" title={meta?.name}>
+          <span className="text-sm font-medium text-foreground max-w-[150px] truncate" title={meta?.name}>
             {displayName}
           </span>
-          <div className="w-px h-5 bg-gray-300 dark:bg-gray-600" />
-          <div className="flex items-center gap-1">
-          <button
-            onClick={actions.undo}
-            disabled={!canUndo}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            title="Undo (Ctrl+Z)"
-          >
-            <IconArrowBackUp className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
-          <button
-            onClick={actions.redo}
-            disabled={!canRedo}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            title="Redo (Ctrl+Shift+Z)"
-          >
-            <IconArrowForwardUp className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
-
-          <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-2" />
-
-          <button
-            onClick={actions.reset}
-            disabled={!hasChanges}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            title="Reset all changes"
-          >
-            <IconRefresh className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
-          </div>
+          <Separator orientation="vertical" className="h-5" />
+          <ButtonGroup variant="tertiary">
+            <Button isIconOnly size="sm" isDisabled={!canUndo} onPress={actions.undo} aria-label="Undo">
+              <IconArrowBackUp className="w-4 h-4" />
+            </Button>
+            <Button isIconOnly size="sm" isDisabled={!canRedo} onPress={actions.redo} aria-label="Redo">
+              <IconArrowForwardUp className="w-4 h-4" />
+            </Button>
+          </ButtonGroup>
+          <Separator orientation="vertical" className="h-5" />
+          <Button isIconOnly size="sm" variant="tertiary" isDisabled={!hasChanges} onPress={actions.reset} aria-label="Reset">
+            <IconRefresh className="w-4 h-4" />
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => actions.setZoom(Math.max(0.1, zoom - 0.25))}
-              className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              title="Zoom out"
-            >
-              <IconZoomOut className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            </button>
-            <select
-              value={zoom}
-              onChange={e => {
-                const val = e.target.value
-                if (val === 'fit') {
-                  // Fit will be handled by setting zoom to a special value
-                  // For now, reset to 1 (100%) as a sensible default
-                  actions.setZoom(1)
-                } else {
-                  actions.setZoom(parseFloat(val))
-                }
-              }}
-              className="px-2 py-1 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300"
-            >
-              <option value={1}>Fit</option>
-              {zoomOptions.map(z => (
-                <option key={z} value={z}>{Math.round(z * 100)}%</option>
-              ))}
-            </select>
-            <button
-              onClick={() => actions.setZoom(Math.min(3, zoom + 0.25))}
-              className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              title="Zoom in"
-            >
-              <IconZoomIn className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            </button>
-          </div>
+          <Button isIconOnly size="sm" variant="tertiary" onPress={() => actions.setZoom(Math.max(0.1, zoom - 0.25))} aria-label="Zoom out">
+            <IconZoomOut className="w-4 h-4" />
+          </Button>
 
-          <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1" />
-
-          <button
-            onClick={actions.toggleCompare}
-            className={`p-1.5 rounded transition-colors ${
-              isComparing
-                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                : 'hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-            }`}
-            title="Compare with original"
+          <Select
+            value={String(zoom)}
+            onChange={k => k && actions.setZoom(parseFloat(k as string))}
+            aria-label="Zoom level"
+            variant="secondary"
+            className="w-24"
           >
-            <IconEye className="w-5 h-5" />
-          </button>
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                <ListBox.Item id="1">Fit</ListBox.Item>
+                {ZOOM_OPTIONS.map(z => (
+                  <ListBox.Item key={z} id={String(z)}>{Math.round(z * 100)}%</ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
 
-          <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1" />
+          <Button isIconOnly size="sm" variant="tertiary" onPress={() => actions.setZoom(Math.min(3, zoom + 0.25))} aria-label="Zoom in">
+            <IconZoomIn className="w-4 h-4" />
+          </Button>
 
-          <button
-            onClick={actions.clearImage}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            title="Close image"
+          <Separator orientation="vertical" className="h-5" />
+
+          <Button
+            isIconOnly size="sm"
+            variant={isComparing ? 'primary' : 'tertiary'}
+            onPress={actions.toggleCompare}
+            aria-label="Compare with original"
           >
-            <IconX className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
+            <IconEye className="w-4 h-4" />
+          </Button>
+
+          <Separator orientation="vertical" className="h-5" />
+
+          <Button isIconOnly size="sm" variant="tertiary" onPress={actions.clearImage} aria-label="Close image">
+            <IconX className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>

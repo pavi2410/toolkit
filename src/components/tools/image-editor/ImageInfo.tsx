@@ -1,5 +1,6 @@
 import { useStore } from '@nanostores/react'
 import { $originalMeta, $outputDimensions, $format, $quality, $estimatedFileSize } from '@/stores/image-editor'
+import { Chip } from '@heroui/react'
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
@@ -17,23 +18,22 @@ export default function ImageInfo() {
   if (!meta) return null
 
   return (
-    <div className="shrink-0 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2">
-      <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
-          <span>
-            <span className="font-medium text-gray-900 dark:text-gray-100">Original:</span>{' '}
-            {meta.width} × {meta.height} {meta.type.split('/')[1].toUpperCase()} ({formatFileSize(meta.size)})
-          </span>
+    <div className="shrink-0 border-t border-border bg-surface-secondary px-4 py-2">
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted">Original</span>
+          <Chip size="sm" variant="soft">{meta.width} × {meta.height}</Chip>
+          <Chip size="sm" variant="soft">{meta.type.split('/')[1].toUpperCase()}</Chip>
+          <Chip size="sm" variant="soft">{formatFileSize(meta.size)}</Chip>
         </div>
 
         {outputDims && (
-          <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
-            <span>
-              <span className="font-medium text-gray-900 dark:text-gray-100">Output:</span>{' '}
-              {outputDims.width} × {outputDims.height} {format.toUpperCase()}
-              {format !== 'png' && ` @ ${Math.round(quality * 100)}%`}
-              {estimatedSize && ` (~${formatFileSize(estimatedSize)})`}
-            </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted">Output</span>
+            <Chip size="sm" variant="soft">{outputDims.width} × {outputDims.height}</Chip>
+            <Chip size="sm" variant="soft">{format.toUpperCase()}</Chip>
+            {format !== 'png' && <Chip size="sm" variant="soft">{Math.round(quality * 100)}%</Chip>}
+            {estimatedSize && <Chip size="sm" variant="soft">~{formatFileSize(estimatedSize)}</Chip>}
           </div>
         )}
       </div>

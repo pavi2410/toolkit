@@ -1,3 +1,4 @@
+import { Button, Separator } from '@heroui/react'
 import IconPlus from '~icons/tabler/plus'
 import IconTrash from '~icons/tabler/trash'
 import IconDownload from '~icons/tabler/download'
@@ -34,16 +35,13 @@ export function Toolbar({
   onExport,
 }: ToolbarProps) {
   return (
-    <div className="shrink-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
+    <div className="shrink-0 bg-surface border-b border-border px-4 py-2">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
+          <Button variant="secondary" size="sm" onPress={() => inputRef.current?.click()} className="gap-2">
             <IconPlus className="w-4 h-4" />
             Add PDFs
-          </button>
+          </Button>
           <input
             ref={inputRef}
             type="file"
@@ -53,71 +51,61 @@ export function Toolbar({
             className="hidden"
           />
 
-          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
+          <Separator orientation="vertical" className="h-6" />
 
-          <button
-            onClick={onSelectAll}
-            className="px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          >
+          <Button variant="tertiary" size="sm" onPress={onSelectAll}>
             {selectedCount === pagesCount ? 'Deselect All' : 'Select All'}
-          </button>
+          </Button>
 
           {selectedCount > 0 && (
             <>
-              <button
-                onClick={onDeleteSelected}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-              >
+              <Button variant="ghost" size="sm" onPress={onDeleteSelected} className="gap-1.5 text-danger">
                 <IconTrash className="w-4 h-4" />
                 Delete ({selectedCount})
-              </button>
+              </Button>
 
-              <button
-                onClick={onExtractSelected}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-              >
+              <Button variant="ghost" size="sm" onPress={onExtractSelected} className="gap-1.5 text-accent">
                 <IconScissors className="w-4 h-4" />
                 Extract Selected
-              </button>
+              </Button>
 
               {onExportSelectedImages && (
-                <button
-                  onClick={onExportSelectedImages}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
-                >
+                <Button variant="ghost" size="sm" onPress={onExportSelectedImages} className="gap-1.5">
                   <IconPhoto className="w-4 h-4" />
                   Export as Images
-                </button>
+                </Button>
               )}
             </>
           )}
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={onExportImages}
-            disabled={isProcessing || pagesCount === 0}
-            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-40 rounded-lg transition-colors"
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={onExportImages}
+            isDisabled={isProcessing || pagesCount === 0}
+            className="gap-2"
           >
             <IconPhoto className="w-4 h-4" />
             Export as Images
-          </button>
+          </Button>
 
-          <button
-            onClick={onClearAll}
-            className="px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-          >
+          <Button variant="tertiary" size="sm" onPress={onClearAll}>
             Clear All
-          </button>
-          
-          <button
-            onClick={onExport}
-            disabled={isProcessing || pagesCount === 0}
-            className="inline-flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 rounded-lg transition-colors"
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onPress={onExport}
+            isDisabled={isProcessing || pagesCount === 0}
+            isPending={isProcessing}
+            className="gap-2"
           >
             <IconDownload className="w-4 h-4" />
-            {isProcessing ? 'Processing...' : 'Download PDF'}
-          </button>
+            {isProcessing ? 'Processing…' : 'Download PDF'}
+          </Button>
         </div>
       </div>
     </div>

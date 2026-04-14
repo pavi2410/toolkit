@@ -1,18 +1,13 @@
 import { useState, useCallback } from 'react'
 import { useStore } from '@nanostores/react'
 import {
-  $originalImage,
-  $originalMeta,
-  $transforms,
-  $format,
-  $quality,
-  $targetFileSize,
-  $outputDimensions,
-  actions,
-  type ImageFormat,
+  $originalImage, $originalMeta, $transforms, $format, $quality,
+  $targetFileSize, $outputDimensions, actions, type ImageFormat,
 } from '@/stores/image-editor'
+import { Button, ButtonGroup, NumberField, Slider } from '@heroui/react'
 import IconDownload from '~icons/tabler/download'
 import IconClipboard from '~icons/tabler/clipboard'
+import IconCheck from '~icons/tabler/check'
 
 const FORMATS: { id: ImageFormat; label: string; lossy: boolean }[] = [
   { id: 'png', label: 'PNG', lossy: false },
@@ -20,7 +15,7 @@ const FORMATS: { id: ImageFormat; label: string; lossy: boolean }[] = [
   { id: 'webp', label: 'WebP', lossy: true },
 ]
 
-function formatFileSize(bytes: number): string {
+function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
@@ -44,14 +39,12 @@ export default function FormatPanel() {
 
   const renderToBlob = useCallback(async (q: number = quality): Promise<Blob | null> => {
     if (!originalImage || !outputDims) return null
-
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
 
     let { width, height } = outputDims
     const isRotated = transforms.rotation === 90 || transforms.rotation === 270
-
     canvas.width = isRotated ? height : width
     canvas.height = isRotated ? width : height
 
@@ -60,40 +53,21 @@ export default function FormatPanel() {
     ctx.rotate((transforms.rotation * Math.PI) / 180)
     ctx.scale(transforms.flipH ? -1 : 1, transforms.flipV ? -1 : 1)
 
-    const filterParts: string[] = []
-    if (transforms.brightness !== 0) {
-      filterParts.push(`brightness(${1 + transforms.brightness / 100})`)
-    }
-    if (transforms.contrast !== 0) {
-      filterParts.push(`contrast(${1 + transforms.contrast / 100})`)
-    }
-    if (transforms.saturation !== 0) {
-      filterParts.push(`saturate(${1 + transforms.saturation / 100})`)
-    }
-    if (filterParts.length > 0) {
-      ctx.filter = filterParts.join(' ')
-    }
+    const filters = [
+      transforms.brightness !== 0 && `brightness(${1 + transforms.brightness / 100})`,
+      transforms.contrast !== 0 && `contrast(${1 + transforms.contrast / 100})`,
+      transforms.saturation !== 0 && `saturate(${1 + transforms.saturation / 100})`,
+    ].filter(Boolean)
+    if (filters.length) ctx.filter = filters.join(' ')
 
     const sourceX = transforms.crop ? transforms.crop.x * originalImage.width : 0
     const sourceY = transforms.crop ? transforms.crop.y * originalImage.height : 0
     const sourceW = transforms.crop ? transforms.crop.width * originalImage.width : originalImage.width
     const sourceH = transforms.crop ? transforms.crop.height * originalImage.height : originalImage.height
-
-    ctx.drawImage(
-      originalImage,
-      sourceX, sourceY, sourceW, sourceH,
-      -width / 2, -height / 2, width, height
-    )
-
+    ctx.drawImage(originalImage, sourceX, sourceY, sourceW, sourceH, -width / 2, -height / 2, width, height)
     ctx.restore()
 
-    return new Promise(resolve => {
-      canvas.toBlob(
-        blob => resolve(blob),
-        `image/${format}`,
-        selectedFormat.lossy ? q : undefined
-      )
-    })
+    return new Promise(resolve => canvas.toBlob(blob => resolve(blob), `image/${format}`, selectedFormat.lossy ? q : undefined))
   }, [originalImage, outputDims, transforms, format, quality, selectedFormat.lossy])
 
   const updateEstimatedSize = useCallback(async () => {
@@ -101,48 +75,27 @@ export default function FormatPanel() {
     if (blob) setEstimatedSize(blob.size)
   }, [renderToBlob])
 
-  const handleQualityChange = (q: number) => {
-    actions.setQuality(q)
-    updateEstimatedSize()
-  }
-
   const handleExport = async () => {
     setIsExporting(true)
     try {
       let blob: Blob | null = null
-
       if (targetFileSize) {
-        let low = 0.1
-        let high = 1.0
-        let bestBlob: Blob | null = null
-
+        let low = 0.1, high = 1.0, bestBlob: Blob | null = null
         for (let i = 0; i < 8; i++) {
           const mid = (low + high) / 2
           blob = await renderToBlob(mid)
           if (!blob) break
-
-          if (blob.size <= targetFileSize) {
-            bestBlob = blob
-            low = mid
-          } else {
-            high = mid
-          }
+          if (blob.size <= targetFileSize) { bestBlob = blob; low = mid } else { high = mid }
         }
         blob = bestBlob
       } else {
         blob = await renderToBlob()
       }
-
-      if (!blob) {
-        alert('Failed to export image')
-        return
-      }
-
+      if (!blob) { alert('Failed to export image'); return }
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      const baseName = meta?.name.replace(/\.[^.]+$/, '') ?? 'image'
       a.href = url
-      a.download = `${baseName}-edited.${format === 'jpeg' ? 'jpg' : format}`
+      a.download = `${meta?.name.replace(/\.[^.]+$/, '') ?? 'image'}-edited.${format === 'jpeg' ? 'jpg' : format}`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -152,123 +105,104 @@ export default function FormatPanel() {
     }
   }
 
+  const handleCopy = async () => {
+    setIsCopying(true)
+    setCopySuccess(false)
+    try {
+      const blob = await renderToBlob()
+      if (blob) {
+        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })])
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 2000)
+      }
+    } catch (e) {
+      console.error('Failed to copy:', e)
+    } finally {
+      setIsCopying(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Format
-        </label>
-        <div className="flex gap-1">
+        <label className="block text-xs font-medium text-foreground mb-2">Format</label>
+        <ButtonGroup variant="secondary" className="w-full">
           {FORMATS.map(f => (
-            <button
+            <Button
               key={f.id}
-              onClick={() => {
-                actions.setFormat(f.id)
-                updateEstimatedSize()
-              }}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                format === f.id
-                  ? 'bg-blue-600 dark:bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
+              variant={format === f.id ? 'primary' : 'secondary'}
+              onPress={() => { actions.setFormat(f.id); updateEstimatedSize() }}
+              className="flex-1"
             >
               {f.label}
-            </button>
+            </Button>
           ))}
-        </div>
+        </ButtonGroup>
       </div>
 
       {selectedFormat.lossy && (
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
-              Quality
-            </label>
-            <span className="text-xs text-gray-500 dark:text-gray-400 tabular-nums">
-              {Math.round(quality * 100)}%
-            </span>
+        <Slider
+          value={Math.round(quality * 100)}
+          onChange={v => { actions.setQuality(v / 100); updateEstimatedSize() }}
+          minValue={10}
+          maxValue={100}
+        >
+          <div className="flex justify-between mb-1">
+            <span className="text-xs font-medium text-foreground">Quality</span>
+            <Slider.Output className="text-xs text-muted tabular-nums" />
           </div>
-          <input
-            type="range"
-            min={10}
-            max={100}
-            value={Math.round(quality * 100)}
-            onChange={e => handleQualityChange(parseInt(e.target.value, 10) / 100)}
-            className="w-full"
-          />
-        </div>
+          <Slider.Track>
+            <Slider.Fill />
+            <Slider.Thumb />
+          </Slider.Track>
+        </Slider>
       )}
 
       <div>
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Target File Size (optional)
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            value={targetFileSize ? Math.round(targetFileSize / 1024) : ''}
-            onChange={e => {
-              const kb = parseInt(e.target.value, 10)
-              actions.setTargetSize(isNaN(kb) || kb <= 0 ? null : kb * 1024)
-            }}
-            placeholder="e.g. 500"
-            className="flex-1 px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100"
-          />
-          <span className="text-sm text-gray-500 dark:text-gray-400">KB</span>
-        </div>
+        <label className="block text-xs font-medium text-foreground mb-2">Target File Size (optional)</label>
+        <NumberField
+          value={targetFileSize ? Math.round(targetFileSize / 1024) : undefined}
+          onChange={kb => actions.setTargetSize(isNaN(kb) || kb <= 0 ? null : kb * 1024)}
+          minValue={1}
+          placeholder="e.g. 500"
+          aria-label="Target file size in KB"
+          variant="secondary"
+          fullWidth
+        >
+          <NumberField.Group>
+            <NumberField.Input />
+          </NumberField.Group>
+        </NumberField>
         {targetFileSize && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Quality will be auto-adjusted to meet target
-          </p>
+          <p className="text-xs text-muted mt-1">Quality will be auto-adjusted to meet target</p>
         )}
       </div>
 
       {estimatedSize && (
-        <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-          <p className="text-xs text-gray-600 dark:text-gray-400">
-            Estimated size: <span className="font-medium text-gray-900 dark:text-gray-100">{formatFileSize(estimatedSize)}</span>
-          </p>
+        <div className="px-3 py-2 bg-default rounded-lg text-xs text-muted">
+          Estimated: <span className="font-medium text-foreground">{formatFileSize(estimatedSize)}</span>
         </div>
       )}
 
       <div className="flex gap-2">
-        <button
-          onClick={handleExport}
-          disabled={isExporting}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+        <Button
+          variant="primary"
+          onPress={handleExport}
+          isPending={isExporting}
+          className="flex-1 gap-2"
         >
-          <IconDownload className="w-5 h-5" />
-          {isExporting ? 'Saving...' : 'Download'}
-        </button>
-        <button
-          onClick={async () => {
-            setIsCopying(true)
-            setCopySuccess(false)
-            try {
-              const blob = await renderToBlob()
-              if (blob) {
-                await navigator.clipboard.write([
-                  new ClipboardItem({ [blob.type]: blob })
-                ])
-                setCopySuccess(true)
-                setTimeout(() => setCopySuccess(false), 2000)
-              }
-            } catch (e) {
-              console.error('Failed to copy:', e)
-            } finally {
-              setIsCopying(false)
-            }
-          }}
-          disabled={isCopying}
-          className={`px-4 py-3 rounded-lg font-medium transition-colors ${
-            copySuccess
-              ? 'bg-green-600 text-white'
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
-          title="Copy to clipboard"
+          <IconDownload className="w-4 h-4" />
+          {isExporting ? 'Saving…' : 'Download'}
+        </Button>
+        <Button
+          variant={copySuccess ? 'primary' : 'secondary'}
+          isIconOnly
+          onPress={handleCopy}
+          isPending={isCopying}
+          aria-label="Copy to clipboard"
         >
-          <IconClipboard className="w-5 h-5" />
-        </button>
+          {copySuccess ? <IconCheck className="w-4 h-4" /> : <IconClipboard className="w-4 h-4" />}
+        </Button>
       </div>
     </div>
   )

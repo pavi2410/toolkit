@@ -1,4 +1,5 @@
-import { Button, ButtonGroup, Separator, Toolbar } from '@heroui/react'
+import { Separator, Toolbar } from '@heroui/react'
+import { buttonVariants } from '@heroui/styles'
 import { Link } from '@tanstack/react-router'
 import IconBrandGithub from '~icons/tabler/brand-github'
 import IconBrandX from '~icons/tabler/brand-x'
@@ -15,40 +16,39 @@ export default function Header() {
           <span className="font-display text-lg font-bold text-foreground">Toolkit</span>
         </Link>
 
-        <Toolbar aria-label="Site controls">
-          <ButtonGroup variant="tertiary">
-            <Button
-              isIconOnly
-              aria-label="Home"
-              render={(props: any) => <Link {...props} to="/" />}
-            >
-              <IconHome />
-            </Button>
-          </ButtonGroup>
-          <Separator />
+        <Toolbar aria-label="Site controls" className="flex items-center gap-1">
+          <Link
+            to="/"
+            aria-label="Home"
+            className={buttonVariants({ variant: 'tertiary', size: 'sm', isIconOnly: true })}
+          >
+            <IconHome className="w-4 h-4" />
+          </Link>
+
+          <Separator orientation="vertical" className="h-5 mx-1" />
+
           <ThemeToggle />
-          <Separator />
-          <ButtonGroup variant="tertiary">
-            <Button
-              isIconOnly
-              aria-label="GitHub"
-              render={(props: any) => (
-                <a {...props} href="https://github.com/pavi2410" target="_blank" rel="noreferrer" />
-              )}
-            >
-              <IconBrandGithub />
-            </Button>
-            <Button
-              isIconOnly
-              aria-label="X"
-              render={(props: any) => (
-                <a {...props} href="https://x.com/pavi2410" target="_blank" rel="noreferrer" />
-              )}
-            >
-              <ButtonGroup.Separator />
-              <IconBrandX />
-            </Button>
-          </ButtonGroup>
+
+          <Separator orientation="vertical" className="h-5 mx-1" />
+
+          <a
+            href="https://github.com/pavi2410"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+            className={buttonVariants({ variant: 'tertiary', size: 'sm', isIconOnly: true })}
+          >
+            <IconBrandGithub className="w-4 h-4" />
+          </a>
+          <a
+            href="https://x.com/pavi2410"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="X"
+            className={buttonVariants({ variant: 'tertiary', size: 'sm', isIconOnly: true })}
+          >
+            <IconBrandX className="w-4 h-4" />
+          </a>
         </Toolbar>
       </div>
     </header>

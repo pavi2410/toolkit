@@ -1,4 +1,5 @@
 import type { DiffStrategy } from '@/utils/diff'
+import { Button, ButtonGroup, Checkbox, Label, Separator, Toolbar as HuiToolbar } from '@heroui/react'
 
 interface ToolbarProps {
   strategy: DiffStrategy
@@ -34,107 +35,65 @@ export default function Toolbar({
   canCopy
 }: ToolbarProps) {
   return (
-    <div className="shrink-0 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2.5">
-      <div className="flex flex-wrap gap-x-6 gap-y-2 items-center text-sm">
+    <div className="shrink-0 border-b border-border bg-surface-secondary px-4 py-2.5">
+      <HuiToolbar aria-label="Diff options" className="flex flex-wrap gap-x-6 gap-y-2 items-center text-sm">
         {/* Strategy Selector */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+          <span className="text-xs font-medium text-muted uppercase tracking-wide">
             Diff Mode:
           </span>
-          <div className="flex gap-0.5 border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+          <ButtonGroup variant="secondary">
             {(['line', 'word', 'char'] as const).map(s => (
-              <button
+              <Button
                 key={s}
-                onClick={() => onStrategyChange(s)}
-                className={`px-3 py-1 text-xs font-medium transition-colors ${
-                  strategy === s
-                    ? 'bg-blue-600 dark:bg-blue-500 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
+                size="sm"
+                variant={strategy === s ? 'primary' : 'secondary'}
+                onPress={() => onStrategyChange(s)}
               >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
+              </Button>
             ))}
-          </div>
+          </ButtonGroup>
         </div>
 
-        {/* Divider */}
-        <div className="h-5 w-px bg-gray-300 dark:bg-gray-600" />
+        <Separator orientation="vertical" className="h-5" />
 
         {/* Options */}
         <div className="flex gap-4">
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={ignoreCase}
-              onChange={e => onIgnoreCaseChange(e.target.checked)}
-              className="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600"
-            />
-            <span className="text-xs text-gray-700 dark:text-gray-300">
-              Ignore Case
-            </span>
-          </label>
+          <Checkbox isSelected={ignoreCase} onChange={v => onIgnoreCaseChange(v)}>
+            <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+            <Checkbox.Content><Label className="text-xs">Ignore Case</Label></Checkbox.Content>
+          </Checkbox>
 
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={ignoreWhitespace}
-              onChange={e => onIgnoreWhitespaceChange(e.target.checked)}
-              className="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600"
-            />
-            <span className="text-xs text-gray-700 dark:text-gray-300">
-              Ignore Whitespace
-            </span>
-          </label>
+          <Checkbox isSelected={ignoreWhitespace} onChange={v => onIgnoreWhitespaceChange(v)}>
+            <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+            <Checkbox.Content><Label className="text-xs">Ignore Whitespace</Label></Checkbox.Content>
+          </Checkbox>
 
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showWhitespace}
-              onChange={e => onShowWhitespaceChange(e.target.checked)}
-              className="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600"
-            />
-            <span className="text-xs text-gray-700 dark:text-gray-300">
-              Show Whitespace
-            </span>
-          </label>
+          <Checkbox isSelected={showWhitespace} onChange={v => onShowWhitespaceChange(v)}>
+            <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+            <Checkbox.Content><Label className="text-xs">Show Whitespace</Label></Checkbox.Content>
+          </Checkbox>
 
-          <label className="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={lineWrap}
-              onChange={e => onLineWrapChange(e.target.checked)}
-              className="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600"
-            />
-            <span className="text-xs text-gray-700 dark:text-gray-300">
-              Line Wrap
-            </span>
-          </label>
+          <Checkbox isSelected={lineWrap} onChange={v => onLineWrapChange(v)}>
+            <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+            <Checkbox.Content><Label className="text-xs">Line Wrap</Label></Checkbox.Content>
+          </Checkbox>
         </div>
 
         {/* Spacer */}
         <div className="flex-1" />
 
         {/* Actions */}
-        <div className="flex gap-2">
-          <button
-            onClick={onSwap}
-            className="px-3 py-1 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            title="Swap text A and B"
-          >
+        <ButtonGroup variant="secondary">
+          <Button size="sm" variant="secondary" onPress={onSwap}>
             ⇄ Swap
-          </button>
-
-          <button
-            onClick={onCopyDiff}
-            disabled={!canCopy}
-            className="px-3 py-1 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            title="Copy unified diff format"
-          >
+          </Button>
+          <Button size="sm" variant="secondary" isDisabled={!canCopy} onPress={onCopyDiff}>
             {copySuccess ? '✓ Copied' : 'Copy Diff'}
-          </button>
-        </div>
-      </div>
+          </Button>
+        </ButtonGroup>
+      </HuiToolbar>
     </div>
   )
 }
