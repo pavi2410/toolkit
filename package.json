@@ -32,7 +32,6 @@
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "diff": "^9.0.0",
-    "lucide-react": "^0.545.0",
     "nanostores": "^1.2.0",
     "nuqs": "^2.8.9",
     "pdf-lib": "^1.17.1",

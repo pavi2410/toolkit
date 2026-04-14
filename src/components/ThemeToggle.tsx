@@ -1,3 +1,7 @@
+import { Button } from '@heroui/react'
+import IconDeviceLaptop from '~icons/tabler/device-laptop'
+import IconMoon from '~icons/tabler/moon'
+import IconSun from '~icons/tabler/sun'
 import { useEffect, useState } from 'react'
 
 type ThemeMode = 'light' | 'dark' | 'auto'
@@ -67,15 +71,21 @@ export default function ThemeToggle() {
       ? 'Theme mode: auto (system). Click to switch to light mode.'
       : `Theme mode: ${mode}. Click to switch mode.`
 
+  const Icon =
+    mode === 'auto' ? IconDeviceLaptop : mode === 'dark' ? IconMoon : IconSun
+
   return (
-    <button
+    <Button
       type="button"
-      onClick={toggleMode}
+      variant="secondary"
+      onPress={toggleMode}
       aria-label={label}
-      title={label}
-      className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink)] shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:-translate-y-0.5"
+      size="sm"
     >
-      {mode === 'auto' ? 'Auto' : mode === 'dark' ? 'Dark' : 'Light'}
-    </button>
+      <span className="inline-flex items-center gap-2 text-sm font-semibold">
+        <Icon className="h-4 w-4" />
+        {mode === 'auto' ? 'Auto' : mode === 'dark' ? 'Dark' : 'Light'}
+      </span>
+    </Button>
   )
 }
