@@ -1,91 +1,63 @@
-import { Button } from '@heroui/react'
-import IconDeviceLaptop from '~icons/tabler/device-laptop'
+import { Switch } from '@heroui/react'
 import IconMoon from '~icons/tabler/moon'
 import IconSun from '~icons/tabler/sun'
 import { useEffect, useState } from 'react'
 
-type ThemeMode = 'light' | 'dark' | 'auto'
+type ThemeMode = 'light' | 'dark'
 
-function getInitialMode(): ThemeMode {
-  if (typeof window === 'undefined') {
-    return 'auto'
-  }
+function getResolvedMode(): ThemeMode {
+  if (typeof window === 'undefined') return 'dark'
 
   const stored = window.localStorage.getItem('theme')
-  if (stored === 'light' || stored === 'dark' || stored === 'auto') {
-    return stored
-  }
+  if (stored === 'light' || stored === 'dark') return stored
 
-  return 'auto'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-function applyThemeMode(mode: ThemeMode) {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode
-
-  document.documentElement.classList.remove('light', 'dark')
-  document.documentElement.classList.add(resolved)
-
-  if (mode === 'auto') {
-    document.documentElement.removeAttribute('data-theme')
-  } else {
-    document.documentElement.setAttribute('data-theme', mode)
-  }
-
-  document.documentElement.style.colorScheme = resolved
+function applyTheme(mode: ThemeMode) {
+  const root = document.documentElement
+  root.classList.remove('light', 'dark')
+  root.classList.add(mode)
+  root.setAttribute('data-theme', mode)
+  root.style.colorScheme = mode
 }
 
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>('auto')
+  const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
-    const initialMode = getInitialMode()
-    setMode(initialMode)
-    applyThemeMode(initialMode)
+    const mode = getResolvedMode()
+    setIsDark(mode === 'dark')
+    applyTheme(mode)
   }, [])
 
-  useEffect(() => {
-    if (mode !== 'auto') {
-      return
-    }
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = () => applyThemeMode('auto')
-
-    media.addEventListener('change', onChange)
-    return () => {
-      media.removeEventListener('change', onChange)
-    }
-  }, [mode])
-
-  function toggleMode() {
-    const nextMode: ThemeMode =
-      mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
-    setMode(nextMode)
-    applyThemeMode(nextMode)
-    window.localStorage.setItem('theme', nextMode)
+  function toggle(selected: boolean) {
+    const mode: ThemeMode = selected ? 'light' : 'dark'
+    setIsDark(!selected)
+    applyTheme(mode)
+    window.localStorage.setItem('theme', mode)
   }
 
-  const label =
-    mode === 'auto'
-      ? 'Theme mode: auto (system). Click to switch to light mode.'
-      : `Theme mode: ${mode}. Click to switch mode.`
-
-  const Icon =
-    mode === 'auto' ? IconDeviceLaptop : mode === 'dark' ? IconMoon : IconSun
-
   return (
-    <Button
-      type="button"
-      variant="secondary"
-      onPress={toggleMode}
-      aria-label={label}
-      size="sm"
+    <Switch
+      isSelected={!isDark}
+      onChange={toggle}
+      size="lg"
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span className="inline-flex items-center gap-2 text-sm font-semibold">
-        <Icon className="h-4 w-4" />
-        {mode === 'auto' ? 'Auto' : mode === 'dark' ? 'Dark' : 'Light'}
-      </span>
-    </Button>
+      {({ isSelected }) => (
+        <Switch.Control>
+          <Switch.Thumb>
+            <Switch.Icon>
+              {isSelected ? (
+                <IconSun className="size-3.5 text-inherit" />
+              ) : (
+                <IconMoon className="size-3.5 text-inherit" />
+              )}
+            </Switch.Icon>
+          </Switch.Thumb>
+        </Switch.Control>
+      )}
+    </Switch>
   )
 }

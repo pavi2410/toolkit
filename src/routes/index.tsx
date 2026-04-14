@@ -1,5 +1,6 @@
-import { Card, Chip } from '@heroui/react'
-import { createFileRoute } from '@tanstack/react-router'
+import { Button, Chip } from '@heroui/react'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import IconArrowRight from '~icons/tabler/arrow-right'
 import Footer from '#/components/Footer'
 import Header from '#/components/Header'
 import { ToolDirectory } from '#/components/ToolDirectory'
@@ -10,57 +11,37 @@ function HomePage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8">
-        <section className="space-y-6">
-          <Card>
-            <Card.Header className="flex flex-wrap items-center gap-2">
-              <Chip color="accent" variant="soft">
-                <Chip.Label>Dedicated Toolkit Website</Chip.Label>
-              </Chip>
-            </Card.Header>
+      <main className="mx-auto w-full max-w-6xl px-4 py-10">
+        <section className="mb-10 space-y-4">
+          <Chip color="accent" variant="soft" size="sm">
+            <Chip.Label>Developer Toolkit</Chip.Label>
+          </Chip>
 
-            <Card.Content className="space-y-4">
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                Fast tools for everyday dev workflows.
-              </h1>
-              <p className="max-w-2xl text-foreground/70">
-                Practical browser-based utilities for comparing, converting, and editing without unnecessary friction.
-              </p>
+          <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            Fast tools for everyday workflows.
+          </h1>
 
-              <div className="flex flex-wrap gap-2">
-                <a
-                  href="#tools"
-                  className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground no-underline"
-                >
-                  Explore tools
-                </a>
-              </div>
-            </Card.Content>
-          </Card>
+          <p className="max-w-xl text-base text-muted">
+            Practical browser-based utilities for comparing, converting, and editing — no installs, no friction.
+          </p>
+
+          <Button
+            variant="primary"
+            render={(props: any) => <Link {...props} to="/diff-checker" />}
+          >
+            Get started
+            <IconArrowRight className="h-4 w-4" />
+          </Button>
         </section>
 
-        <section id="tools" className="mt-6">
-          <Card>
-            <Card.Header>
-              <div className="flex flex-wrap items-center gap-2">
-                <Chip color="accent" variant="soft">
-                  <Chip.Label>Toolkit directory</Chip.Label>
-                </Chip>
-                <Chip color="success" variant="soft">
-                  <Chip.Label>4 live tools</Chip.Label>
-                </Chip>
-              </div>
-              <Card.Title>
-                Choose a tool
-              </Card.Title>
-              <Card.Description>
-                Minimal, practical navigation to each utility.
-              </Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <ToolDirectory />
-            </Card.Content>
-          </Card>
+        <section>
+          <div className="mb-4 flex items-center gap-2">
+            <h2 className="font-display text-lg font-semibold text-foreground">Tools</h2>
+            <Chip color="success" variant="soft" size="sm">
+              <Chip.Label>4 available</Chip.Label>
+            </Chip>
+          </div>
+          <ToolDirectory />
         </section>
       </main>
       <Footer />

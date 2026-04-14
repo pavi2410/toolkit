@@ -9,40 +9,36 @@ import IconTag from '~icons/tabler/tag'
 const toolItems = [
   {
     name: 'Diff Checker',
-    description:
-      'Compare text differences with line, word, or character-level strategies.',
+    description: 'Compare text differences with line, word, or character-level strategies.',
     to: '/diff-checker',
     Icon: IconGitCompare,
-    tags: ['Text', 'Comparison', 'Developer Tools'],
+    tags: ['Text', 'Comparison'],
   },
   {
     name: 'Image Editor',
-    description:
-      'Resize, crop, and convert images fully in your browser with privacy-first processing.',
+    description: 'Resize, crop, and convert images fully in your browser.',
     to: '/image-editor',
     Icon: IconPhoto,
-    tags: ['Image', 'Converter', 'Editor'],
+    tags: ['Image', 'Editor'],
   },
   {
     name: 'PDF Editor',
-    description:
-      'Merge, split, rotate, reorder, and unlock PDFs directly in your browser.',
+    description: 'Merge, split, rotate, reorder, and unlock PDFs in-browser.',
     to: '/pdf-editor',
     Icon: IconFileTypePdf,
-    tags: ['PDF', 'Converter', 'Editor'],
+    tags: ['PDF', 'Editor'],
   },
   {
     name: 'Name Checker',
-    description:
-      'Check project-name availability across platforms and domains for your next build.',
+    description: 'Check project-name availability across platforms and domains.',
     to: '/name-checker',
     Icon: IconTag,
-    tags: ['Brand', 'Domain', 'Developer Tools'],
+    tags: ['Brand', 'Domain'],
   },
 ] as const
 
 interface ToolDirectoryProps {
-  layout?: 'grid' | 'stack'
+  layout?: 'grid' | 'list'
 }
 
 interface ToolPageShellProps {
@@ -53,67 +49,44 @@ export function ToolDirectory({ layout = 'grid' }: ToolDirectoryProps) {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
-  const isStack = layout === 'stack'
+  const isList = layout === 'list'
 
   return (
     <div
-      className={`grid gap-4 ${
-        isStack ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
+      className={`grid gap-3 ${
+        isList ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
       }`}
     >
-      {toolItems.map(({ name, description, to, Icon, tags }, index) => {
+      {toolItems.map(({ name, description, to, Icon, tags }) => {
         const isActive = pathname === to
 
         return (
-          <Link
-            key={to}
-            to={to}
-            className="group block no-underline"
-          >
-            <Card
-              variant={isActive ? 'secondary' : 'default'}
-              className="h-full"
-            >
-              <Card.Header className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted text-foreground/80">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-foreground/60">Tool {String(index + 1).padStart(2, '0')}</p>
-                    <Card.Title className="text-lg font-semibold">
-                      {name}
-                    </Card.Title>
-                  </div>
+          <Link key={to} to={to} className="group block no-underline">
+            <Card variant={isActive ? 'secondary' : 'default'} className="h-full transition-colors">
+              <Card.Header className="flex-row items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-secondary">
+                  <Icon className="h-4.5 w-4.5 text-foreground" />
                 </div>
-
-                <IconArrowRight className="mt-1 h-4 w-4 shrink-0 text-foreground/50 transition group-hover:translate-x-1" />
+                <div className="min-w-0 flex-1">
+                  <Card.Title className="text-sm font-semibold">{name}</Card.Title>
+                  {!isList && (
+                    <Card.Description className="text-xs text-muted">
+                      {description}
+                    </Card.Description>
+                  )}
+                </div>
+                <IconArrowRight className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5" />
               </Card.Header>
 
-              <Card.Content>
-                <Card.Description className="text-sm text-foreground/70">
-                  {description}
-                </Card.Description>
-              </Card.Content>
-
-              <Card.Footer className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
+              {!isList && (
+                <Card.Footer className="gap-2 pt-0">
                   {tags.map((tag) => (
-                    <Chip
-                      key={tag}
-                      color="default"
-                      size="sm"
-                      variant="soft"
-                    >
+                    <Chip key={tag} color="default" size="sm" variant="soft">
                       <Chip.Label>{tag}</Chip.Label>
                     </Chip>
                   ))}
-                </div>
-
-                <span className="text-sm font-medium text-foreground/70">
-                  Open tool
-                </span>
-              </Card.Footer>
+                </Card.Footer>
+              )}
             </Card>
           </Link>
         )
@@ -124,24 +97,8 @@ export function ToolDirectory({ layout = 'grid' }: ToolDirectoryProps) {
 
 export function ToolPageShell({ children }: ToolPageShellProps) {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="lg:sticky lg:top-20">
-          <Card>
-            <Card.Header>
-              <Card.Title>Tools</Card.Title>
-              <Card.Description>Switch quickly between utilities.</Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <ToolDirectory layout="stack" />
-            </Card.Content>
-          </Card>
-        </aside>
-
-        <Card className="min-h-[75vh]">
-          <Card.Content className="h-full p-0">{children}</Card.Content>
-        </Card>
-      </div>
+    <main className="flex-1">
+      {children}
     </main>
   )
 }
