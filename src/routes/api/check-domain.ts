@@ -28,7 +28,9 @@ async function handle({ request }: { request: Request }) {
   const domainUrl = `https://${domain}`
 
   try {
-    const response = await fetch(`https://dns.google/resolve?name=${domain}&type=A`)
+    const response = await fetch(`https://dns.google/resolve?name=${domain}&type=A`, {
+      signal: AbortSignal.timeout(5000),
+    })
     const data: { Status?: number; Answer?: unknown } = await response.json()
 
     const available = data.Status === 3 || (!data.Answer && data.Status !== 0)

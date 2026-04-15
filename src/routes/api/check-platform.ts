@@ -13,6 +13,7 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
     try {
       const res = await fetch(`https://api.github.com/repos/${name}/${name}`, {
         headers: { 'User-Agent': 'name-checker' },
+        signal: AbortSignal.timeout(5000),
       })
       return {
         platform: 'GitHub repo',
@@ -30,6 +31,7 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
     try {
       const res = await fetch(`https://api.github.com/users/${name}`, {
         headers: { 'User-Agent': 'name-checker' },
+        signal: AbortSignal.timeout(5000),
       })
       return {
         platform: 'GitHub org/user',
@@ -45,7 +47,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'npm package': async (name) => {
     const link = `https://www.npmjs.com/package/${name}`
     try {
-      const res = await fetch(`https://registry.npmjs.org/${name}`)
+      const res = await fetch(`https://registry.npmjs.org/${name}`, {
+        signal: AbortSignal.timeout(5000),
+      })
       return {
         platform: 'npm package',
         available: res.status === 404,
@@ -60,7 +64,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'npm org': async (name) => {
     const link = `https://www.npmjs.com/org/${name}`
     try {
-      const res = await fetch(`https://registry.npmjs.org/-/org/${name}/package`)
+      const res = await fetch(`https://registry.npmjs.org/-/org/${name}/package`, {
+        signal: AbortSignal.timeout(5000),
+      })
       return {
         platform: 'npm org',
         available: res.status === 404,
@@ -75,7 +81,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'PyPI package': async (name) => {
     const link = `https://pypi.org/project/${name}/`
     try {
-      const res = await fetch(`https://pypi.org/pypi/${name}/json`)
+      const res = await fetch(`https://pypi.org/pypi/${name}/json`, {
+        signal: AbortSignal.timeout(5000),
+      })
       return {
         platform: 'PyPI package',
         available: res.status === 404,
@@ -90,7 +98,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'Rust crate': async (name) => {
     const link = `https://crates.io/crates/${name}`
     try {
-      const res = await fetch(`https://crates.io/api/v1/crates/${name}`)
+      const res = await fetch(`https://crates.io/api/v1/crates/${name}`, {
+        signal: AbortSignal.timeout(5000),
+      })
       return {
         platform: 'Rust crate',
         available: res.status === 404,
@@ -105,7 +115,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'Ruby gem': async (name) => {
     const link = `https://rubygems.org/gems/${name}`
     try {
-      const res = await fetch(`https://rubygems.org/api/v1/gems/${name}.json`)
+      const res = await fetch(`https://rubygems.org/api/v1/gems/${name}.json`, {
+        signal: AbortSignal.timeout(5000),
+      })
       return {
         platform: 'Ruby gem',
         available: res.status === 404,
@@ -121,7 +133,8 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
     const link = `https://www.nuget.org/packages/${name}`
     try {
       const res = await fetch(
-        `https://api.nuget.org/v3/registration5-gz-semver2/${name.toLowerCase()}/index.json`
+        `https://api.nuget.org/v3/registration5-gz-semver2/${name.toLowerCase()}/index.json`,
+        { signal: AbortSignal.timeout(5000) }
       )
       return {
         platform: 'Nuget package',
@@ -137,7 +150,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'Packagist package': async (name) => {
     const link = `https://packagist.org/packages/${name}/${name}`
     try {
-      const res = await fetch(`https://repo.packagist.org/p2/${name}/${name}.json`)
+      const res = await fetch(`https://repo.packagist.org/p2/${name}/${name}.json`, {
+        signal: AbortSignal.timeout(5000),
+      })
       return {
         platform: 'Packagist package',
         available: res.status === 404,
@@ -152,7 +167,9 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
   'Go package': async (name) => {
     const link = `https://pkg.go.dev/github.com/${name}/${name}`
     try {
-      const res = await fetch(`https://proxy.golang.org/github.com/${name}/${name}/@v/list`)
+      const res = await fetch(`https://proxy.golang.org/github.com/${name}/${name}/@v/list`, {
+        signal: AbortSignal.timeout(5000),
+      })
       const text = await res.text()
       return {
         platform: 'Go package',
@@ -169,8 +186,12 @@ const platformCheckers: Record<string, (name: string) => Promise<PlatformResult>
     const link = `https://formulae.brew.sh/formula/${name}`
     try {
       const [formulaRes, caskRes] = await Promise.all([
-        fetch(`https://formulae.brew.sh/api/formula/${name}.json`),
-        fetch(`https://formulae.brew.sh/api/cask/${name}.json`),
+        fetch(`https://formulae.brew.sh/api/formula/${name}.json`, {
+          signal: AbortSignal.timeout(5000),
+        }),
+        fetch(`https://formulae.brew.sh/api/cask/${name}.json`, {
+          signal: AbortSignal.timeout(5000),
+        }),
       ])
       return {
         platform: 'Homebrew cask/formula',

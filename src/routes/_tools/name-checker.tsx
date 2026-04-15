@@ -1,7 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { z } from 'zod'
 import NameCheckerTool from '#/components/tools/name-checker'
 
+const nameSearchSchema = z.object({
+  name: z.string().default('').catch(''),
+})
+
+export type NameSearchParams = z.infer<typeof nameSearchSchema>
+
 export const Route = createFileRoute('/_tools/name-checker')({
+  validateSearch: nameSearchSchema,
   head: () => ({
     meta: [
       { title: 'Name Checker | Toolkit' },

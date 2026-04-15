@@ -15,6 +15,7 @@ interface ToolbarProps {
   onSwap: () => void
   onCopyDiff: () => void
   copySuccess: boolean
+  copyError: boolean
   canCopy: boolean
   onLoadExample: () => void
   onClear: () => void
@@ -35,6 +36,7 @@ export default function Toolbar({
   onSwap,
   onCopyDiff,
   copySuccess,
+  copyError,
   canCopy,
   onLoadExample,
   onClear,
@@ -112,8 +114,8 @@ export default function Toolbar({
           <Button size="sm" variant="secondary" onPress={onSwap}>
             ⇄ Swap
           </Button>
-          <Button size="sm" variant="secondary" isDisabled={!canCopy} onPress={onCopyDiff}>
-            {copySuccess ? '✓ Copied' : 'Copy Diff'}
+          <Button size="sm" variant={copyError ? 'danger' : 'secondary'} isDisabled={!canCopy} onPress={onCopyDiff}>
+            {copySuccess ? '✓ Copied' : copyError ? 'Copy failed' : 'Copy Diff'}
           </Button>
         </div>
       </HuiToolbar>

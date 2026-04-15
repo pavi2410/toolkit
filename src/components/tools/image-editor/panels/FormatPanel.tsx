@@ -4,7 +4,7 @@ import {
   $originalImage, $originalMeta, $transforms, $format, $quality,
   $targetFileSize, $outputDimensions, actions, type ImageFormat,
 } from '@/stores/image-editor'
-import { Button, ButtonGroup, NumberField, Slider } from '@heroui/react'
+import { Alert, Button, ButtonGroup, NumberField, Slider } from '@heroui/react'
 import IconDownload from '~icons/tabler/download'
 import IconClipboard from '~icons/tabler/clipboard'
 import IconCheck from '~icons/tabler/check'
@@ -34,6 +34,7 @@ export default function FormatPanel() {
   const [isCopying, setIsCopying] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
   const [estimatedSize, setEstimatedSize] = useState<number | null>(null)
+  const [exportError, setExportError] = useState<string | null>(null)
 
   const selectedFormat = FORMATS.find(f => f.id === format)!
 
@@ -77,11 +78,13 @@ export default function FormatPanel() {
 
   const handleExport = async () => {
     setIsExporting(true)
+    setExportError(null)
     try {
       let blob: Blob | null = null
       if (targetFileSize) {
         let low = 0.1, high = 1.0, bestBlob: Blob | null = null
         for (let i = 0; i < 8; i++) {
+          if (high - low < 0.01) break
           const mid = (low + high) / 2
           blob = await renderToBlob(mid)
           if (!blob) break
@@ -91,7 +94,7 @@ export default function FormatPanel() {
       } else {
         blob = await renderToBlob()
       }
-      if (!blob) { alert('Failed to export image'); return }
+      if (!blob) { setExportError('Failed to export image. Try a different format or smaller dimensions.'); return }
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -116,6 +119,7 @@ export default function FormatPanel() {
         setTimeout(() => setCopySuccess(false), 2000)
       }
     } catch (e) {
+      setExportError('Failed to copy image to clipboard.')
       console.error('Failed to copy:', e)
     } finally {
       setIsCopying(false)
@@ -182,6 +186,14 @@ export default function FormatPanel() {
         <div className="px-3 py-2 bg-default rounded-lg text-xs text-muted">
           Estimated: <span className="font-medium text-foreground">{formatFileSize(estimatedSize)}</span>
         </div>
+      )}
+
+      {exportError && (
+        <Alert status="danger" onDismiss={() => setExportError(null)}>
+          <Alert.Content>
+            <Alert.Description>{exportError}</Alert.Description>
+          </Alert.Content>
+        </Alert>
       )}
 
       <div className="flex gap-2">

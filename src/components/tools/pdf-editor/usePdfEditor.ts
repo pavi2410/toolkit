@@ -400,16 +400,21 @@ export function usePdfEditor() {
 
     try {
       const mergedPdf = await PDFDocument.create()
+      const docCache = new Map<string, PDFDocument>()
 
       for (const page of pages) {
         const file = files.find(f => f.id === page.fileId)
         if (!file) continue
 
-        const sourcePdf = await PDFDocument.load(file.data, { ignoreEncryption: true })
+        let sourcePdf = docCache.get(file.id)
+        if (!sourcePdf) {
+          sourcePdf = await PDFDocument.load(file.data, { ignoreEncryption: true })
+          docCache.set(file.id, sourcePdf)
+        }
         const [copiedPage] = await mergedPdf.copyPages(sourcePdf, [page.pageIndex])
-        
+
         copiedPage.setRotation(degrees((copiedPage.getRotation().angle + page.rotation) % 360))
-        
+
         mergedPdf.addPage(copiedPage)
       }
 
@@ -440,16 +445,21 @@ export function usePdfEditor() {
     try {
       const newPdf = await PDFDocument.create()
       const selectedPagesList = pages.filter(p => selectedPages.has(p.id))
+      const docCache = new Map<string, PDFDocument>()
 
       for (const page of selectedPagesList) {
         const file = files.find(f => f.id === page.fileId)
         if (!file) continue
 
-        const sourcePdf = await PDFDocument.load(file.data, { ignoreEncryption: true })
+        let sourcePdf = docCache.get(file.id)
+        if (!sourcePdf) {
+          sourcePdf = await PDFDocument.load(file.data, { ignoreEncryption: true })
+          docCache.set(file.id, sourcePdf)
+        }
         const [copiedPage] = await newPdf.copyPages(sourcePdf, [page.pageIndex])
-        
+
         copiedPage.setRotation(degrees((copiedPage.getRotation().angle + page.rotation) % 360))
-        
+
         newPdf.addPage(copiedPage)
       }
 

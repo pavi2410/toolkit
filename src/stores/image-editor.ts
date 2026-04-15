@@ -240,6 +240,7 @@ export const actions = {
   },
 
   setAdjustment(key: 'brightness' | 'contrast' | 'saturation', value: number) {
+    if ($transforms.get()[key] === value) return
     pushHistory()
     $transforms.setKey(key, value)
   },

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { getRouteApi, useNavigate } from '@tanstack/react-router'
 import { Button } from '@heroui/react'
-import { NuqsAdapter } from 'nuqs/adapters/react'
-import { parseAsString, parseAsBoolean, useQueryState } from 'nuqs'
 import {
   computeDiff,
   groupIntoHunks,
@@ -18,6 +17,8 @@ interface DiffState {
   textA: string
   textB: string
 }
+
+const routeApi = getRouteApi('/_tools/diff-checker')
 
 function DiffCheckerContent() {
   // Generate unique tab ID
@@ -37,33 +38,32 @@ function DiffCheckerContent() {
 
   const STORAGE_KEY = `diff-checker-${tabId}`
 
-  // URL state with nuqs
-  const [strategy, setStrategy] = useQueryState(
-    'strategy',
-    parseAsString.withDefault('line').withOptions({ shallow: false })
-  )
-  const [ignoreCase, setIgnoreCase] = useQueryState(
-    'ignoreCase',
-    parseAsBoolean.withDefault(false).withOptions({ shallow: false })
-  )
-  const [ignoreWhitespace, setIgnoreWhitespace] = useQueryState(
-    'ignoreWS',
-    parseAsBoolean.withDefault(false).withOptions({ shallow: false })
-  )
-  const [showWhitespace, setShowWhitespace] = useQueryState(
-    'showWS',
-    parseAsBoolean.withDefault(false).withOptions({ shallow: false })
-  )
-  const [lineWrap, setLineWrap] = useQueryState(
-    'wrap',
-    parseAsBoolean.withDefault(false).withOptions({ shallow: false })
-  )
+  // URL state via TanStack Router search params
+  const { strategy, ignoreCase, ignoreWS: ignoreWhitespace, showWS: showWhitespace, wrap: lineWrap } = routeApi.useSearch()
+  const navigate = useNavigate({ from: '/_tools/diff-checker' })
+
+  const setStrategy = useCallback((v: string) => {
+    navigate({ search: (prev) => ({ ...prev, strategy: v as 'line' | 'word' | 'char' }) })
+  }, [navigate])
+  const setIgnoreCase = useCallback((v: boolean) => {
+    navigate({ search: (prev) => ({ ...prev, ignoreCase: v }) })
+  }, [navigate])
+  const setIgnoreWhitespace = useCallback((v: boolean) => {
+    navigate({ search: (prev) => ({ ...prev, ignoreWS: v }) })
+  }, [navigate])
+  const setShowWhitespace = useCallback((v: boolean) => {
+    navigate({ search: (prev) => ({ ...prev, showWS: v }) })
+  }, [navigate])
+  const setLineWrap = useCallback((v: boolean) => {
+    navigate({ search: (prev) => ({ ...prev, wrap: v }) })
+  }, [navigate])
 
   // Local state
   const [textA, setTextA] = useState('')
   const [textB, setTextB] = useState('')
   const [expandedHunks, setExpandedHunks] = useState<Set<number>>(new Set())
   const [copySuccess, setCopySuccess] = useState(false)
+  const [copyError, setCopyError] = useState(false)
 
   const handleLoadExample = useCallback(() => {
     setTextA(['const config = {', '  retries: 3,', '  timeout: 5000,', '}', ''].join('\n'))
@@ -153,8 +153,11 @@ function DiffCheckerContent() {
     try {
       await navigator.clipboard.writeText(unifiedDiff)
       setCopySuccess(true)
+      setCopyError(false)
       setTimeout(() => setCopySuccess(false), 2000)
     } catch (err) {
+      setCopyError(true)
+      setTimeout(() => setCopyError(false), 3000)
       console.error('Failed to copy:', err)
     }
   }, [hunks])
@@ -183,6 +186,7 @@ function DiffCheckerContent() {
         onSwap={handleSwap}
         onCopyDiff={handleCopyDiff}
         copySuccess={copySuccess}
+        copyError={copyError}
         canCopy={hunks.length > 0}
         onLoadExample={handleLoadExample}
         onClear={handleClear}
@@ -246,9 +250,5 @@ function DiffCheckerContent() {
 }
 
 export default function DiffChecker() {
-  return (
-    <NuqsAdapter>
-      <DiffCheckerContent />
-    </NuqsAdapter>
-  )
+  return <DiffCheckerContent />
 }

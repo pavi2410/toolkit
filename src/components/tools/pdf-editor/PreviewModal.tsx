@@ -16,6 +16,7 @@ export function PreviewModal({ url, onClose }: PreviewModalProps) {
             {url && (
               <iframe
                 src={url}
+                sandbox="allow-same-origin"
                 className="w-full h-full rounded-lg bg-white"
                 title="PDF Preview"
               />

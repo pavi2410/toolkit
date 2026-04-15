@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { NuqsAdapter } from 'nuqs/adapters/react'
-import { parseAsString, useQueryState } from 'nuqs'
+import { getRouteApi, useNavigate } from '@tanstack/react-router'
 import { Alert, Button, Chip, SearchField, Surface } from '@heroui/react'
 import { PLATFORMS, TLDS, NAME_VARIATIONS, type PlatformResult, type DomainResult } from './types'
 import PlatformAvailabilityCard from './PlatformAvailabilityCard'
@@ -9,11 +8,14 @@ import IconSearch from '~icons/tabler/search'
 
 const SUGGESTED_NAMES = ['orbit', 'canvaslab', 'dockyard', 'framekit']
 
-function NameCheckerContent() {
-  const [searchName, setSearchName] = useQueryState(
-    'name',
-    parseAsString.withDefault('').withOptions({ shallow: false })
-  )
+const routeApi = getRouteApi('/_tools/name-checker')
+
+export default function NameChecker() {
+  const { name: searchName } = routeApi.useSearch()
+  const navigate = routeApi.useNavigate()
+  const setSearchName = useCallback((v: string) => {
+    navigate({ search: { name: v } })
+  }, [navigate])
 
   const [platformResults, setPlatformResults] = useState<Map<string, PlatformResult>>(new Map())
   const [domainResults, setDomainResults] = useState<Map<string, DomainResult>>(new Map())
@@ -298,7 +300,7 @@ function NameCheckerContent() {
                 <div className="space-y-1">
                   <p className="text-lg font-semibold text-foreground">Start with a candidate name</p>
                   <p className="mx-auto max-w-lg text-sm leading-6 text-muted">
-                    You’ll get a dense domain matrix plus platform-by-platform availability without leaving this workspace.
+                    You'll get a dense domain matrix plus platform-by-platform availability without leaving this workspace.
                   </p>
                 </div>
               </div>
@@ -307,13 +309,5 @@ function NameCheckerContent() {
         </div>
       </div>
     </div>
-  )
-}
-
-export default function NameChecker() {
-  return (
-    <NuqsAdapter>
-      <NameCheckerContent />
-    </NuqsAdapter>
   )
 }

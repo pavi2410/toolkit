@@ -42,11 +42,20 @@ export function PageGrid({
         {pages.map((page, index) => (
           <div
             key={page.id}
+            role="button"
+            tabIndex={0}
+            aria-label={`Page ${index + 1}${selectedPages.has(page.id) ? ', selected' : ''}`}
             draggable
             onDragStart={(e) => onDragStart(e, page.id)}
             onDragOver={(e) => onDragOver(e, page.id)}
             onDragEnd={onDragEnd}
             onClick={() => onToggleSelection(page.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onToggleSelection(page.id)
+              }
+            }}
             className={`
               group relative bg-surface border-2 rounded-lg overflow-hidden cursor-pointer transition-all
               ${selectedPages.has(page.id)

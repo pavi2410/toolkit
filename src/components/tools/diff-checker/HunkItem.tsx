@@ -50,6 +50,8 @@ export default function HunkItem({ hunk, index, isExpanded, onToggle, formatText
       <button
         type="button"
         onClick={() => onToggle(index)}
+        aria-expanded={isExpanded}
+        aria-label="Toggle hunk"
         className="w-full text-left flex items-center bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors border-b border-blue-200 dark:border-blue-800/60"
       >
         <div className="w-24 shrink-0 flex items-center justify-center py-1.5 border-r border-blue-200 dark:border-blue-800/60 text-blue-500 dark:text-blue-400 text-xs select-none">

@@ -45,7 +45,13 @@ export default function ResizePanel() {
   const handleHeightChange = (h: number) => {
     if (isNaN(h) || h <= 0) return
     setHeight(h)
-    if (lockAspect) setWidth(Math.round(h * aspectRatio))
+    if (lockAspect) {
+      const newWidth = Math.round(h * aspectRatio)
+      setWidth(newWidth)
+      if (baseWidth) setPercentage(Math.round((newWidth / baseWidth) * 100))
+    } else {
+      if (baseHeight) setPercentage(Math.round((h / baseHeight) * 100))
+    }
   }
 
   const handlePercentageChange = (pct: number) => {
