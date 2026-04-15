@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import ImageEditorTool from '#/components/tools/image-editor'
 
 export const Route = createFileRoute('/_tools/image-editor')({
+  ssr: false,
   head: () => ({
     meta: [
       { title: 'Image Editor | Toolkit' },

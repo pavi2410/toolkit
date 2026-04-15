@@ -1,153 +1,82 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { getRouteApi, useNavigate } from '@tanstack/react-router'
-import { Button } from '@heroui/react'
-import {
-  computeDiff,
-  groupIntoHunks,
-  formatAsUnifiedDiff,
-  visualizeWhitespace,
-  type DiffStrategy
-} from '@/utils/diff'
+import { useCallback, useMemo, useState } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
+import { computeDiff, groupIntoHunks, formatAsUnifiedDiff } from '@/utils/diff'
+import { useSessionStorage } from '@/hooks/useSessionStorage'
 import Toolbar from './Toolbar'
-import TextInputPanel from './TextInputPanel'
 import DiffViewer from './DiffViewer'
-import EmptyState from './EmptyState'
-
-interface DiffState {
-  textA: string
-  textB: string
-}
 
 const routeApi = getRouteApi('/_tools/diff-checker')
 
-function DiffCheckerContent() {
-  // Generate unique tab ID
-  const tabId = useRef(
-    typeof window !== 'undefined'
-      ? sessionStorage.getItem('diff-tab-id') ||
-        `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      : ''
-  ).current
+function calculateDiffStats(hunkCount: number, hunks: ReturnType<typeof groupIntoHunks>) {
+  let additions = 0
+  let deletions = 0
 
-  // Store tab ID in sessionStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined' && tabId) {
-      sessionStorage.setItem('diff-tab-id', tabId)
+  for (const hunk of hunks) {
+    for (const change of hunk.changes) {
+      if (change.type === 'add') additions++
+      if (change.type === 'remove') deletions++
     }
-  }, [tabId])
+  }
 
-  const STORAGE_KEY = `diff-checker-${tabId}`
+  return {
+    hunkCount,
+    additions,
+    deletions
+  }
+}
 
-  // URL state via TanStack Router search params
-  const { strategy, ignoreCase, ignoreWS: ignoreWhitespace, showWS: showWhitespace, wrap: lineWrap } = routeApi.useSearch()
-  const navigate = useNavigate({ from: '/_tools/diff-checker' })
+export default function DiffChecker() {
+  const [textA, setTextAStorage, textARef] = useSessionStorage('diff-checker:textA', '')
+  const [textB, setTextBStorage, textBRef] = useSessionStorage('diff-checker:textB', '')
 
-  const setStrategy = useCallback((v: string) => {
-    navigate({ search: (prev) => ({ ...prev, strategy: v as 'line' | 'word' | 'char' }) })
-  }, [navigate])
-  const setIgnoreCase = useCallback((v: boolean) => {
-    navigate({ search: (prev) => ({ ...prev, ignoreCase: v }) })
-  }, [navigate])
-  const setIgnoreWhitespace = useCallback((v: boolean) => {
-    navigate({ search: (prev) => ({ ...prev, ignoreWS: v }) })
-  }, [navigate])
-  const setShowWhitespace = useCallback((v: boolean) => {
-    navigate({ search: (prev) => ({ ...prev, showWS: v }) })
-  }, [navigate])
+  const { wrap: lineWrap } = routeApi.useSearch()
+  const navigate = routeApi.useNavigate()
+
   const setLineWrap = useCallback((v: boolean) => {
     navigate({ search: (prev) => ({ ...prev, wrap: v }) })
   }, [navigate])
 
-  // Local state
-  const [textA, setTextA] = useState('')
-  const [textB, setTextB] = useState('')
-  const [expandedHunks, setExpandedHunks] = useState<Set<number>>(new Set())
   const [copySuccess, setCopySuccess] = useState(false)
   const [copyError, setCopyError] = useState(false)
 
+  const setTextA = useCallback((value: string) => {
+    if (value !== textARef.current) setTextAStorage(value)
+  }, [setTextAStorage, textARef])
+
+  const setTextB = useCallback((value: string) => {
+    if (value !== textBRef.current) setTextBStorage(value)
+  }, [setTextBStorage, textBRef])
+
   const handleLoadExample = useCallback(() => {
-    setTextA(['const config = {', '  retries: 3,', '  timeout: 5000,', '}', ''].join('\n'))
-    setTextB(['const config = {', '  retries: 5,', '  timeout: 3000,', '  cache: true,', '}', ''].join('\n'))
-  }, [])
+    setTextAStorage(['const config = {', '  retries: 3,', '  timeout: 5000,', '}', ''].join('\n'))
+    setTextBStorage(['const config = {', '  retries: 5,', '  timeout: 3000,', '  cache: true,', '}', ''].join('\n'))
+  }, [setTextAStorage, setTextBStorage])
 
   const handleClear = useCallback(() => {
-    setTextA('')
-    setTextB('')
-    setExpandedHunks(new Set())
-  }, [])
+    setTextAStorage('')
+    setTextBStorage('')
+  }, [setTextAStorage, setTextBStorage])
 
-  // Load from sessionStorage on mount
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const saved = sessionStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      try {
-        const state: DiffState = JSON.parse(saved)
-        setTextA(state.textA || '')
-        setTextB(state.textB || '')
-      } catch (e) {
-        console.error('Failed to parse saved state:', e)
-      }
-    }
-  }, [STORAGE_KEY])
-
-  // Save to sessionStorage (debounced)
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const timer = setTimeout(() => {
-      const state: DiffState = { textA, textB }
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [textA, textB, STORAGE_KEY])
-
-  // Compute diff
   const diffChanges = useMemo(() => {
     if (!textA && !textB) return []
     return computeDiff(textA, textB, {
-      strategy: strategy as DiffStrategy,
-      ignoreCase,
-      ignoreWhitespace
+      strategy: 'line',
+      ignoreCase: false,
+      ignoreWhitespace: false
     })
-  }, [textA, textB, strategy, ignoreCase, ignoreWhitespace])
-
-  // Group into hunks
-  const hunks = useMemo(() => {
-    return groupIntoHunks(diffChanges, strategy as DiffStrategy, 3)
-  }, [diffChanges, strategy])
-
-  // Handle swap
-  const handleSwap = useCallback(() => {
-    setTextA(textB)
-    setTextB(textA)
   }, [textA, textB])
 
-  // Handle expand/collapse hunk
-  const toggleHunk = useCallback((index: number) => {
-    setExpandedHunks(prev => {
-      const next = new Set(prev)
-      if (next.has(index)) {
-        next.delete(index)
-      } else {
-        next.add(index)
-      }
-      return next
-    })
-  }, [])
+  const hunks = useMemo(() => {
+    return groupIntoHunks(diffChanges, 'line', 3)
+  }, [diffChanges])
 
-  // Handle expand/collapse all
-  const expandAll = useCallback(() => {
-    setExpandedHunks(new Set(hunks.map((_, i) => i)))
-  }, [hunks])
+  const diffStats = useMemo(() => calculateDiffStats(hunks.length, hunks), [hunks])
 
-  const collapseAll = useCallback(() => {
-    setExpandedHunks(new Set())
-  }, [])
+  const handleSwap = useCallback(() => {
+    setTextAStorage(textB)
+    setTextBStorage(textA)
+  }, [setTextAStorage, setTextBStorage, textA, textB])
 
-  // Handle copy diff
   const handleCopyDiff = useCallback(async () => {
     const unifiedDiff = formatAsUnifiedDiff(hunks)
     try {
@@ -162,25 +91,9 @@ function DiffCheckerContent() {
     }
   }, [hunks])
 
-  // Format text with whitespace visualization
-  const formatText = useCallback(
-    (text: string) => {
-      return showWhitespace ? visualizeWhitespace(text) : text
-    },
-    [showWhitespace]
-  )
-
   return (
     <div className="flex h-full min-w-0 w-full flex-col bg-surface-secondary">
       <Toolbar
-        strategy={strategy as DiffStrategy}
-        onStrategyChange={setStrategy}
-        ignoreCase={ignoreCase}
-        onIgnoreCaseChange={setIgnoreCase}
-        ignoreWhitespace={ignoreWhitespace}
-        onIgnoreWhitespaceChange={setIgnoreWhitespace}
-        showWhitespace={showWhitespace}
-        onShowWhitespaceChange={setShowWhitespace}
         lineWrap={lineWrap}
         onLineWrapChange={setLineWrap}
         onSwap={handleSwap}
@@ -191,64 +104,17 @@ function DiffCheckerContent() {
         onLoadExample={handleLoadExample}
         onClear={handleClear}
         canClear={Boolean(textA || textB)}
+        additions={diffStats.additions}
+        deletions={diffStats.deletions}
       />
 
-      {/* Text Input Areas */}
-      <div className="shrink-0 grid grid-cols-1 md:grid-cols-2 border-b border-border">
-        <TextInputPanel
-          label="Text A (Original)"
-          value={textA}
-          onChange={setTextA}
-          placeholder="Paste or type original text…"
-          lineWrap={lineWrap}
-        />
-        <TextInputPanel
-          label="Text B (Modified)"
-          value={textB}
-          onChange={setTextB}
-          placeholder="Paste or type modified text…"
-          lineWrap={lineWrap}
-        />
-      </div>
-
-      {/* Diff Viewer */}
-      {hunks.length > 0 && (
-        <DiffViewer
-          hunks={hunks}
-          expandedHunks={expandedHunks}
-          onToggleHunk={toggleHunk}
-          onExpandAll={expandAll}
-          onCollapseAll={collapseAll}
-          formatText={formatText}
-          strategy={strategy as DiffStrategy}
-        />
-      )}
-
-      {/* Empty States */}
-      {hunks.length === 0 && (textA || textB) && (
-        <EmptyState
-          icon="✓"
-          title="No differences found"
-          description="The texts are identical"
-        />
-      )}
-
-      {!textA && !textB && (
-        <EmptyState
-          icon="compare"
-          title="Ready to compare"
-          description="Enter text in both fields above to see the differences"
-          actions={
-            <Button variant="secondary" size="sm" onPress={handleLoadExample}>
-              Load Example
-            </Button>
-          }
-        />
-      )}
+      <DiffViewer
+        originalText={textA}
+        modifiedText={textB}
+        lineWrap={lineWrap}
+        onOriginalChange={setTextA}
+        onModifiedChange={setTextB}
+      />
     </div>
   )
-}
-
-export default function DiffChecker() {
-  return <DiffCheckerContent />
 }

@@ -1,81 +1,152 @@
-import HunkItem from './HunkItem'
-import type { DiffHunk } from '@/utils/diff'
-import { Button, Chip, Toolbar } from '@heroui/react'
+import { useMemo } from 'react'
+import { EditorView } from '@uiw/react-codemirror'
+import { oneDark } from '@codemirror/theme-one-dark'
+import CodeMirrorMerge from 'react-codemirror-merge'
+import { useIsDarkTheme } from '@/hooks/useTheme'
+import StatsWidget from './StatsWidget'
 
 interface DiffViewerProps {
-  hunks: DiffHunk[]
-  expandedHunks: Set<number>
-  onToggleHunk: (index: number) => void
-  onExpandAll: () => void
-  onCollapseAll: () => void
-  formatText: (text: string) => string
-  strategy: 'line' | 'word' | 'char'
+  originalText: string
+  modifiedText: string
+  lineWrap: boolean
+  onOriginalChange: (value: string) => void
+  onModifiedChange: (value: string) => void
 }
 
-function calculateDiffStats(hunks: DiffHunk[]) {
-  let additions = 0
-  let deletions = 0
-
-  for (const hunk of hunks) {
-    for (const change of hunk.changes) {
-      if (change.type === 'add') additions++
-      else if (change.type === 'remove') deletions++
-    }
-  }
-
-  return { additions, deletions }
-}
+const OriginalEditor = CodeMirrorMerge.Original
+const ModifiedEditor = CodeMirrorMerge.Modified
 
 export default function DiffViewer({
-  hunks,
-  expandedHunks,
-  onToggleHunk,
-  onExpandAll,
-  onCollapseAll,
-  formatText,
-  strategy
+  originalText,
+  modifiedText,
+  lineWrap,
+  onOriginalChange,
+  onModifiedChange
 }: DiffViewerProps) {
-  const stats = calculateDiffStats(hunks)
+  const isDarkTheme = useIsDarkTheme()
+
+  const editorExtensions = useMemo(
+    () => [
+      EditorView.theme({
+        '&': {
+          height: '100%',
+          backgroundColor: 'var(--surface)',
+          color: 'var(--foreground)',
+          fontSize: '13px'
+        },
+        '.cm-scroller': {
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+          lineHeight: '1.55'
+        },
+        '.cm-content': {
+          padding: '8px 0 16px'
+        },
+        '.cm-line': {
+          paddingLeft: '16px',
+          paddingRight: '16px'
+        },
+        '.cm-gutters': {
+          backgroundColor: 'var(--surface-secondary)',
+          borderRight: '1px solid var(--border)',
+          color: 'var(--muted)'
+        },
+        '.cm-activeLine, .cm-activeLineGutter': {
+          backgroundColor: 'transparent'
+        },
+        '.cm-merge-b .cm-changedLine, .cm-inlineChangedLine': {
+          backgroundColor: 'color-mix(in srgb, var(--success) 12%, transparent)'
+        },
+        '.cm-deletedChunk, .cm-merge-a .cm-changedLine': {
+          backgroundColor: 'color-mix(in srgb, var(--danger) 10%, transparent)'
+        },
+        '.cm-changedText': {
+          borderRadius: '0.25rem'
+        },
+        '.cm-merge-b .cm-changedText, .cm-insertedLine': {
+          backgroundColor: 'color-mix(in srgb, var(--success) 22%, transparent)',
+          textDecoration: 'none'
+        },
+        '.cm-deletedChunk .cm-deletedText, .cm-deletedLine, .cm-deletedLine del': {
+          backgroundColor: 'color-mix(in srgb, var(--danger) 18%, transparent)',
+          textDecoration: 'none'
+        },
+        '.cm-deletedChunk': {
+          borderTop: '1px solid color-mix(in srgb, var(--danger) 18%, transparent)',
+          borderBottom: '1px solid color-mix(in srgb, var(--danger) 18%, transparent)'
+        },
+        '.cm-changedLineGutter, .cm-deletedLineGutter': {
+          minWidth: '4px'
+        },
+        '&.cm-focused': {
+          outline: 'none'
+        }
+      }),
+      ...(lineWrap ? [EditorView.lineWrapping] : [])
+    ],
+    [lineWrap]
+  )
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden border-t border-border">
-      {/* Diff header */}
-      <Toolbar
-        aria-label="Diff controls"
-        className="shrink-0 px-4 py-2 bg-surface-secondary border-b border-border flex items-center gap-3"
-      >
-        <span className="text-xs font-semibold text-muted uppercase tracking-widest">Diff</span>
+      <div className="grid shrink-0 grid-cols-1 border-b border-border bg-surface md:grid-cols-2">
+        <div className="flex items-center justify-between gap-4 border-b border-border/70 px-4 py-2 md:border-b-0 md:border-r">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+            Text A (Original)
+          </span>
+          <StatsWidget text={originalText} />
+        </div>
+        <div className="flex items-center justify-between gap-4 px-4 py-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+            Text B (Modified)
+          </span>
+          <StatsWidget text={modifiedText} />
+        </div>
+      </div>
 
-        <Chip size="sm" variant="soft">
-          {hunks.length} {hunks.length === 1 ? 'hunk' : 'hunks'}
-        </Chip>
-
-        {(stats.additions > 0 || stats.deletions > 0) && (
-          <>
-            <Chip size="sm" variant="soft" color="success">+{stats.additions}</Chip>
-            <Chip size="sm" variant="soft" color="danger">−{stats.deletions}</Chip>
-          </>
-        )}
-
-        <div className="flex-1" />
-
-        <Button size="sm" variant="tertiary" onPress={onExpandAll}>Expand all</Button>
-        <Button size="sm" variant="tertiary" onPress={onCollapseAll}>Collapse all</Button>
-      </Toolbar>
-
-      {/* Hunks */}
-      <div className="flex-1 overflow-y-auto">
-        {hunks.map((hunk, index) => (
-          <HunkItem
-            key={index}
-            hunk={hunk}
-            index={index}
-            isExpanded={expandedHunks.has(index)}
-            onToggle={onToggleHunk}
-            formatText={formatText}
-            strategy={strategy}
+      <div className="flex-1 min-h-0 overflow-hidden bg-surface [&_.cm-mergeView]:h-full [&_.cm-mergeView]:bg-transparent [&_.cm-mergeViewEditors]:h-full [&_.cm-editor]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-merge-revert]:hidden">
+        <CodeMirrorMerge
+          className="h-full"
+          orientation="a-b"
+          revertControls="a-to-b"
+          gutter
+          highlightChanges
+          collapseUnchanged={{ margin: 3, minSize: 4 }}
+          theme={isDarkTheme ? oneDark : 'light'}
+          destroyRerender={false}
+        >
+          <OriginalEditor
+            value={originalText}
+            onChange={(value) => onOriginalChange(value)}
+            extensions={editorExtensions}
+            editable
+            readOnly={false}
+            basicSetup={{
+              lineNumbers: true,
+              highlightActiveLine: false,
+              highlightActiveLineGutter: false,
+              foldGutter: false,
+              dropCursor: false,
+              allowMultipleSelections: false,
+              indentOnInput: false
+            }}
           />
-        ))}
+          <ModifiedEditor
+            value={modifiedText}
+            onChange={(value) => onModifiedChange(value)}
+            extensions={editorExtensions}
+            editable
+            readOnly={false}
+            basicSetup={{
+              lineNumbers: true,
+              highlightActiveLine: false,
+              highlightActiveLineGutter: false,
+              foldGutter: false,
+              dropCursor: false,
+              allowMultipleSelections: false,
+              indentOnInput: false
+            }}
+          />
+        </CodeMirrorMerge>
       </div>
     </div>
   )

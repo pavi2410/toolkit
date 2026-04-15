@@ -10,6 +10,7 @@ function getSystemMode(): ThemeMode {
 }
 
 function applyTheme(mode: ThemeMode) {
+  if (typeof document === 'undefined') return
   const root = document.documentElement
   root.classList.remove('light', 'dark')
   root.classList.add(mode)

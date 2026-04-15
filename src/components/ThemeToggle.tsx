@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Switch } from '@heroui/react'
 import IconMoon from '~icons/tabler/moon'
 import IconSun from '~icons/tabler/sun'
@@ -5,6 +6,13 @@ import { useTheme } from '../hooks/useTheme'
 
 export default function ThemeToggle() {
   const { isDark, toggle } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
 
   return (
     <Switch

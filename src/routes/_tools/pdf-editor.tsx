@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import PdfEditorTool from '#/components/tools/pdf-editor'
 
 export const Route = createFileRoute('/_tools/pdf-editor')({
+  ssr: false,
   head: () => ({
     meta: [
       { title: 'PDF Editor | Toolkit' },
