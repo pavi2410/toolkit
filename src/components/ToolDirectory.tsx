@@ -1,6 +1,7 @@
 import { Chip, Surface } from '@heroui/react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import IconArrowRight from '~icons/tabler/arrow-right'
+import IconCode from '~icons/tabler/code'
 import IconFileTypePdf from '~icons/tabler/file-type-pdf'
 import IconGitCompare from '~icons/tabler/git-compare'
 import IconPhoto from '~icons/tabler/photo'
@@ -22,6 +23,14 @@ export const toolItems = [
     Icon: IconPhoto,
     tags: ['Image', 'Editor'],
     eyebrow: 'Prep Assets',
+  },
+  {
+    name: 'Deco',
+    description: 'Edit HTML, CSS, and JavaScript together with a live browser preview.',
+    to: '/deco',
+    Icon: IconCode,
+    tags: ['Code', 'Preview'],
+    eyebrow: 'Prototype Fast',
   },
   {
     name: 'PDF Editor',

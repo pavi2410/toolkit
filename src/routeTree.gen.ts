@@ -18,6 +18,7 @@ import { Route as ToolsPdfEditorRouteImport } from './routes/_tools/pdf-editor'
 import { Route as ToolsNameCheckerRouteImport } from './routes/_tools/name-checker'
 import { Route as ToolsImageEditorRouteImport } from './routes/_tools/image-editor'
 import { Route as ToolsDiffCheckerRouteImport } from './routes/_tools/diff-checker'
+import { Route as ToolsDecoRouteImport } from './routes/_tools/deco'
 import { Route as ApiRpcSplatRouteImport } from './routes/api.rpc.$'
 
 const ToolsRouteRoute = ToolsRouteRouteImport.update({
@@ -64,6 +65,11 @@ const ToolsDiffCheckerRoute = ToolsDiffCheckerRouteImport.update({
   path: '/diff-checker',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsDecoRoute = ToolsDecoRouteImport.update({
+  id: '/deco',
+  path: '/deco',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -72,6 +78,7 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/deco': typeof ToolsDecoRoute
   '/diff-checker': typeof ToolsDiffCheckerRoute
   '/image-editor': typeof ToolsImageEditorRoute
   '/name-checker': typeof ToolsNameCheckerRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/deco': typeof ToolsDecoRoute
   '/diff-checker': typeof ToolsDiffCheckerRoute
   '/image-editor': typeof ToolsImageEditorRoute
   '/name-checker': typeof ToolsNameCheckerRoute
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_tools': typeof ToolsRouteRouteWithChildren
+  '/_tools/deco': typeof ToolsDecoRoute
   '/_tools/diff-checker': typeof ToolsDiffCheckerRoute
   '/_tools/image-editor': typeof ToolsImageEditorRoute
   '/_tools/name-checker': typeof ToolsNameCheckerRoute
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/deco'
     | '/diff-checker'
     | '/image-editor'
     | '/name-checker'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/deco'
     | '/diff-checker'
     | '/image-editor'
     | '/name-checker'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_tools'
+    | '/_tools/deco'
     | '/_tools/diff-checker'
     | '/_tools/image-editor'
     | '/_tools/name-checker'
@@ -216,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsDiffCheckerRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/deco': {
+      id: '/_tools/deco'
+      path: '/deco'
+      fullPath: '/deco'
+      preLoaderRoute: typeof ToolsDecoRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -227,6 +246,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface ToolsRouteRouteChildren {
+  ToolsDecoRoute: typeof ToolsDecoRoute
   ToolsDiffCheckerRoute: typeof ToolsDiffCheckerRoute
   ToolsImageEditorRoute: typeof ToolsImageEditorRoute
   ToolsNameCheckerRoute: typeof ToolsNameCheckerRoute
@@ -234,6 +254,7 @@ interface ToolsRouteRouteChildren {
 }
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
+  ToolsDecoRoute: ToolsDecoRoute,
   ToolsDiffCheckerRoute: ToolsDiffCheckerRoute,
   ToolsImageEditorRoute: ToolsImageEditorRoute,
   ToolsNameCheckerRoute: ToolsNameCheckerRoute,
