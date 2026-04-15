@@ -1,4 +1,4 @@
-import { Card, Chip } from '@heroui/react'
+import { Chip, Surface } from '@heroui/react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import IconArrowRight from '~icons/tabler/arrow-right'
 import IconFileTypePdf from '~icons/tabler/file-type-pdf'
@@ -6,13 +6,14 @@ import IconGitCompare from '~icons/tabler/git-compare'
 import IconPhoto from '~icons/tabler/photo'
 import IconTag from '~icons/tabler/tag'
 
-const toolItems = [
+export const toolItems = [
   {
     name: 'Diff Checker',
     description: 'Compare text differences with line, word, or character-level strategies.',
     to: '/diff-checker',
     Icon: IconGitCompare,
     tags: ['Text', 'Comparison'],
+    eyebrow: 'Review Changes',
   },
   {
     name: 'Image Editor',
@@ -20,6 +21,7 @@ const toolItems = [
     to: '/image-editor',
     Icon: IconPhoto,
     tags: ['Image', 'Editor'],
+    eyebrow: 'Prep Assets',
   },
   {
     name: 'PDF Editor',
@@ -27,6 +29,7 @@ const toolItems = [
     to: '/pdf-editor',
     Icon: IconFileTypePdf,
     tags: ['PDF', 'Editor'],
+    eyebrow: 'Assemble Documents',
   },
   {
     name: 'Name Checker',
@@ -34,8 +37,13 @@ const toolItems = [
     to: '/name-checker',
     Icon: IconTag,
     tags: ['Brand', 'Domain'],
+    eyebrow: 'Claim a Name',
   },
 ] as const
+
+export function getToolByPath(pathname: string) {
+  return toolItems.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`))
+}
 
 interface ToolDirectoryProps {
   layout?: 'grid' | 'list'
@@ -57,37 +65,47 @@ export function ToolDirectory({ layout = 'grid' }: ToolDirectoryProps) {
         isList ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
       }`}
     >
-      {toolItems.map(({ name, description, to, Icon, tags }) => {
+      {toolItems.map(({ name, description, to, Icon, tags, eyebrow }) => {
         const isActive = pathname === to
 
         return (
           <Link key={to} to={to} className="group block no-underline">
-            <Card variant={isActive ? 'secondary' : 'default'} className="h-full transition-colors">
-              <Card.Header className="flex-row items-center gap-3">
+            <Surface
+              variant={isActive ? 'secondary' : 'default'}
+              className="h-full space-y-3 rounded-3xl p-4 shadow-none transition-transform duration-200 group-hover:-translate-y-0.5"
+            >
+              <div className="flex items-start gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-secondary">
                   <Icon className="h-4.5 w-4.5 text-foreground" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <Card.Title className="text-sm font-semibold">{name}</Card.Title>
-                  {!isList && (
-                    <Card.Description className="text-xs text-muted">
-                      {description}
-                    </Card.Description>
-                  )}
+                  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+                    {eyebrow}
+                  </p>
+                  <p className="text-sm font-semibold text-foreground">{name}</p>
                 </div>
-                <IconArrowRight className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5" />
-              </Card.Header>
+                <IconArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5" />
+              </div>
 
-              {!isList && (
-                <Card.Footer className="gap-2 pt-0">
-                  {tags.map((tag) => (
-                    <Chip key={tag} color="default" size="sm" variant="soft">
-                      <Chip.Label>{tag}</Chip.Label>
-                    </Chip>
-                  ))}
-                </Card.Footer>
-              )}
-            </Card>
+              <div className={isList ? '' : 'pb-1'}>
+                <p className="text-sm text-muted">
+                  {description}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <Chip key={tag} color="default" size="sm" variant="soft">
+                    <Chip.Label>{tag}</Chip.Label>
+                  </Chip>
+                ))}
+                {isActive && (
+                  <Chip color="accent" size="sm" variant="soft">
+                    <Chip.Label>Current</Chip.Label>
+                  </Chip>
+                )}
+              </div>
+            </Surface>
           </Link>
         )
       })}

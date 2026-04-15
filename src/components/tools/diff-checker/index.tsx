@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { Button } from '@heroui/react'
 import { NuqsAdapter } from 'nuqs/adapters/react'
 import { parseAsString, parseAsBoolean, useQueryState } from 'nuqs'
 import {
@@ -63,6 +64,17 @@ function DiffCheckerContent() {
   const [textB, setTextB] = useState('')
   const [expandedHunks, setExpandedHunks] = useState<Set<number>>(new Set())
   const [copySuccess, setCopySuccess] = useState(false)
+
+  const handleLoadExample = useCallback(() => {
+    setTextA(['const config = {', '  retries: 3,', '  timeout: 5000,', '}', ''].join('\n'))
+    setTextB(['const config = {', '  retries: 5,', '  timeout: 3000,', '  cache: true,', '}', ''].join('\n'))
+  }, [])
+
+  const handleClear = useCallback(() => {
+    setTextA('')
+    setTextB('')
+    setExpandedHunks(new Set())
+  }, [])
 
   // Load from sessionStorage on mount
   useEffect(() => {
@@ -156,8 +168,7 @@ function DiffCheckerContent() {
   )
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Toolbar */}
+    <div className="flex h-full min-w-0 w-full flex-col bg-surface-secondary">
       <Toolbar
         strategy={strategy as DiffStrategy}
         onStrategyChange={setStrategy}
@@ -173,6 +184,9 @@ function DiffCheckerContent() {
         onCopyDiff={handleCopyDiff}
         copySuccess={copySuccess}
         canCopy={hunks.length > 0}
+        onLoadExample={handleLoadExample}
+        onClear={handleClear}
+        canClear={Boolean(textA || textB)}
       />
 
       {/* Text Input Areas */}
@@ -181,14 +195,14 @@ function DiffCheckerContent() {
           label="Text A (Original)"
           value={textA}
           onChange={setTextA}
-          placeholder="Paste or type original text..."
+          placeholder="Paste or type original text…"
           lineWrap={lineWrap}
         />
         <TextInputPanel
           label="Text B (Modified)"
           value={textB}
           onChange={setTextB}
-          placeholder="Paste or type modified text..."
+          placeholder="Paste or type modified text…"
           lineWrap={lineWrap}
         />
       </div>
@@ -217,9 +231,14 @@ function DiffCheckerContent() {
 
       {!textA && !textB && (
         <EmptyState
-          icon="📝"
+          icon="compare"
           title="Ready to compare"
           description="Enter text in both fields above to see the differences"
+          actions={
+            <Button variant="secondary" size="sm" onPress={handleLoadExample}>
+              Load Example
+            </Button>
+          }
         />
       )}
     </div>

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { NuqsAdapter } from 'nuqs/adapters/react'
 import { parseAsString, useQueryState } from 'nuqs'
-import { SearchField, Alert } from '@heroui/react'
+import { Alert, Button, Chip, SearchField, Surface } from '@heroui/react'
 import { PLATFORMS, TLDS, NAME_VARIATIONS, type PlatformResult, type DomainResult } from './types'
 import PlatformAvailabilityCard from './PlatformAvailabilityCard'
 import DomainAvailabilityMatrix from './DomainAvailabilityMatrix'
 import IconSearch from '~icons/tabler/search'
+
+const SUGGESTED_NAMES = ['orbit', 'canvaslab', 'dockyard', 'framekit']
 
 function NameCheckerContent() {
   const [searchName, setSearchName] = useQueryState(
@@ -19,6 +21,7 @@ function NameCheckerContent() {
   const [error, setError] = useState('')
   const currentAbortController = useRef<AbortController | null>(null)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const trimmedSearchName = searchName.trim()
 
   const checkPlatforms = useCallback(async (name: string, signal: AbortSignal) => {
     const promises = PLATFORMS.map(async (platform) => {
@@ -126,9 +129,32 @@ function NameCheckerContent() {
       clearTimeout(debounceTimer.current)
     }
 
-    if (searchName.trim()) {
+    if (trimmedSearchName) {
       debounceTimer.current = setTimeout(() => {
-        doSearch()
+        const signalController = new AbortController()
+        const signal = signalController.signal
+
+        if (currentAbortController.current) {
+          currentAbortController.current.abort()
+        }
+
+        currentAbortController.current = signalController
+        setError('')
+        setIsLoading(true)
+        setPlatformResults(new Map())
+        setDomainResults(new Map())
+
+        Promise.all([checkPlatforms(trimmedSearchName, signal), checkDomains(trimmedSearchName, signal)])
+          .catch((err: any) => {
+            if (err.name !== 'AbortError' && !signal.aborted) {
+              setError('Search failed. Please try again.')
+            }
+          })
+          .finally(() => {
+            if (!signal.aborted) {
+              setIsLoading(false)
+            }
+          })
       }, 500)
     }
 
@@ -137,7 +163,7 @@ function NameCheckerContent() {
         clearTimeout(debounceTimer.current)
       }
     }
-  }, [searchName])
+  }, [trimmedSearchName, checkPlatforms, checkDomains])
 
   useEffect(() => {
     return () => {
@@ -147,65 +173,139 @@ function NameCheckerContent() {
     }
   }, [])
 
+  const availablePlatforms = Array.from(platformResults.values()).filter(
+    (result) => result.status !== 'error' && result.available
+  ).length
+  const availableDomains = Array.from(domainResults.values()).filter(
+    (result) => result.status !== 'error' && result.available
+  ).length
+
   return (
-    <div className="flex flex-col h-full px-6 py-3 gap-6">
-      {/* Search Section */}
-      <div className="text-center">
-        <p className="text-muted mb-3">
-          Find out if your project name is taken across platforms and domains
-        </p>
+    <div className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 bg-surface-secondary p-4 lg:p-5">
+      <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="flex min-h-0 flex-col gap-4">
+          <Surface className="space-y-4 rounded-3xl p-5 shadow-none">
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-foreground">Search a Name</h2>
+              <p className="text-sm text-muted">
+                Check the same candidate across registries, social surfaces, and domain variations.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <SearchField
+                value={searchName}
+                onChange={(val) => setSearchName(val)}
+                onSubmit={() => doSearch()}
+                fullWidth
+                variant="secondary"
+                aria-label="Project name"
+              >
+                <SearchField.Group>
+                  <SearchField.SearchIcon />
+                  <SearchField.Input placeholder="Enter a project name…" />
+                  <SearchField.ClearButton />
+                </SearchField.Group>
+              </SearchField>
 
-        <div className="max-w-md mx-auto flex flex-col gap-3">
-          <SearchField
-            value={searchName}
-            onChange={(val) => setSearchName(val.trim())}
-            onSubmit={() => doSearch()}
-            fullWidth
-            variant="secondary"
-            aria-label="Project name"
-          >
-            <SearchField.Group>
-              <SearchField.SearchIcon />
-              <SearchField.Input placeholder="Enter project name..." />
-              <SearchField.ClearButton />
-            </SearchField.Group>
-          </SearchField>
+              <div className="flex flex-wrap gap-2">
+                {SUGGESTED_NAMES.map((name) => (
+                  <Button
+                    key={name}
+                    variant="secondary"
+                    size="sm"
+                    onPress={() => setSearchName(name)}
+                  >
+                    {name}
+                  </Button>
+                ))}
+              </div>
 
-          {error && (
-            <Alert status="danger">
-              <Alert.Indicator />
-              <Alert.Content>
-                <Alert.Description>{error}</Alert.Description>
-              </Alert.Content>
-            </Alert>
+              {error && (
+                <Alert status="danger">
+                  <Alert.Indicator />
+                  <Alert.Content>
+                    <Alert.Description>{error}</Alert.Description>
+                  </Alert.Content>
+                </Alert>
+              )}
+
+              <div className="flex flex-wrap gap-2">
+                <Chip color="default" variant="soft" size="sm">
+                  <Chip.Label>{PLATFORMS.length} Platforms</Chip.Label>
+                </Chip>
+                <Chip color="default" variant="soft" size="sm">
+                  <Chip.Label>{TLDS.length * NAME_VARIATIONS.length} Domain Checks</Chip.Label>
+                </Chip>
+                <Chip color={isLoading ? 'accent' : 'success'} variant="soft" size="sm">
+                  <Chip.Label>{isLoading ? 'Checking…' : 'Ready'}</Chip.Label>
+                </Chip>
+              </div>
+            </div>
+          </Surface>
+
+          <Surface variant="secondary" className="space-y-3 rounded-3xl p-5 shadow-none">
+            <p className="text-sm font-semibold text-foreground">What this view optimizes for</p>
+            <ul className="space-y-2 text-sm leading-6 text-muted">
+              <li>One search fans out across package ecosystems, GitHub surfaces, and domain patterns.</li>
+              <li>Availability data stays visible in a dense matrix instead of forcing repeated searches.</li>
+              <li>External links open directly from the result surface so follow-up validation is immediate.</li>
+            </ul>
+          </Surface>
+        </div>
+
+        <div className="flex min-h-0 flex-col gap-4 overflow-hidden">
+          {trimmedSearchName ? (
+            <>
+              <Surface variant="secondary" className="flex flex-col gap-3 rounded-3xl p-5 shadow-none lg:flex-row lg:items-center lg:justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">Results for “{trimmedSearchName}”</p>
+                  <p className="text-sm text-muted">
+                    Scan for greenfield options first, then open the links that need manual confirmation.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Chip color="success" variant="soft" size="sm">
+                    <Chip.Label>{availablePlatforms} Platforms Available</Chip.Label>
+                  </Chip>
+                  <Chip color="accent" variant="soft" size="sm">
+                    <Chip.Label>{availableDomains} Domains Available</Chip.Label>
+                  </Chip>
+                </div>
+              </Surface>
+
+              <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto pr-1">
+                <DomainAvailabilityMatrix
+                  domainResults={domainResults}
+                  isLoading={isLoading}
+                  searchName={trimmedSearchName}
+                  onRetry={doSearch}
+                />
+
+                <PlatformAvailabilityCard
+                  platformResults={platformResults}
+                  isLoading={isLoading}
+                  onRetry={doSearch}
+                />
+              </div>
+            </>
+          ) : (
+            <Surface className="flex flex-1 items-center justify-center rounded-3xl p-8 text-center shadow-none">
+              <div className="space-y-4">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-default text-muted">
+                  <IconSearch className="h-7 w-7" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold text-foreground">Start with a candidate name</p>
+                  <p className="mx-auto max-w-lg text-sm leading-6 text-muted">
+                    You’ll get a dense domain matrix plus platform-by-platform availability without leaving this workspace.
+                  </p>
+                </div>
+              </div>
+            </Surface>
           )}
         </div>
       </div>
-
-      {/* Results Section */}
-      {searchName.trim() ? (
-        <div className="space-y-6 flex-1 overflow-auto">
-          <DomainAvailabilityMatrix
-            domainResults={domainResults}
-            isLoading={isLoading}
-            searchName={searchName}
-            onRetry={doSearch}
-          />
-
-          <PlatformAvailabilityCard
-            platformResults={platformResults}
-            isLoading={isLoading}
-            onRetry={doSearch}
-          />
-        </div>
-      ) : (
-        <div className="flex items-center justify-center flex-1">
-          <div className="text-center">
-            <IconSearch className="text-4xl text-muted mx-auto mb-4" />
-            <p className="text-muted">Enter a name above to check availability</p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

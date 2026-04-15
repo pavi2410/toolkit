@@ -66,7 +66,7 @@ export default function PdfEditorApp() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface-secondary">
+    <div className="flex h-full min-w-0 w-full flex-col bg-surface-secondary">
       <Toolbar
         pagesCount={pages.length}
         selectedCount={selectedPages.size}

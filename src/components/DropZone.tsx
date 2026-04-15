@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, type ReactNode } from 'react'
-import { Alert } from '@heroui/react'
+import { Alert, Chip, Surface } from '@heroui/react'
 import IconUpload from '~icons/tabler/upload'
 
 interface DropZoneProps {
@@ -75,22 +75,14 @@ export default function DropZone({
 
   return (
     <div
-      className="flex-1 flex flex-col items-center justify-center p-8 bg-surface-secondary h-full gap-4"
+      className="flex h-full flex-1 flex-col items-center justify-center gap-4 bg-surface-secondary p-4 sm:p-6"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onPaste={supportsPaste ? handlePaste : undefined}
       tabIndex={supportsPaste ? 0 : undefined}
     >
-      <div
-        onClick={() => inputRef.current?.click()}
-        className={[
-          'w-full max-w-xl p-12 border-2 border-dashed rounded-xl text-center transition-all cursor-pointer select-none',
-          isDragging
-            ? 'border-accent bg-accent/5 dark:bg-accent/10'
-            : 'border-border hover:border-muted hover:bg-surface',
-        ].join(' ')}
-      >
+      <Surface className="w-full max-w-3xl rounded-[2rem] p-6 shadow-none sm:p-8">
         <input
           ref={inputRef}
           type="file"
@@ -100,25 +92,56 @@ export default function DropZone({
           className="hidden"
         />
 
-        <div className="flex flex-col items-center gap-4">
-          <div className={[
-            'p-4 rounded-full transition-colors',
-            isDragging ? 'bg-accent/10 dark:bg-accent/20' : 'bg-default',
-          ].join(' ')}>
-            {isDragging
-              ? <IconUpload className="w-10 h-10 text-accent" />
-              : <span className="block w-10 h-10 flex items-center justify-center text-muted">{icon}</span>
-            }
+        <div className="space-y-6 text-center">
+          <div className="flex flex-wrap justify-center gap-2">
+            <Chip color="accent" variant="soft" size="sm">
+              <Chip.Label>{multiple ? 'Multi-File Ready' : 'Single File Flow'}</Chip.Label>
+            </Chip>
+            {supportsPaste && (
+              <Chip color="default" variant="soft" size="sm">
+                <Chip.Label>Paste Supported</Chip.Label>
+              </Chip>
+            )}
           </div>
 
-          <div>
-            <p className="text-lg font-medium text-foreground mb-1">
-              {isDragging ? dragTitle : title}
-            </p>
-            <p className="text-sm text-muted">{subtitle}</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className={[
+              'flex w-full flex-col items-center gap-4 rounded-[calc(var(--radius)*2)] border border-dashed px-6 py-10 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+              isDragging
+                ? 'border-accent bg-accent/6'
+                : 'border-border bg-surface-secondary hover:bg-surface',
+            ].join(' ')}
+          >
+            <div className={[
+              'flex h-16 w-16 items-center justify-center rounded-full transition-colors',
+              isDragging ? 'bg-accent/12 text-accent' : 'bg-default text-muted',
+            ].join(' ')}>
+              {isDragging
+                ? <IconUpload className="h-8 w-8" />
+                : <span className="flex h-8 w-8 items-center justify-center">{icon}</span>
+              }
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xl font-semibold text-foreground">
+                {isDragging ? dragTitle : title}
+              </p>
+              <p className="mx-auto max-w-2xl text-sm leading-6 text-muted">{subtitle}</p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3">
+              <Chip color="accent" variant="soft">
+                <Chip.Label>Choose Files</Chip.Label>
+              </Chip>
+              <Chip color="default" variant="soft">
+                <Chip.Label>Drag & Drop</Chip.Label>
+              </Chip>
+            </div>
+          </button>
         </div>
-      </div>
+      </Surface>
 
       {error && (
         <Alert status="danger" className="w-full max-w-xl">

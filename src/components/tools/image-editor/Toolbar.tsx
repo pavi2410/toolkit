@@ -35,7 +35,7 @@ export default function Toolbar() {
     <div className="shrink-0 border-b border-border bg-surface-secondary px-4 py-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-foreground max-w-[150px] truncate" title={meta?.name}>
+          <span className="text-sm font-medium text-foreground max-w-[50ch] truncate" title={meta?.name}>
             {displayName}
           </span>
           <Separator orientation="vertical" className="h-5" />

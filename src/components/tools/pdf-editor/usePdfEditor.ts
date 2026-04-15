@@ -1,10 +1,23 @@
 import { useState, useCallback, useRef } from 'react'
 import { PDFDocument, degrees } from 'pdf-lib'
-import * as pdfjsLib from 'pdfjs-dist'
 import type { PdfFile, PageInfo } from './types'
 
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`
+let pdfJsLibPromise: Promise<typeof import('pdfjs-dist')> | null = null
+
+async function getPdfJs() {
+  if (typeof window === 'undefined') {
+    throw new Error('PDF.js can only be loaded in the browser.')
+  }
+
+  if (!pdfJsLibPromise) {
+    pdfJsLibPromise = import('pdfjs-dist').then((module) => {
+      module.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${module.version}/build/pdf.worker.min.mjs`
+      return module
+    })
+  }
+
+  return pdfJsLibPromise
+}
 
 const generateId = () => Math.random().toString(36).substring(2, 9)
 
@@ -26,7 +39,7 @@ export function usePdfEditor() {
 
   // Generate thumbnail for a page using PDF.js
   const generateThumbnail = useCallback(async (
-    pdfJsDoc: pdfjsLib.PDFDocumentProxy,
+    pdfJsDoc: any,
     pageIndex: number
   ): Promise<string> => {
     const page = await pdfJsDoc.getPage(pageIndex + 1)
@@ -46,8 +59,9 @@ export function usePdfEditor() {
   const loadPdf = useCallback(async (file: File, password?: string): Promise<PdfFile | null> => {
     const arrayBuffer = await file.arrayBuffer()
     const data = new Uint8Array(arrayBuffer)
+    const pdfjsLib = await getPdfJs()
     
-    let pdfJsDoc: pdfjsLib.PDFDocumentProxy | null = null
+    let pdfJsDoc: any = null
     let isLocked = false
     let pageCount = 0
     

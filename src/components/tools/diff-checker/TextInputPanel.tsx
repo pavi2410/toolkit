@@ -80,6 +80,7 @@ export default function TextInputPanel({
           onScroll={handleScroll}
           className={textareaClasses}
           placeholder={placeholder}
+          aria-label={label}
           spellCheck={false}
         />
       </div>

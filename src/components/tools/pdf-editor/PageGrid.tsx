@@ -34,11 +34,11 @@ export function PageGrid({
   onDragEnd,
 }: PageGridProps) {
   return (
-    <div>
+    <div className="space-y-3">
       <h3 className="text-sm font-medium text-foreground mb-2">
         Pages ({pages.length}) — Drag to reorder
       </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4 xl:grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
         {pages.map((page, index) => (
           <div
             key={page.id}
@@ -50,7 +50,7 @@ export function PageGrid({
             className={`
               group relative bg-surface border-2 rounded-lg overflow-hidden cursor-pointer transition-all
               ${selectedPages.has(page.id)
-                ? 'border-accent ring-2 ring-accent/20'
+                ? 'border-accent ring-2 ring-accent-soft-hover'
                 : 'border-border hover:border-muted'
               }
               ${draggedPage === page.id ? 'opacity-50' : ''}
@@ -72,7 +72,7 @@ export function PageGrid({
             </div>
 
             {/* Page preview */}
-            <div className="aspect-[8.5/11] bg-default flex items-center justify-center overflow-hidden">
+            <div className="aspect-8.5/11 bg-default flex items-center justify-center overflow-hidden">
               {page.thumbnailUrl ? (
                 <img
                   src={page.thumbnailUrl}

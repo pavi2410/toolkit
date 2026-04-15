@@ -1,4 +1,4 @@
-import { Card, Badge, Button, Spinner } from '@heroui/react'
+import { Button, Chip, Skeleton, Surface } from '@heroui/react'
 import { PLATFORMS, PLATFORM_DISPLAY_NAMES, type Platform, type PlatformResult } from './types'
 import IconCheck from '~icons/tabler/circle-check'
 import IconX from '~icons/tabler/circle-x'
@@ -38,28 +38,11 @@ const PlatformIconMap: Record<Platform, React.ComponentType<{ className?: string
 export default function PlatformAvailabilityCard({ platformResults, isLoading, onRetry }: Props) {
   const hasResults = platformResults.size > 0
   const hasError = Array.from(platformResults.values()).some((result) => result.status === 'error')
+  const availableCount = Array.from(platformResults.values()).filter(
+    (result) => result.status !== 'error' && result.available
+  ).length
 
   const getPlatformResult = (platform: Platform) => platformResults.get(platform)
-
-  const getBadgeColor = (platform: Platform): 'default' | 'success' | 'danger' | 'warning' => {
-    const result = getPlatformResult(platform)
-    if (!result) return 'default'
-    if (result.status === 'error') return 'warning'
-    return result.available ? 'success' : 'danger'
-  }
-
-  const getPlatformCardClass = (platform: Platform) => {
-    const result = getPlatformResult(platform)
-    if (!result) return 'border-border'
-
-    if (result.status === 'error') {
-      return 'border-yellow-300 bg-yellow-50 hover:bg-yellow-100 dark:border-yellow-600 dark:bg-yellow-950 dark:hover:bg-yellow-900'
-    }
-
-    return result.available
-      ? 'border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-950 dark:hover:bg-green-900'
-      : 'border-red-300 bg-red-50 hover:bg-red-100 dark:border-red-600 dark:bg-red-950 dark:hover:bg-red-900'
-  }
 
   const getStatusIcon = (platform: Platform) => {
     const result = getPlatformResult(platform)
@@ -70,43 +53,100 @@ export default function PlatformAvailabilityCard({ platformResults, isLoading, o
       : <IconX className="text-xs text-red-600 dark:text-red-500" />
   }
 
+  const getStatusChip = (platform: Platform) => {
+    const result = getPlatformResult(platform)
+    if (!result) {
+      return (
+        <Chip color="default" size="sm" variant="soft">
+          <Chip.Label>Pending</Chip.Label>
+        </Chip>
+      )
+    }
+
+    if (result.status === 'error') {
+      return (
+        <Chip color="warning" size="sm" variant="soft">
+          <Chip.Label>Error</Chip.Label>
+        </Chip>
+      )
+    }
+
+    return result.available ? (
+      <Chip color="success" size="sm" variant="soft">
+        <Chip.Label>Available</Chip.Label>
+      </Chip>
+    ) : (
+      <Chip color="danger" size="sm" variant="soft">
+        <Chip.Label>Taken</Chip.Label>
+      </Chip>
+    )
+  }
+
   const renderPlatformCard = (platform: Platform) => {
     const result = getPlatformResult(platform)
     const PlatformIcon = PlatformIconMap[platform]
     const isLoadingPlatform = isLoading && !result
 
+    if (isLoadingPlatform) {
+      return (
+        <Surface key={platform} className="flex items-center gap-2.5 rounded-2xl p-3 shadow-none">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-secondary">
+            <PlatformIcon className="text-xl" />
+          </div>
+
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <p className="truncate text-sm font-medium leading-5 text-foreground">
+              {PLATFORM_DISPLAY_NAMES[platform]}
+            </p>
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+        </Surface>
+      )
+    }
+
     return (
-      <Badge.Anchor key={platform}>
-        <a
-          href={result?.link || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`w-20 h-20 flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all duration-200 hover:scale-105 cursor-pointer ${getPlatformCardClass(platform)}`}
-        >
-          {isLoadingPlatform ? (
-            <Spinner size="md" className="mb-1" />
-          ) : (
-            <PlatformIcon className="text-2xl mb-1" />
-          )}
-          <span className="text-xs text-center font-medium text-foreground leading-tight">
-            {PLATFORM_DISPLAY_NAMES[platform]}
-          </span>
-        </a>
-        <Badge color={getBadgeColor(platform)} placement="top-right" className="p-0.5">
-          {getStatusIcon(platform)}
-        </Badge>
-      </Badge.Anchor>
+      <a
+        key={platform}
+        href={result?.link || '#'}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block no-underline"
+      >
+        <Surface variant={result?.available ? 'secondary' : 'default'} className="flex items-center gap-2.5 rounded-2xl p-3 shadow-none transition-transform duration-200 hover:-translate-y-0.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-secondary">
+              <PlatformIcon className="text-xl" />
+            </div>
+
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                {getStatusIcon(platform)}
+                <p className="truncate text-sm font-medium leading-5 text-foreground">
+                  {PLATFORM_DISPLAY_NAMES[platform]}
+                </p>
+              </div>
+              <div className="w-fit">
+                {getStatusChip(platform)}
+              </div>
+            </div>
+        </Surface>
+      </a>
     )
   }
 
   return (
-    <Card.Root variant="default">
-      <Card.Header>
-        <Card.Title>Platform Availability</Card.Title>
-      </Card.Header>
-      <Card.Content>
+    <Surface className="space-y-4 rounded-3xl p-5 shadow-none">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-base font-semibold text-foreground">Platform Availability</h3>
+          <p className="text-sm text-muted">Open a result to verify the exact package or namespace.</p>
+        </div>
+        <Chip color="success" variant="soft" size="sm">
+          <Chip.Label>{availableCount} Available</Chip.Label>
+        </Chip>
+      </div>
+      <div>
         {hasResults || isLoading ? (
-          <div className="flex flex-wrap gap-3">
+          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
             {PLATFORMS.map((platform) => renderPlatformCard(platform))}
           </div>
         ) : hasError && !isLoading ? (
@@ -122,7 +162,7 @@ export default function PlatformAvailabilityCard({ platformResults, isLoading, o
             <p className="text-sm">Enter a name to check platform availability</p>
           </div>
         )}
-      </Card.Content>
-    </Card.Root>
+      </div>
+    </Surface>
   )
 }

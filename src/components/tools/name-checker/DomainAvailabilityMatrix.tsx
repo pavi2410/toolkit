@@ -1,4 +1,4 @@
-import { Card, Button, Spinner, Table } from '@heroui/react'
+import { Card, Button, Chip, Spinner, Table } from '@heroui/react'
 import { TLDS, NAME_VARIATIONS, type DomainResult, type NameVariation, type TLD } from './types'
 import IconCheck from '~icons/tabler/circle-check'
 import IconX from '~icons/tabler/circle-x'
@@ -15,6 +15,9 @@ interface Props {
 export default function DomainAvailabilityMatrix({ domainResults, isLoading, searchName, onRetry }: Props) {
   const hasResults = domainResults.size > 0
   const hasError = Array.from(domainResults.values()).some((result) => result.status === 'error')
+  const availableCount = Array.from(domainResults.values()).filter(
+    (result) => result.status !== 'error' && result.available
+  ).length
 
   const getDomainResult = (variation: NameVariation, tld: TLD) =>
     domainResults.get(`${variation}-${tld}`)
@@ -54,7 +57,15 @@ export default function DomainAvailabilityMatrix({ domainResults, isLoading, sea
   return (
     <Card.Root variant="default">
       <Card.Header>
-        <Card.Title>Domain Availability</Card.Title>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <Card.Title>Domain Availability</Card.Title>
+            <Card.Description>Compare naming patterns quickly before you commit to a direction.</Card.Description>
+          </div>
+          <Chip color="accent" variant="soft" size="sm">
+            <Chip.Label>{availableCount} Available</Chip.Label>
+          </Chip>
+        </div>
       </Card.Header>
       <Card.Content className="p-0">
         {hasError && !isLoading && !hasResults ? (

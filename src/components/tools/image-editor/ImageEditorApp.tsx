@@ -43,7 +43,7 @@ export default function ImageEditorApp() {
   if (!originalImage) return <DropZone />
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full min-w-0 w-full flex-col bg-surface-secondary">
       <Toolbar />
       <div className="flex-1 flex overflow-hidden">
         <Sidebar />
