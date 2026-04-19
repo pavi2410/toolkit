@@ -13,3 +13,5 @@
 - App uses TanStack Router, Vite, pnpm, HeroUI v3, and Tailwind v4; global theme tokens are customized in `src/styles.css` after `@heroui/styles`.
 - Tool UIs mount from the `_tools` route layout (`src/routes/_tools/route.tsx`), which uses `surface-secondary` as the unified shell background.
 - Homepage route wraps content in a full-viewport `bg-background` column alongside `__root.tsx` body classes for a consistent marketing canvas.
+- Each tool toolbar (the options bar below `ToolHeader`) must use `<ToolPageToolbar>` from `src/components/ToolPageToolbar.tsx` as its outer shell, with a HeroUI `<Toolbar aria-label="…">` inside for semantic role and layout.
+- State management is intentionally per-tool: nanostores for Image Editor (cross-component shared state), router search params for Name Checker (shareable URLs), `useSessionStorage` for Diff Checker (tab persistence), and local `useState` for PDF Editor and Deco. Pick the lightest approach that fits the tool's sharing requirements — do not introduce a new pattern without a clear reason.

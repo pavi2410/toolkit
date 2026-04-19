@@ -1,4 +1,5 @@
 import { Button, Checkbox, Label, Separator, Toolbar as HuiToolbar } from '@heroui/react'
+import { ToolPageToolbar } from '#/components/ToolPageToolbar'
 
 interface ToolbarProps {
   lineWrap: boolean
@@ -30,44 +31,44 @@ export default function Toolbar({
   deletions,
 }: ToolbarProps) {
   return (
-    <div className="shrink-0 border-b border-border bg-surface px-4 py-2">
+    <ToolPageToolbar>
       <HuiToolbar aria-label="Diff options" className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="ghost" onPress={onLoadExample}>
-            Load Example
+      <div className="flex items-center gap-2">
+        <Button size="sm" variant="tertiary" onPress={onLoadExample}>
+          Load Example
+        </Button>
+        {canClear && (
+          <Button size="sm" variant="tertiary" onPress={onClear}>
+            Clear
           </Button>
-          {canClear && (
-            <Button size="sm" variant="ghost" onPress={onClear}>
-              Clear
-            </Button>
-          )}
-        </div>
-
-        {(additions > 0 || deletions > 0) && <Separator orientation="vertical" className="h-4" />}
-
-        {(additions > 0 || deletions > 0) && (
-          <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em]">
-            {additions > 0 && <span className="text-success">+{additions}</span>}
-            {deletions > 0 && <span className="text-danger">-{deletions}</span>}
-          </div>
         )}
+      </div>
 
-        <div className="flex-1" />
+      {(additions > 0 || deletions > 0) && <Separator orientation="vertical" className="h-4" />}
 
-        <div className="flex flex-wrap items-center gap-4">
-          <Checkbox isSelected={lineWrap} onChange={v => onLineWrapChange(v)}>
-            <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
-            <Checkbox.Content><Label className="text-xs">Line Wrap</Label></Checkbox.Content>
-          </Checkbox>
-
-          <Button size="sm" variant="ghost" onPress={onSwap}>
-            ⇄ Swap
-          </Button>
-          <Button size="sm" variant={copyError ? 'danger' : 'secondary'} isDisabled={!canCopy} onPress={onCopyDiff}>
-            {copySuccess ? '✓ Copied' : copyError ? 'Copy failed' : 'Copy Diff'}
-          </Button>
+      {(additions > 0 || deletions > 0) && (
+        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em]">
+          {additions > 0 && <span className="text-success">+{additions}</span>}
+          {deletions > 0 && <span className="text-danger">-{deletions}</span>}
         </div>
+      )}
+
+      <div className="flex-1" />
+
+      <div className="flex flex-wrap items-center gap-4">
+        <Checkbox isSelected={lineWrap} onChange={v => onLineWrapChange(v)}>
+          <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+          <Checkbox.Content><Label className="text-xs">Line Wrap</Label></Checkbox.Content>
+        </Checkbox>
+
+        <Button size="sm" variant="tertiary" onPress={onSwap} aria-label="Swap sides">
+          ⇄ Swap
+        </Button>
+        <Button size="sm" variant={copyError ? 'danger' : 'secondary'} isDisabled={!canCopy} onPress={onCopyDiff}>
+          {copySuccess ? '✓ Copied' : copyError ? 'Copy failed' : 'Copy Diff'}
+        </Button>
+      </div>
       </HuiToolbar>
-    </div>
+    </ToolPageToolbar>
   )
 }

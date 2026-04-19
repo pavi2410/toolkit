@@ -1,4 +1,5 @@
-import { Button, Separator } from '@heroui/react'
+import { Button, Separator, Toolbar as HuiToolbar } from '@heroui/react'
+import { ToolPageToolbar } from '#/components/ToolPageToolbar'
 import IconPlus from '~icons/tabler/plus'
 import IconTrash from '~icons/tabler/trash'
 import IconDownload from '~icons/tabler/download'
@@ -35,8 +36,8 @@ export function Toolbar({
   onExport,
 }: ToolbarProps) {
   return (
-    <div className="shrink-0 bg-surface border-b border-border px-4 py-2">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+    <ToolPageToolbar>
+      <HuiToolbar aria-label="PDF editor options" className="flex items-center justify-between gap-4 flex-wrap w-full">
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onPress={() => inputRef.current?.click()} className="gap-2">
             <IconPlus className="w-4 h-4" />
@@ -107,7 +108,7 @@ export function Toolbar({
             {isProcessing ? 'Processing…' : 'Download PDF'}
           </Button>
         </div>
-      </div>
-    </div>
+      </HuiToolbar>
+    </ToolPageToolbar>
   )
 }

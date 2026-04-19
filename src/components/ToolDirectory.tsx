@@ -71,7 +71,7 @@ export function ToolDirectory({ layout = 'grid' }: ToolDirectoryProps) {
   return (
     <div
       className={`grid gap-3 ${
-        isList ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'
+        isList ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
       }`}
     >
       {toolItems.map(({ name, description, to, Icon, tags, eyebrow }) => {

@@ -8,7 +8,8 @@ import {
   $originalMeta,
   actions,
 } from '@/stores/image-editor'
-import { Button, ButtonGroup, Separator, Select, ListBox } from '@heroui/react'
+import { Button, ButtonGroup, Separator, Select, ListBox, Toolbar as HuiToolbar } from '@heroui/react'
+import { ToolPageToolbar } from '#/components/ToolPageToolbar'
 import IconArrowBackUp from '~icons/tabler/arrow-back-up'
 import IconArrowForwardUp from '~icons/tabler/arrow-forward-up'
 import IconRefresh from '~icons/tabler/refresh'
@@ -32,8 +33,8 @@ export default function Toolbar() {
     : 'Image'
 
   return (
-    <div className="shrink-0 border-b border-border bg-surface-secondary px-4 py-2">
-      <div className="flex items-center justify-between">
+    <ToolPageToolbar>
+      <HuiToolbar aria-label="Image editor options" className="flex items-center justify-between gap-2 w-full">
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-foreground max-w-[50ch] truncate" title={meta?.name}>
             {displayName}
@@ -100,7 +101,7 @@ export default function Toolbar() {
             <IconX className="w-4 h-4" />
           </Button>
         </div>
-      </div>
-    </div>
+      </HuiToolbar>
+    </ToolPageToolbar>
   )
 }
