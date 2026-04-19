@@ -46,7 +46,7 @@ function HomePage() {
             <div className="flex flex-wrap gap-3">
               <Link to="/diff-checker" className={buttonVariants({ variant: 'primary' })}>
                 Open Diff Checker
-                <IconArrowRight className="h-4 w-4" />
+                <IconArrowRight aria-hidden="true" className="h-4 w-4" />
               </Link>
               <Link to="/name-checker" className={buttonVariants({ variant: 'secondary' })}>
                 Check a Project Name
@@ -55,7 +55,7 @@ function HomePage() {
 
             <div className="grid gap-3 sm:grid-cols-3">
               <Surface variant="secondary" className="space-y-2 rounded-2xl p-4 shadow-none">
-                <IconLayoutGrid className="h-5 w-5 text-accent" />
+                <IconLayoutGrid aria-hidden="true" className="h-5 w-5 text-accent" />
                 <p className="text-sm font-semibold text-foreground">Fast Discovery</p>
                 <p className="text-sm text-muted">
                   Every tool stays one click away so utility tasks feel like part of the same workspace.
@@ -63,7 +63,7 @@ function HomePage() {
               </Surface>
 
               <Surface variant="secondary" className="space-y-2 rounded-2xl p-4 shadow-none">
-                <IconBolt className="h-5 w-5 text-warning" />
+                <IconBolt aria-hidden="true" className="h-5 w-5 text-warning" />
                 <p className="text-sm font-semibold text-foreground">Dense, Not Crowded</p>
                 <p className="text-sm text-muted">
                   Controls stay visible, outputs stay large, and the layout favors working area over decoration.
@@ -71,7 +71,7 @@ function HomePage() {
               </Surface>
 
               <Surface variant="secondary" className="space-y-2 rounded-2xl p-4 shadow-none">
-                <IconShieldHalf className="h-5 w-5 text-success" />
+                <IconShieldHalf aria-hidden="true" className="h-5 w-5 text-success" />
                 <p className="text-sm font-semibold text-foreground">Privacy First</p>
                 <p className="text-sm text-muted">
                   Text, images, and documents are handled locally when the workflow allows it.

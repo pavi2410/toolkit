@@ -72,10 +72,10 @@ export function PageGrid({
 
             {/* Badges container - top right */}
             <div className="absolute top-1 right-1 z-10 flex flex-col items-end gap-0.5">
-              <div className="px-1.5 py-0.5 bg-black/70 text-white text-xs font-medium rounded">
+              <div className="px-1.5 py-0.5 bg-foreground/70 text-background text-xs font-medium rounded">
                 {index + 1}
               </div>
-              <div className="px-1.5 py-0.5 bg-blue-600/90 text-white text-[10px] font-medium rounded" title={`Original: ${getFileName(page.fileId)} - Page ${page.pageIndex + 1}`}>
+              <div className="px-1.5 py-0.5 bg-accent/85 text-accent-foreground text-[10px] font-medium rounded" title={`Original: ${getFileName(page.fileId)} - Page ${page.pageIndex + 1}`}>
                 {filesCount > 1 ? `${getFileName(page.fileId).slice(0, 6)}:${page.pageIndex + 1}` : `orig: ${page.pageIndex + 1}`}
               </div>
             </div>

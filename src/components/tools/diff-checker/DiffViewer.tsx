@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { EditorView } from '@uiw/react-codemirror'
+import { EditorView, placeholder } from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import CodeMirrorMerge from 'react-codemirror-merge'
 import { useIsDarkTheme } from '@/hooks/useTheme'
@@ -25,7 +25,7 @@ export default function DiffViewer({
 }: DiffViewerProps) {
   const isDarkTheme = useIsDarkTheme()
 
-  const editorExtensions = useMemo(
+  const baseExtensions = useMemo(
     () => [
       EditorView.theme({
         '&': {
@@ -86,6 +86,16 @@ export default function DiffViewer({
     [lineWrap]
   )
 
+  const originalExtensions = useMemo(
+    () => [...baseExtensions, placeholder('Paste original text here…')],
+    [baseExtensions]
+  )
+
+  const modifiedExtensions = useMemo(
+    () => [...baseExtensions, placeholder('Paste modified text here…')],
+    [baseExtensions]
+  )
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden border-t border-border">
       <div className="grid shrink-0 grid-cols-1 border-b border-border bg-surface md:grid-cols-2">
@@ -117,7 +127,7 @@ export default function DiffViewer({
           <OriginalEditor
             value={originalText}
             onChange={(value) => onOriginalChange(value)}
-            extensions={editorExtensions}
+            extensions={originalExtensions}
             editable
             readOnly={false}
             basicSetup={{
@@ -133,7 +143,7 @@ export default function DiffViewer({
           <ModifiedEditor
             value={modifiedText}
             onChange={(value) => onModifiedChange(value)}
-            extensions={editorExtensions}
+            extensions={modifiedExtensions}
             editable
             readOnly={false}
             basicSetup={{
