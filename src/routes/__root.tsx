@@ -50,7 +50,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body
-        className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]"
+        className="min-h-dvh bg-background font-sans text-foreground antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]"
       >
         {children}
         <TanStackDevtools

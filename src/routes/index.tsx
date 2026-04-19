@@ -13,9 +13,12 @@ export const Route = createFileRoute('/')({ component: HomePage })
 
 function HomePage() {
   return (
-    <>
+    <div className="flex min-h-dvh flex-col bg-background">
       <Header />
-      <main id="main-content" className="mx-auto flex w-full max-w-400 flex-col gap-6 px-4 py-6 sm:py-8">
+      <main
+        id="main-content"
+        className="mx-auto flex w-full max-w-400 flex-1 flex-col gap-6 px-4 py-6 sm:py-8"
+      >
         <section className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_360px]">
           <Surface className="space-y-6 rounded-3xl p-6 shadow-none sm:p-8">
             <div className="flex flex-wrap gap-2">
@@ -116,6 +119,6 @@ function HomePage() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
