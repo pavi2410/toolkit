@@ -80,11 +80,16 @@ export function ToolDirectory({ layout = 'grid' }: ToolDirectoryProps) {
         return (
           <Link key={to} to={to} className="group block no-underline">
             <Surface
-              variant={isActive ? 'secondary' : 'default'}
-              className="h-full space-y-3 rounded-3xl p-4 shadow-none transition-transform duration-200 group-hover:-translate-y-0.5"
+              variant={isActive ? 'secondary' : 'transparent'}
+              className={[
+                'h-full space-y-3 rounded-3xl p-4 shadow-none transition-[transform,box-shadow] duration-300 ease-out group-hover:-translate-y-1',
+                isActive
+                  ? 'ring-2 ring-accent-soft'
+                  : 'glass-soft group-hover:ring-2 group-hover:ring-accent-soft',
+              ].join(' ')}
             >
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-secondary">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-secondary/70">
                   <Icon aria-hidden="true" className="h-4.5 w-4.5 text-foreground" />
                 </div>
                 <div className="min-w-0 flex-1">
