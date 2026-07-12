@@ -22,7 +22,7 @@ export default function ToolHeader({ title }: ToolHeaderProps) {
           <Toolbar
             isAttached
             aria-label="Tool navigation"
-            className="flex w-max max-w-full min-w-0 items-center gap-2 sm:gap-3"
+            className="flex w-max max-w-full min-w-0 items-center gap-2 pl-3 pr-[1.375rem] sm:gap-3"
           >
             <Link
               to="/"
@@ -40,7 +40,7 @@ export default function ToolHeader({ title }: ToolHeaderProps) {
           </Toolbar>
         </div>
 
-        <Toolbar isAttached aria-label="Tool page settings" className="shrink-0">
+        <Toolbar isAttached aria-label="Tool page settings" className="shrink-0 px-2">
           <ThemeToggle />
         </Toolbar>
       </div>
