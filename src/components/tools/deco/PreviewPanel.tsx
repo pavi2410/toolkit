@@ -1,14 +1,19 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
+import { Button, Tooltip } from '@heroui/react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import IconRefresh from '~icons/tabler/refresh'
+import IconWorld from '~icons/tabler/world'
+import PanelHeader from './PanelHeader'
 import type { ConsoleLog, FileContent } from './types'
 
 interface PreviewPanelProps {
   files: FileContent
+  runId: number
+  onRun: () => void
   onConsoleLog: (log: ConsoleLog) => void
   onPreviewRefresh: () => void
 }
 
-export default function PreviewPanel({ files, onConsoleLog, onPreviewRefresh }: PreviewPanelProps) {
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+export default function PreviewPanel({ files, runId, onRun, onConsoleLog, onPreviewRefresh }: PreviewPanelProps) {
   const [isListening, setIsListening] = useState(false)
   const channel = 'toolkit-deco-preview'
 
@@ -109,19 +114,24 @@ export default function PreviewPanel({ files, onConsoleLog, onPreviewRefresh }: 
   }, [])
 
   return (
-    <div className="flex min-h-0 flex-col overflow-hidden">
-      <div className="flex h-7 shrink-0 items-center border-b border-border bg-surface px-3">
-        <span className="text-xs font-medium text-muted">Web View</span>
-      </div>
+    <section className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <PanelHeader title="Preview" icon={IconWorld}>
+        <Tooltip delay={300}>
+          <Button isIconOnly size="sm" variant="ghost" onPress={onRun} aria-label="Reload preview">
+            <IconRefresh className="h-4 w-4" />
+          </Button>
+          <Tooltip.Content>Reload preview</Tooltip.Content>
+        </Tooltip>
+      </PanelHeader>
       <div className="min-h-0 flex-1 overflow-hidden bg-white">
         <iframe
-          ref={iframeRef}
+          key={runId}
           title="Deco preview"
           srcDoc={isListening ? srcDoc : ''}
           sandbox="allow-scripts"
           className="h-full w-full border-0 bg-white"
         />
       </div>
-    </div>
+    </section>
   )
 }

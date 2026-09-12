@@ -1,37 +1,35 @@
 import { Tabs } from '@heroui/react'
 import { startTransition, useCallback, useDeferredValue, useState } from 'react'
-import IconFileHtml from '~icons/tabler/file-type-html'
-import IconFileCss from '~icons/tabler/file-type-css'
-import IconFileJs from '~icons/tabler/file-type-js'
 import CodeEditor from './CodeEditor'
 import ConsolePanel from './ConsolePanel'
 import { fileDescriptors, initialFiles } from './constants'
+import FileExplorer from './FileExplorer'
+import { fileIcons } from './icons'
 import PreviewPanel from './PreviewPanel'
 import type { ConsoleLog, FileContent, FileName } from './types'
-
-const fileIcons: Record<FileName, typeof IconFileHtml> = {
-  'index.html': IconFileHtml,
-  'style.css': IconFileCss,
-  'script.js': IconFileJs,
-}
 
 export default function DecoTool() {
   const [files, setFiles] = useState<FileContent>(() => initialFiles)
   const [activeFile, setActiveFile] = useState<FileName>('script.js')
   const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([])
   const [persistLogs, setPersistLogs] = useState(false)
+  const [runId, setRunId] = useState(0)
 
   const deferredFiles = useDeferredValue(files)
 
   const handleFileChange = useCallback(
     (value: string) => {
-      setFiles((previous) => ({
-        ...previous,
-        [activeFile]: value,
-      }))
+      setFiles((previous) => ({ ...previous, [activeFile]: value }))
     },
     [activeFile]
   )
+
+  const handleReset = useCallback(() => {
+    setFiles(initialFiles)
+    setConsoleLogs([])
+  }, [])
+
+  const handleRun = useCallback(() => setRunId((id) => id + 1), [])
 
   const handleConsoleLog = useCallback((log: ConsoleLog) => {
     startTransition(() => {
@@ -41,86 +39,65 @@ export default function DecoTool() {
 
   const handlePreviewRefresh = useCallback(() => {
     if (!persistLogs) {
-      startTransition(() => {
-        setConsoleLogs([])
-      })
+      startTransition(() => setConsoleLogs([]))
     }
   }, [persistLogs])
 
-  const handleClearConsole = useCallback(() => {
-    setConsoleLogs([])
-  }, [])
+  const handleClearConsole = useCallback(() => setConsoleLogs([]), [])
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-background text-foreground">
-      <div className="grid min-h-0 flex-1 grid-cols-[12rem_minmax(0,1fr)] grid-rows-[minmax(0,1fr)_14rem] overflow-hidden">
-        {/* Explorer */}
-        <div className="row-span-2 flex min-h-0 flex-col overflow-hidden border-r border-border bg-surface">
-          <div className="flex h-7 shrink-0 items-center border-b border-border px-3">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-muted">Files</span>
-          </div>
-          <div className="min-h-0 flex-1 overflow-auto py-1">
-            {fileDescriptors.map((descriptor) => {
-              const isActive = descriptor.name === activeFile
-              const Icon = fileIcons[descriptor.name]
-              return (
-                <button
-                  key={descriptor.name}
-                  type="button"
-                  onClick={() => setActiveFile(descriptor.name)}
-                  className={`flex w-full items-center gap-2 px-3 py-1.5 text-left font-mono text-[12px] ${
-                    isActive
-                      ? 'bg-surface-secondary text-foreground'
-                      : 'text-muted hover:bg-surface-secondary'
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{descriptor.name}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
+    <div className="grid h-full min-h-0 w-full grid-cols-[11rem_minmax(0,1fr)_clamp(20rem,36%,40rem)] overflow-hidden bg-surface-secondary text-foreground">
+      <FileExplorer activeFile={activeFile} onSelect={setActiveFile} onReset={handleReset} />
 
-        {/* Editor */}
-        <div className="flex min-h-0 flex-col overflow-hidden">
-          <Tabs
-            selectedKey={activeFile}
-            onSelectionChange={(key) => setActiveFile(key as FileName)}
-            className="flex min-h-0 flex-1 flex-col"
-            variant="secondary"
-          >
-            <Tabs.List aria-label="Editor files" className="flex h-8 w-full justify-start border-b border-border bg-surface">
-              {fileDescriptors.map(({ name }) => (
-                <Tabs.Tab
-                  key={name}
-                  id={name}
-                  className="flex w-auto grow-0 items-center gap-2 rounded-none border-r border-border px-4 py-2 font-mono text-[13px] text-muted"
-                >
-                  <span>{name}</span>
-                  <Tabs.Indicator />
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
+      <Tabs
+        selectedKey={activeFile}
+        onSelectionChange={(key) => setActiveFile(key as FileName)}
+        variant="secondary"
+        className="flex min-h-0 flex-col overflow-hidden border-r border-border"
+      >
+        <Tabs.List aria-label="Editor files" className="h-9 w-full shrink-0 justify-start gap-0 rounded-none border-b border-border bg-surface p-0">
+          {fileDescriptors.map(({ name }) => {
+            const Icon = fileIcons[name]
+            return (
+              <Tabs.Tab
+                key={name}
+                id={name}
+                className="h-full w-auto grow-0 gap-2 rounded-none border-r border-border px-3 font-mono text-xs data-[selected=true]:bg-surface-secondary"
+              >
+                <Icon className="h-4 w-4" />
+                <span>{name}</span>
+                <Tabs.Indicator className="bottom-0 h-0.5 rounded-none" />
+              </Tabs.Tab>
+            )
+          })}
+        </Tabs.List>
 
-            {fileDescriptors.map(({ name }) => (
-              <Tabs.Panel key={name} id={name} className="min-h-0 flex-1">
-                <CodeEditor value={files[name]} fileName={name} onChange={handleFileChange} />
-              </Tabs.Panel>
-            ))}
-          </Tabs>
-        </div>
+        {fileDescriptors.map(({ name }) => (
+          <Tabs.Panel key={name} id={name} className="min-h-0 flex-1">
+            <CodeEditor value={files[name]} fileName={name} onChange={handleFileChange} />
+          </Tabs.Panel>
+        ))}
+      </Tabs>
 
-        {/* Bottom panels */}
-        <section className="grid min-h-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] border-t border-border bg-surface-secondary">
-          <ConsolePanel logs={consoleLogs} persistLogs={persistLogs} onPersistLogsChange={setPersistLogs} onClear={handleClearConsole} />
+      <aside className="flex min-h-0 flex-col overflow-hidden">
+        <div className="flex min-h-0 flex-[3] flex-col">
           <PreviewPanel
             files={deferredFiles}
+            runId={runId}
+            onRun={handleRun}
             onConsoleLog={handleConsoleLog}
             onPreviewRefresh={handlePreviewRefresh}
           />
-        </section>
-      </div>
+        </div>
+        <div className="flex min-h-0 flex-[2] flex-col border-t border-border">
+          <ConsolePanel
+            logs={consoleLogs}
+            persistLogs={persistLogs}
+            onPersistLogsChange={setPersistLogs}
+            onClear={handleClearConsole}
+          />
+        </div>
+      </aside>
     </div>
   )
 }
