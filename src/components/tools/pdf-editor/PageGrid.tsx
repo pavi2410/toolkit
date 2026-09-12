@@ -109,7 +109,7 @@ export function PageGrid({
                   isIconOnly
                   size="sm"
                   variant="secondary"
-                  onPress={(e) => { onRotate(page.id, -90) }}
+                  onPress={() => { onRotate(page.id, -90) }}
                   aria-label="Rotate left"
                   className="p-1 h-auto"
                   onClick={(e) => e.stopPropagation()}

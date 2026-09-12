@@ -10,7 +10,13 @@ type Adjustment = 'brightness' | 'contrast' | 'saturation'
 
 function AdjustSlider({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
-    <Slider value={value} onChange={onChange} minValue={-100} maxValue={100} step={1}>
+    <Slider
+      value={value}
+      onChange={(next) => onChange(Array.isArray(next) ? next[0] : next)}
+      minValue={-100}
+      maxValue={100}
+      step={1}
+    >
       <div className="flex justify-between mb-1">
         <span className="text-xs font-medium text-foreground">{label}</span>
         <button

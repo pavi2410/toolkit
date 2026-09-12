@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { EditorView, placeholder } from '@uiw/react-codemirror'
+import { EditorView, placeholder } from '@codemirror/view'
 import { oneDark } from '@codemirror/theme-one-dark'
 import CodeMirrorMerge from 'react-codemirror-merge'
 import { useIsDarkTheme } from '@/hooks/useTheme'

@@ -147,7 +147,11 @@ export default function FormatPanel() {
       {selectedFormat.lossy && (
         <Slider
           value={Math.round(quality * 100)}
-          onChange={v => { actions.setQuality(v / 100); updateEstimatedSize() }}
+          onChange={(v) => {
+            const next = Array.isArray(v) ? v[0] : v
+            actions.setQuality(next / 100)
+            updateEstimatedSize()
+          }}
           minValue={10}
           maxValue={100}
         >
@@ -168,13 +172,12 @@ export default function FormatPanel() {
           value={targetFileSize ? Math.round(targetFileSize / 1024) : undefined}
           onChange={kb => actions.setTargetSize(isNaN(kb) || kb <= 0 ? null : kb * 1024)}
           minValue={1}
-          placeholder="e.g. 500"
           aria-label="Target file size in KB"
           variant="secondary"
           fullWidth
         >
           <NumberField.Group>
-            <NumberField.Input />
+            <NumberField.Input placeholder="e.g. 500" />
           </NumberField.Group>
         </NumberField>
         {targetFileSize && (
@@ -189,10 +192,19 @@ export default function FormatPanel() {
       )}
 
       {exportError && (
-        <Alert status="danger" onDismiss={() => setExportError(null)}>
+        <Alert status="danger">
+          <Alert.Indicator />
           <Alert.Content>
             <Alert.Description>{exportError}</Alert.Description>
           </Alert.Content>
+          <button
+            type="button"
+            onClick={() => setExportError(null)}
+            className="ml-auto text-xs text-muted hover:text-foreground"
+            aria-label="Dismiss"
+          >
+            Dismiss
+          </button>
         </Alert>
       )}
 

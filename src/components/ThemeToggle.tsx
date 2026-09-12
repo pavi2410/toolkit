@@ -22,17 +22,19 @@ export default function ThemeToggle() {
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {({ isSelected }) => (
-        <Switch.Control>
-          <Switch.Thumb>
-            <Switch.Icon>
-              {isSelected ? (
-                <IconSun className="size-3.5 text-inherit" />
-              ) : (
-                <IconMoon className="size-3.5 text-inherit" />
-              )}
-            </Switch.Icon>
-          </Switch.Thumb>
-        </Switch.Control>
+        <Switch.Content>
+          <Switch.Control>
+            <Switch.Thumb>
+              <Switch.Icon>
+                {isSelected ? (
+                  <IconSun className="size-3.5 text-inherit" />
+                ) : (
+                  <IconMoon className="size-3.5 text-inherit" />
+                )}
+              </Switch.Icon>
+            </Switch.Thumb>
+          </Switch.Control>
+        </Switch.Content>
       )}
     </Switch>
   )

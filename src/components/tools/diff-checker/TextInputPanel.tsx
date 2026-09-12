@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import CodeMirror, { EditorView } from '@uiw/react-codemirror'
+import { EditorView } from '@codemirror/view'
+import CodeMirror from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { useIsDarkTheme } from '@/hooks/useTheme'
 import StatsWidget from './StatsWidget'

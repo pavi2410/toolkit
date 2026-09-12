@@ -1,4 +1,4 @@
-import { Button, Checkbox, Label, Separator, Toolbar as HuiToolbar } from '@heroui/react'
+import { Button, Checkbox, Separator, Toolbar as HuiToolbar } from '@heroui/react'
 import { ToolPageToolbar } from '#/components/ToolPageToolbar'
 
 interface ToolbarProps {
@@ -57,8 +57,10 @@ export default function Toolbar({
 
       <div className="flex flex-wrap items-center gap-4">
         <Checkbox isSelected={lineWrap} onChange={v => onLineWrapChange(v)}>
-          <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
-          <Checkbox.Content><Label className="text-xs">Line Wrap</Label></Checkbox.Content>
+          <Checkbox.Content>
+            <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+            <span className="text-xs">Line Wrap</span>
+          </Checkbox.Content>
         </Checkbox>
 
         <Button size="sm" variant="tertiary" onPress={onSwap} aria-label="Swap sides">

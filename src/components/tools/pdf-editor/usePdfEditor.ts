@@ -21,6 +21,10 @@ async function getPdfJs() {
 
 const generateId = () => Math.random().toString(36).substring(2, 9)
 
+function pdfBlob(bytes: Uint8Array) {
+  return new Blob([bytes as BlobPart], { type: 'application/pdf' })
+}
+
 export function usePdfEditor() {
   const [files, setFiles] = useState<PdfFile[]>([])
   const [pages, setPages] = useState<PageInfo[]>([])
@@ -249,7 +253,7 @@ export function usePdfEditor() {
       }
 
       const pdfBytes = await newPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      const blob = pdfBlob(pdfBytes)
       const url = URL.createObjectURL(blob)
 
       const link = document.createElement('a')
@@ -284,7 +288,7 @@ export function usePdfEditor() {
       }
       
       const pdfBytes = await newPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      const blob = pdfBlob(pdfBytes)
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
@@ -419,7 +423,7 @@ export function usePdfEditor() {
       }
 
       const pdfBytes = await mergedPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      const blob = pdfBlob(pdfBytes)
       const url = URL.createObjectURL(blob)
 
       const link = document.createElement('a')
@@ -464,7 +468,7 @@ export function usePdfEditor() {
       }
 
       const pdfBytes = await newPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      const blob = pdfBlob(pdfBytes)
       const url = URL.createObjectURL(blob)
 
       const link = document.createElement('a')
@@ -546,7 +550,7 @@ export function usePdfEditor() {
       }
 
       const pdfBytes = await unlockedPdf.save()
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      const blob = pdfBlob(pdfBytes)
       const url = URL.createObjectURL(blob)
 
       const link = document.createElement('a')
@@ -570,7 +574,7 @@ export function usePdfEditor() {
     const file = files.find(f => f.id === fileId)
     if (!file) return
 
-    const blob = new Blob([file.data], { type: 'application/pdf' })
+    const blob = pdfBlob(file.data)
     const url = URL.createObjectURL(blob)
     setPreviewUrl(url)
   }, [files])

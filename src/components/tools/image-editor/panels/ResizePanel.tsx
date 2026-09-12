@@ -92,7 +92,13 @@ export default function ResizePanel() {
 
       <div>
         <label className="block text-xs font-medium text-foreground mb-2">Scale</label>
-        <Slider value={percentage} onChange={handlePercentageChange} onChangeEnd={applyResize} minValue={10} maxValue={200}>
+        <Slider
+          value={percentage}
+          onChange={(value) => handlePercentageChange(Array.isArray(value) ? value[0] : value)}
+          onChangeEnd={applyResize}
+          minValue={10}
+          maxValue={200}
+        >
           <Slider.Output className="block text-xs text-muted tabular-nums mb-1" />
           <Slider.Track>
             <Slider.Fill />
