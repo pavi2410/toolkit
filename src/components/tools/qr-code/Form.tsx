@@ -38,13 +38,18 @@ export default function Form({ content, style, onContentChange, onStyleChange }:
       <Tabs
         selectedKey={content.kind}
         onSelectionChange={(key) => setKind(key as ContentKind)}
+        variant="secondary"
         className="flex min-w-0 flex-col gap-4"
       >
-        <Tabs.List aria-label="QR content type" className="grid w-full min-w-0 grid-cols-5">
+        <Tabs.List aria-label="QR content type" className="flex w-full border-b border-border">
           {KINDS.map(({ id, label, Icon }) => (
-            <Tabs.Tab key={id} id={id} className="min-w-0 flex flex-col items-center gap-1 px-1 py-2 text-[11px] font-medium">
+            <Tabs.Tab
+              key={id}
+              id={id}
+              className="flex flex-1 flex-col items-center gap-1 px-0 py-2 text-[11px] font-medium"
+            >
               <Icon className="h-4 w-4" />
-              <span className="truncate">{label}</span>
+              <span className="whitespace-nowrap">{label}</span>
               <Tabs.Indicator />
             </Tabs.Tab>
           ))}
