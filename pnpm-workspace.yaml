@@ -1,6 +1,7 @@
 allowBuilds:
   esbuild: true
   lightningcss: true
+  workerd: true
 
 overrides:
   "@codemirror/state": "6.7.4"
