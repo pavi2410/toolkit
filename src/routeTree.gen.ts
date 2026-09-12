@@ -16,6 +16,7 @@ import { Route as ToolsDiffCheckerRouteImport } from './routes/_tools/diff-check
 import { Route as ToolsImageEditorRouteImport } from './routes/_tools/image-editor'
 import { Route as ToolsNameCheckerRouteImport } from './routes/_tools/name-checker'
 import { Route as ToolsPdfEditorRouteImport } from './routes/_tools/pdf-editor'
+import { Route as ToolsQrCodeRouteImport } from './routes/_tools/qr-code'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
 import { Route as ApiCheckDomainRouteImport } from './routes/api/check-domain'
 import { Route as ApiCheckPlatformRouteImport } from './routes/api/check-platform'
@@ -55,6 +56,11 @@ const ToolsPdfEditorRoute = ToolsPdfEditorRouteImport.update({
   path: '/pdf-editor',
   getParentRoute: () => ToolsRouteRoute,
 } as any)
+const ToolsQrCodeRoute = ToolsQrCodeRouteImport.update({
+  id: '/qr-code',
+  path: '/qr-code',
+  getParentRoute: () => ToolsRouteRoute,
+} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/image-editor': typeof ToolsImageEditorRoute
   '/name-checker': typeof ToolsNameCheckerRoute
   '/pdf-editor': typeof ToolsPdfEditorRoute
+  '/qr-code': typeof ToolsQrCodeRoute
   '/api/$': typeof ApiSplatRoute
   '/api/check-domain': typeof ApiCheckDomainRoute
   '/api/check-platform': typeof ApiCheckPlatformRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/image-editor': typeof ToolsImageEditorRoute
   '/name-checker': typeof ToolsNameCheckerRoute
   '/pdf-editor': typeof ToolsPdfEditorRoute
+  '/qr-code': typeof ToolsQrCodeRoute
   '/api/$': typeof ApiSplatRoute
   '/api/check-domain': typeof ApiCheckDomainRoute
   '/api/check-platform': typeof ApiCheckPlatformRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/_tools/image-editor': typeof ToolsImageEditorRoute
   '/_tools/name-checker': typeof ToolsNameCheckerRoute
   '/_tools/pdf-editor': typeof ToolsPdfEditorRoute
+  '/_tools/qr-code': typeof ToolsQrCodeRoute
   '/api/$': typeof ApiSplatRoute
   '/api/check-domain': typeof ApiCheckDomainRoute
   '/api/check-platform': typeof ApiCheckPlatformRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/image-editor'
     | '/name-checker'
     | '/pdf-editor'
+    | '/qr-code'
     | '/api/$'
     | '/api/check-domain'
     | '/api/check-platform'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/image-editor'
     | '/name-checker'
     | '/pdf-editor'
+    | '/qr-code'
     | '/api/$'
     | '/api/check-domain'
     | '/api/check-platform'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/_tools/image-editor'
     | '/_tools/name-checker'
     | '/_tools/pdf-editor'
+    | '/_tools/qr-code'
     | '/api/$'
     | '/api/check-domain'
     | '/api/check-platform'
@@ -214,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsPdfEditorRouteImport
       parentRoute: typeof ToolsRouteRoute
     }
+    '/_tools/qr-code': {
+      id: '/_tools/qr-code'
+      path: '/qr-code'
+      fullPath: '/qr-code'
+      preLoaderRoute: typeof ToolsQrCodeRouteImport
+      parentRoute: typeof ToolsRouteRoute
+    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
@@ -251,6 +270,7 @@ interface ToolsRouteRouteChildren {
   ToolsImageEditorRoute: typeof ToolsImageEditorRoute
   ToolsNameCheckerRoute: typeof ToolsNameCheckerRoute
   ToolsPdfEditorRoute: typeof ToolsPdfEditorRoute
+  ToolsQrCodeRoute: typeof ToolsQrCodeRoute
 }
 
 const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
@@ -259,6 +279,7 @@ const ToolsRouteRouteChildren: ToolsRouteRouteChildren = {
   ToolsImageEditorRoute: ToolsImageEditorRoute,
   ToolsNameCheckerRoute: ToolsNameCheckerRoute,
   ToolsPdfEditorRoute: ToolsPdfEditorRoute,
+  ToolsQrCodeRoute: ToolsQrCodeRoute,
 }
 
 const ToolsRouteRouteWithChildren = ToolsRouteRoute._addFileChildren(

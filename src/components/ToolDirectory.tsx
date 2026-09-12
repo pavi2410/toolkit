@@ -5,6 +5,7 @@ import IconCode from '~icons/tabler/code'
 import IconFileTypePdf from '~icons/tabler/file-type-pdf'
 import IconGitCompare from '~icons/tabler/git-compare'
 import IconPhoto from '~icons/tabler/photo'
+import IconQrcode from '~icons/tabler/qrcode'
 import IconTag from '~icons/tabler/tag'
 
 export const toolItems = [
@@ -47,6 +48,14 @@ export const toolItems = [
     Icon: IconTag,
     tags: ['Brand', 'Domain'],
     eyebrow: 'Claim a Name',
+  },
+  {
+    name: 'QR Code',
+    description: 'Generate QR codes for URLs, text, Wi-Fi, email, and phone numbers.',
+    to: '/qr-code',
+    Icon: IconQrcode,
+    tags: ['Image', 'Share'],
+    eyebrow: 'Encode Anything',
   },
 ] as const
 
