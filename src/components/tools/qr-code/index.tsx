@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Surface } from '@heroui/react'
 import type { QrCodeGenerateResult } from 'uqr'
 import Form from './Form'
 import Preview from './Preview'
@@ -65,7 +64,7 @@ export default function QrCodeTool() {
   }, [withQr, style.fg, style.bg, style.size])
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col bg-surface-secondary">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-surface-secondary">
       <Toolbar
         canExport={Boolean(encoded.qr)}
         copyState={copyState}
@@ -76,11 +75,11 @@ export default function QrCodeTool() {
         onDownloadSvg={handleDownloadSvg}
       />
 
-      <div className="grid min-h-0 flex-1 overflow-auto lg:grid-cols-[22rem_minmax(0,1fr)] lg:overflow-hidden">
-        <Surface variant="default" className="order-2 min-h-0 rounded-none shadow-none lg:order-none lg:border-r lg:border-border">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <aside className="flex h-full w-[22rem] min-w-0 shrink-0 flex-col overflow-hidden border-r border-border bg-surface">
           <Form content={content} style={style} onContentChange={setContent} onStyleChange={setStyle} />
-        </Surface>
-        <div className="order-1 flex min-h-[28rem] flex-col lg:order-none lg:min-h-0">
+        </aside>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <Preview
             qr={encoded.qr}
             error={encoded.error}

@@ -13,7 +13,7 @@ function ToolLayout() {
   const activeTool = getToolByPath(pathname)
 
   return (
-    <div className="flex min-h-dvh flex-col bg-surface-secondary">
+    <div className="flex h-dvh flex-col overflow-hidden bg-surface-secondary">
       <ToolHeader title={activeTool?.name ?? 'Toolkit'} />
 
       <main id="main-content" className="flex min-h-0 flex-1 flex-col overflow-hidden">
