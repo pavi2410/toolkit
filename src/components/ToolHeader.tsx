@@ -22,7 +22,7 @@ export default function ToolHeader({ title }: ToolHeaderProps) {
           <Toolbar
             isAttached
             aria-label="Tool navigation"
-            className="flex w-max max-w-full min-w-0 items-center gap-2 pl-3 pr-[1.375rem] sm:gap-3"
+            className="flex w-max max-w-full min-w-0 items-center gap-1 p-1"
           >
             <Link
               to="/"
@@ -34,7 +34,7 @@ export default function ToolHeader({ title }: ToolHeaderProps) {
 
             <Separator orientation="vertical" className="hidden h-5 sm:block" />
 
-            <p className="min-w-0 max-w-[min(100%,18rem)] truncate text-sm font-semibold text-foreground sm:max-w-xs sm:text-base md:max-w-md">
+            <p className="min-w-0 max-w-[min(100%,18rem)] truncate text-sm font-semibold text-foreground sm:max-w-xs sm:text-base md:max-w-md px-2">
               {title}
             </p>
           </Toolbar>
