@@ -212,18 +212,16 @@ export default function ImageCanvas() {
       className="flex flex-1 overflow-auto p-4"
       onWheel={handleWheel}
       style={{
-        backgroundColor: 'var(--canvas-bg, #f3f4f6)',
+        ['--checker' as string]: 'light-dark(#d6d6d6, #3a3a3a)',
+        backgroundColor: 'light-dark(#ffffff, #2a2a2a)',
         backgroundImage: `
-          linear-gradient(45deg, var(--checker-color, #e5e7eb) 25%, transparent 25%),
-          linear-gradient(-45deg, var(--checker-color, #e5e7eb) 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, var(--checker-color, #e5e7eb) 75%),
-          linear-gradient(-45deg, transparent 75%, var(--checker-color, #e5e7eb) 75%)
+          linear-gradient(45deg, var(--checker) 25%, transparent 25%),
+          linear-gradient(-45deg, var(--checker) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, var(--checker) 75%),
+          linear-gradient(-45deg, transparent 75%, var(--checker) 75%)
         `,
         backgroundSize: '20px 20px',
         backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
-        // CSS custom properties for dark mode
-        ['--canvas-bg' as string]: 'color-mix(in srgb, rgb(17 24 39) 100%, transparent)',
-        ['--checker-color' as string]: 'color-mix(in srgb, rgb(31 41 55) 100%, transparent)',
       }}
     >
       <div className="relative m-auto shrink-0">
