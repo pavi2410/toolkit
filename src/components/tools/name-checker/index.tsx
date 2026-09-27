@@ -183,10 +183,10 @@ export default function NameChecker() {
   ).length
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 bg-surface-secondary p-4 lg:p-5">
-      <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
-        <div className="flex min-h-0 flex-col gap-4">
-          <Surface className="space-y-4 rounded-3xl p-5 shadow-none">
+    <div className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 overflow-y-auto bg-surface-secondary p-3 sm:p-4 lg:p-5 xl:overflow-hidden">
+      <div className="grid gap-4 xl:min-h-0 xl:flex-1 xl:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="flex flex-col gap-4 xl:min-h-0">
+          <Surface className="space-y-4 rounded-3xl p-4 shadow-none sm:p-5">
             <div className="space-y-1">
               <h2 className="text-lg font-semibold text-foreground">Search a Name</h2>
               <p className="text-sm text-muted">
@@ -245,7 +245,7 @@ export default function NameChecker() {
             </div>
           </Surface>
 
-          <Surface variant="secondary" className="space-y-3 rounded-3xl p-5 shadow-none">
+          <Surface variant="secondary" className="hidden space-y-3 rounded-3xl p-5 shadow-none xl:block">
             <p className="text-sm font-semibold text-foreground">What this view optimizes for</p>
             <ul className="space-y-2 text-sm leading-6 text-muted">
               <li>One search fans out across package ecosystems, GitHub surfaces, and domain patterns.</li>
@@ -255,10 +255,10 @@ export default function NameChecker() {
           </Surface>
         </div>
 
-        <div className="flex min-h-0 flex-col gap-4 overflow-hidden">
+        <div className="flex flex-col gap-4 xl:min-h-0 xl:overflow-hidden">
           {trimmedSearchName ? (
             <>
-              <Surface variant="secondary" className="flex flex-col gap-3 rounded-3xl p-5 shadow-none lg:flex-row lg:items-center lg:justify-between">
+              <Surface variant="secondary" className="flex flex-col gap-3 rounded-3xl p-4 shadow-none sm:p-5 lg:flex-row lg:items-center lg:justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-foreground">Results for “{trimmedSearchName}”</p>
                   <p className="text-sm text-muted">
@@ -276,7 +276,7 @@ export default function NameChecker() {
                 </div>
               </Surface>
 
-              <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto pr-1">
+              <div className="flex flex-col gap-4 xl:min-h-0 xl:flex-1 xl:overflow-auto xl:pr-1">
                 <DomainAvailabilityMatrix
                   domainResults={domainResults}
                   isLoading={isLoading}
@@ -292,7 +292,7 @@ export default function NameChecker() {
               </div>
             </>
           ) : (
-            <Surface className="flex flex-1 items-center justify-center rounded-3xl p-8 text-center shadow-none">
+            <Surface className="flex flex-1 items-center justify-center rounded-3xl p-6 text-center shadow-none sm:p-8">
               <div className="space-y-4">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-default text-muted">
                   <IconSearch className="h-7 w-7" />

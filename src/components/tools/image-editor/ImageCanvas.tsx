@@ -149,8 +149,8 @@ export default function ImageCanvas() {
     return () => observer.disconnect()
   }, [zoomMode, canvasSize])
 
-  // Crop overlay mouse handlers
-  const handleCropMouseDown = (e: React.MouseEvent, mode: 'move' | 'resize') => {
+  // Crop overlay pointer handlers
+  const handleCropPointerDown = (e: React.PointerEvent, mode: 'move' | 'resize') => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(true)
@@ -158,7 +158,7 @@ export default function ImageCanvas() {
     setDragStart({ x: e.clientX, y: e.clientY })
   }
 
-  const handleCropMouseMove = useCallback((e: MouseEvent) => {
+  const handleCropPointerMove = useCallback((e: PointerEvent) => {
     if (!isDragging || !dragMode || !cropOverlayRef.current) return
 
     const overlay = cropOverlayRef.current
@@ -180,21 +180,23 @@ export default function ImageCanvas() {
     setDragStart({ x: e.clientX, y: e.clientY })
   }, [isDragging, dragMode, dragStart])
 
-  const handleCropMouseUp = useCallback(() => {
+  const handleCropPointerUp = useCallback(() => {
     setIsDragging(false)
     setDragMode(null)
   }, [])
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleCropMouseMove)
-      window.addEventListener('mouseup', handleCropMouseUp)
+      window.addEventListener('pointermove', handleCropPointerMove)
+      window.addEventListener('pointerup', handleCropPointerUp)
+      window.addEventListener('pointercancel', handleCropPointerUp)
       return () => {
-        window.removeEventListener('mousemove', handleCropMouseMove)
-        window.removeEventListener('mouseup', handleCropMouseUp)
+        window.removeEventListener('pointermove', handleCropPointerMove)
+        window.removeEventListener('pointerup', handleCropPointerUp)
+        window.removeEventListener('pointercancel', handleCropPointerUp)
       }
     }
-  }, [isDragging, handleCropMouseMove, handleCropMouseUp])
+  }, [isDragging, handleCropPointerMove, handleCropPointerUp])
 
   // Mouse wheel zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -246,7 +248,7 @@ export default function ImageCanvas() {
             
             {/* Crop selection area */}
             <div
-              className="absolute bg-transparent border-2 border-white border-dashed pointer-events-auto cursor-move"
+              className="absolute touch-none bg-transparent border-2 border-white border-dashed pointer-events-auto cursor-move"
               style={{
                 left: `${cropSelection.x * 100}%`,
                 top: `${cropSelection.y * 100}%`,
@@ -254,13 +256,13 @@ export default function ImageCanvas() {
                 height: `${cropSelection.height * 100}%`,
                 boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
               }}
-              onMouseDown={(e) => handleCropMouseDown(e, 'move')}
+              onPointerDown={(e) => handleCropPointerDown(e, 'move')}
             >
               {/* Resize handle */}
               <div
-                className="absolute bottom-0 right-0 w-4 h-4 bg-white border border-gray-400 cursor-se-resize"
+                className="absolute bottom-0 right-0 w-4 h-4 bg-white border border-gray-400 cursor-se-resize pointer-coarse:w-6 pointer-coarse:h-6"
                 style={{ transform: 'translate(50%, 50%)' }}
-                onMouseDown={(e) => handleCropMouseDown(e, 'resize')}
+                onPointerDown={(e) => handleCropPointerDown(e, 'resize')}
               />
               
               {/* Corner handles for visual feedback */}

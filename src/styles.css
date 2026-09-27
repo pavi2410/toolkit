@@ -84,6 +84,16 @@
   body {
     overscroll-behavior: none;
   }
+
+  /* iOS Safari auto-zooms on focus when text is below 16px */
+  @media (pointer: coarse) {
+    input,
+    textarea,
+    select,
+    .cm-editor {
+      font-size: max(16px, 1em) !important;
+    }
+  }
 }
 
 @theme {

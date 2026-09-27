@@ -36,9 +36,9 @@ export function PageGrid({
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium text-foreground mb-2">
-        Pages ({pages.length}) — Drag to reorder
+        Pages ({pages.length})<span className="pointer-coarse:hidden"> — Drag to reorder</span>
       </h3>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4 xl:grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(170px,1fr))] sm:gap-4 xl:grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
         {pages.map((page, index) => (
           <div
             key={page.id}
@@ -103,7 +103,7 @@ export function PageGrid({
             </div>
 
             {/* Actions */}
-            <div className="absolute bottom-0 left-0 right-0 p-1 bg-linear-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute bottom-0 left-0 right-0 p-1 bg-linear-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity">
               <div className="flex items-center justify-center gap-1">
                 <Button
                   isIconOnly
@@ -146,7 +146,7 @@ export function PageGrid({
               absolute top-1 left-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-all
               ${selectedPages.has(page.id)
                 ? 'bg-accent border-accent'
-                : 'bg-surface/80 border-border opacity-0 group-hover:opacity-100'
+                : 'bg-surface/80 border-border opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100'
               }
             `}>
               {selectedPages.has(page.id) && (

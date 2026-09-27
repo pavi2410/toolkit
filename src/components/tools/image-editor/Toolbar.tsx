@@ -37,12 +37,12 @@ export default function Toolbar() {
 
   return (
     <ToolPageToolbar>
-      <HuiToolbar aria-label="Image editor options" className="flex items-center justify-between gap-2 w-full">
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-foreground max-w-[50ch] truncate" title={meta?.name}>
+      <HuiToolbar aria-label="Image editor options" className="flex w-full flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="hidden max-w-[50ch] truncate text-sm font-medium text-foreground sm:inline" title={meta?.name}>
             {displayName}
           </span>
-          <Separator orientation="vertical" className="h-5" />
+          <Separator orientation="vertical" className="hidden h-5 sm:block" />
           <ButtonGroup variant="tertiary">
             <Button isIconOnly size="sm" isDisabled={!canUndo} onPress={actions.undo} aria-label="Undo">
               <IconArrowBackUp className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function Toolbar() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Button isIconOnly size="sm" variant="tertiary" onPress={actions.zoomOut} aria-label="Zoom out">
             <IconZoomOut className="w-4 h-4" />
           </Button>
@@ -71,7 +71,7 @@ export default function Toolbar() {
             }}
             aria-label="Zoom level"
             variant="secondary"
-            className="w-28"
+            className="w-24 sm:w-28"
           >
             <Select.Trigger>
               <Select.Value />

@@ -21,7 +21,7 @@ export default function Sidebar() {
   const activePanel = useStore($activePanel)
 
   return (
-    <aside className="w-72 shrink-0 overflow-y-auto border-r border-border bg-surface">
+    <aside className="max-h-[45%] w-full shrink-0 overflow-y-auto border-t border-border bg-surface md:max-h-none md:w-72 md:border-t-0 md:border-r">
       <Accordion
         expandedKeys={activePanel ? [activePanel] : []}
         onExpandedChange={keys => actions.setPanel(([...keys][0] as EditorPanel | undefined) ?? null)}

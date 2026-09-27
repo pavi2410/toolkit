@@ -19,8 +19,8 @@ export default function ImageInfo() {
 
   return (
     <div className="shrink-0 border-t border-border bg-surface-secondary px-4 py-2">
-      <div className="flex items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-muted">Original</span>
           <Chip size="sm" variant="soft">{meta.width} × {meta.height}</Chip>
           <Chip size="sm" variant="soft">{meta.type.split('/')[1].toUpperCase()}</Chip>
@@ -28,7 +28,7 @@ export default function ImageInfo() {
         </div>
 
         {outputDims && (
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-muted">Output</span>
             <Chip size="sm" variant="soft">{outputDims.width} × {outputDims.height}</Chip>
             <Chip size="sm" variant="soft">{format.toUpperCase()}</Chip>

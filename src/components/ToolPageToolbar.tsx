@@ -6,7 +6,7 @@ interface ToolPageToolbarProps {
 
 export function ToolPageToolbar({ children }: ToolPageToolbarProps) {
   return (
-    <div className="shrink-0 border-b border-border bg-surface px-4 py-2">
+    <div className="shrink-0 border-b border-border bg-surface px-3 py-2 sm:px-4">
       {children}
     </div>
   )

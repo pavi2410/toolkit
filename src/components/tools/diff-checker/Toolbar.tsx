@@ -53,9 +53,9 @@ export default function Toolbar({
         </div>
       )}
 
-      <div className="flex-1" />
+      <div className="hidden flex-1 sm:block" />
 
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <Checkbox isSelected={lineWrap} onChange={v => onLineWrapChange(v)}>
           <Checkbox.Content>
             <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>

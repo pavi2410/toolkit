@@ -28,23 +28,26 @@ export default function ToolHeader({ title, toolPath }: ToolHeaderProps) {
           >
             <Link
               to="/"
+              aria-label="All Tools"
               className={`${buttonVariants({ variant: 'tertiary', size: 'sm' })} shrink-0 whitespace-nowrap`}
             >
               <IconArrowLeft className="h-4 w-4" />
-              All Tools
+              <span className="hidden sm:inline">All Tools</span>
             </Link>
 
             <Separator orientation="vertical" className="hidden h-5 sm:block" />
 
-            <p className="min-w-0 max-w-[min(100%,18rem)] truncate text-sm font-semibold text-foreground sm:max-w-xs sm:text-base md:max-w-md px-2">
+            <p className="min-w-0 truncate px-2 text-sm font-semibold text-foreground sm:max-w-xs sm:text-base md:max-w-md">
               {title}
             </p>
           </Toolbar>
         </div>
 
         <Toolbar isAttached aria-label="Tool page settings" className="flex shrink-0 items-center gap-1 px-1">
-          <ShortcutsButton toolPath={toolPath} toolName={title} />
-          <Separator orientation="vertical" className="h-5" />
+          <div className="flex items-center gap-1 pointer-coarse:hidden">
+            <ShortcutsButton toolPath={toolPath} toolName={title} />
+            <Separator orientation="vertical" className="h-5" />
+          </div>
           <ThemeToggle />
         </Toolbar>
       </div>

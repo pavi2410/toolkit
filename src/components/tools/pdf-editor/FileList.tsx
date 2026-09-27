@@ -22,10 +22,10 @@ export function FileList({ files, onUnlock, onBypass, onPreview }: FileListProps
         {files.map(file => (
           <div
             key={file.id}
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded-lg text-sm"
+            className="inline-flex max-w-full items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded-lg text-sm"
           >
-            <IconFile className="w-4 h-4 text-danger" />
-            <span className="text-foreground">{file.name}</span>
+            <IconFile className="w-4 h-4 shrink-0 text-danger" />
+            <span className="min-w-0 truncate text-foreground" title={file.name}>{file.name}</span>
             <Chip size="sm" variant="soft">{file.pageCount} pages</Chip>
 
             {file.isLocked && (

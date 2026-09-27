@@ -14,7 +14,7 @@ interface FileExplorerProps {
 
 export default function FileExplorer({ activeFile, onSelect, onReset }: FileExplorerProps) {
   return (
-    <aside className="flex min-h-0 flex-col overflow-hidden border-r border-border bg-surface">
+    <aside className="hidden min-h-0 flex-col overflow-hidden border-r border-border bg-surface lg:flex">
       <PanelHeader title="Files" icon={IconFolder}>
         <Tooltip delay={300}>
           <Button isIconOnly size="sm" variant="ghost" onPress={onReset} aria-label="Reset to example">

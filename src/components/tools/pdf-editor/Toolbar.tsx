@@ -37,8 +37,8 @@ export function Toolbar({
 }: ToolbarProps) {
   return (
     <ToolPageToolbar>
-      <HuiToolbar aria-label="PDF editor options" className="flex items-center justify-between gap-4 flex-wrap w-full">
-        <div className="flex items-center gap-2">
+      <HuiToolbar aria-label="PDF editor options" className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="secondary" size="sm" onPress={() => inputRef.current?.click()} className="gap-2">
             <IconPlus className="w-4 h-4" />
             Add PDFs
@@ -80,7 +80,7 @@ export function Toolbar({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="ghost"
             size="sm"

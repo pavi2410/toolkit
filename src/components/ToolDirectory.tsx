@@ -52,15 +52,17 @@ export function getToolByPath(pathname: string) {
 
 export function ToolDirectory() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
       {toolItems.map(({ name, description, to, Icon }) => (
         <Link key={to} to={to} className="group block rounded-3xl no-underline">
-          <Surface className="h-full space-y-3 rounded-3xl p-5 transition-shadow group-hover:ring-2 group-hover:ring-accent-soft">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary">
+          <Surface className="flex h-full items-start gap-4 rounded-3xl p-4 transition-shadow group-hover:ring-2 group-hover:ring-accent-soft sm:block sm:space-y-3 sm:p-5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-secondary">
               <Icon aria-hidden="true" className="h-5 w-5 text-foreground" />
             </div>
-            <h2 className="text-base font-semibold text-foreground">{name}</h2>
-            <p className="text-sm text-muted">{description}</p>
+            <div className="min-w-0 space-y-1 sm:space-y-3">
+              <h2 className="text-base font-semibold text-foreground">{name}</h2>
+              <p className="text-sm text-muted">{description}</p>
+            </div>
           </Surface>
         </Link>
       ))}

@@ -134,7 +134,7 @@ export default function PlatformAvailabilityCard({ platformResults, isLoading, o
   }
 
   return (
-    <Surface className="space-y-4 rounded-3xl p-5 shadow-none">
+    <Surface className="space-y-4 rounded-3xl p-4 shadow-none sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base font-semibold text-foreground">Platform Availability</h3>
@@ -146,7 +146,7 @@ export default function PlatformAvailabilityCard({ platformResults, isLoading, o
       </div>
       <div>
         {hasResults || isLoading ? (
-          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {PLATFORMS.map((platform) => renderPlatformCard(platform))}
           </div>
         ) : hasError && !isLoading ? (

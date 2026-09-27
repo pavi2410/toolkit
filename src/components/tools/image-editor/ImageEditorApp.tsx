@@ -46,9 +46,9 @@ export default function ImageEditorApp() {
   return (
     <div className="flex h-full min-w-0 w-full flex-col bg-surface-secondary">
       <Toolbar />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col-reverse overflow-hidden md:flex-row">
         <Sidebar />
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <ImageCanvas />
           <ImageInfo />
         </div>

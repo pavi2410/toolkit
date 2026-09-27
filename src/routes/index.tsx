@@ -9,7 +9,7 @@ function HomePage() {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <Header />
-      <main id="main-content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-14">
+      <main id="main-content" className="mx-auto w-full max-w-6xl flex-1 px-3 py-6 sm:px-4 sm:py-14">
         <ToolDirectory />
       </main>
       <Footer />

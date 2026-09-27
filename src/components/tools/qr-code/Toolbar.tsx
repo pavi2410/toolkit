@@ -39,7 +39,7 @@ export default function Toolbar({
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" variant="tertiary" onPress={onCopy} isDisabled={!canExport}>
             {copyState === 'copied' ? <IconCheck className="h-4 w-4" /> : <IconCopy className="h-4 w-4" />}
             {copyState === 'copied' ? 'Copied' : copyState === 'failed' ? 'Copy failed' : 'Copy PNG'}

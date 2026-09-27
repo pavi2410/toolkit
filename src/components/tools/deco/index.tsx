@@ -1,5 +1,6 @@
-import { Tabs } from '@heroui/react'
+import { Button, Tabs } from '@heroui/react'
 import { startTransition, useCallback, useDeferredValue, useState } from 'react'
+import IconRestore from '~icons/tabler/restore'
 import CodeEditor from './CodeEditor'
 import ConsolePanel from './ConsolePanel'
 import { fileDescriptors, initialFiles } from './constants'
@@ -46,31 +47,36 @@ export default function DecoTool() {
   const handleClearConsole = useCallback(() => setConsoleLogs([]), [])
 
   return (
-    <div className="grid h-full min-h-0 w-full grid-cols-[11rem_minmax(0,1fr)_clamp(20rem,36%,40rem)] overflow-hidden bg-surface-secondary text-foreground">
+    <div className="grid h-full min-h-0 w-full grid-cols-1 grid-rows-2 overflow-hidden bg-surface-secondary text-foreground md:grid-cols-2 md:grid-rows-1 lg:grid-cols-[11rem_minmax(0,1fr)_clamp(20rem,36%,40rem)]">
       <FileExplorer activeFile={activeFile} onSelect={setActiveFile} onReset={handleReset} />
 
       <Tabs
         selectedKey={activeFile}
         onSelectionChange={(key) => setActiveFile(key as FileName)}
         variant="secondary"
-        className="flex min-h-0 flex-col overflow-hidden border-r border-border"
+        className="flex min-h-0 flex-col overflow-hidden border-b border-border md:border-r md:border-b-0"
       >
-        <Tabs.List aria-label="Editor files" className="h-9 w-full shrink-0 justify-start gap-0 rounded-none border-b border-border bg-surface p-0">
-          {fileDescriptors.map(({ name }) => {
-            const Icon = fileIcons[name]
-            return (
-              <Tabs.Tab
-                key={name}
-                id={name}
-                className="h-full w-auto grow-0 gap-2 rounded-none border-r border-border px-3 font-mono text-xs data-[selected=true]:bg-surface-secondary"
-              >
-                <Icon className="h-4 w-4" />
-                <span>{name}</span>
-                <Tabs.Indicator className="bottom-0 h-0.5 rounded-none" />
-              </Tabs.Tab>
-            )
-          })}
-        </Tabs.List>
+        <div className="flex h-9 shrink-0 items-center border-b border-border bg-surface">
+          <Tabs.List aria-label="Editor files" className="h-full min-w-0 flex-1 justify-start gap-0 overflow-x-auto rounded-none bg-transparent p-0">
+            {fileDescriptors.map(({ name }) => {
+              const Icon = fileIcons[name]
+              return (
+                <Tabs.Tab
+                  key={name}
+                  id={name}
+                  className="h-full w-auto shrink-0 grow-0 gap-2 whitespace-nowrap rounded-none border-r border-border px-3 font-mono text-xs data-[selected=true]:bg-surface-secondary"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{name}</span>
+                  <Tabs.Indicator className="bottom-0 h-0.5 rounded-none" />
+                </Tabs.Tab>
+              )
+            })}
+          </Tabs.List>
+          <Button isIconOnly size="sm" variant="ghost" onPress={handleReset} aria-label="Reset to example" className="mx-1 shrink-0 lg:hidden">
+            <IconRestore className="h-4 w-4" />
+          </Button>
+        </div>
 
         {fileDescriptors.map(({ name }) => (
           <Tabs.Panel key={name} id={name} className="min-h-0 flex-1">

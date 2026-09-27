@@ -33,11 +33,11 @@ export default function ConsolePanel({ logs, persistLogs, onPersistLogsChange, o
           </Chip>
         )}
 
-        <Switch size="sm" isSelected={persistLogs} onChange={onPersistLogsChange} className="mr-1 gap-1.5">
+        <Switch size="sm" isSelected={persistLogs} onChange={onPersistLogsChange} className="mr-1 flex-row items-center gap-1.5">
           <Switch.Control>
             <Switch.Thumb />
           </Switch.Control>
-          <Switch.Content className="text-[11px] text-muted">Persist</Switch.Content>
+          <Switch.Content className="whitespace-nowrap text-[11px] text-muted">Persist</Switch.Content>
         </Switch>
 
         <Tooltip delay={300}>

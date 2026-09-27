@@ -78,14 +78,14 @@ export default function DropZone({
 
   return (
     <div
-      className="flex h-full flex-1 flex-col items-center justify-center gap-4 bg-surface-secondary p-4 sm:p-6"
+      className="flex h-full flex-1 flex-col items-center justify-center gap-4 overflow-y-auto bg-surface-secondary p-3 sm:p-6"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onPaste={supportsPaste ? handlePaste : undefined}
       tabIndex={supportsPaste ? 0 : undefined}
     >
-      <Surface className="w-full max-w-3xl rounded-[2rem] p-6 shadow-none sm:p-8">
+      <Surface className="w-full max-w-3xl rounded-[2rem] p-4 shadow-none sm:p-8">
         <input
           ref={inputRef}
           type="file"
@@ -111,7 +111,7 @@ export default function DropZone({
             type="button"
             onClick={() => inputRef.current?.click()}
             className={[
-              'flex w-full flex-col items-center gap-4 rounded-[calc(var(--radius)*2)] border border-dashed px-6 py-10 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+              'flex w-full flex-col items-center gap-4 rounded-[calc(var(--radius)*2)] border border-dashed px-4 py-8 text-center sm:px-6 sm:py-10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
               isDragging
                 ? 'border-accent bg-accent/6'
                 : 'border-border bg-surface-secondary hover:bg-surface',

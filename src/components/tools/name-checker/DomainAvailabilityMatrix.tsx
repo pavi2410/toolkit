@@ -83,7 +83,7 @@ export default function DomainAvailabilityMatrix({ domainResults, isLoading, sea
         ) : (
           <Table>
             <Table.ScrollContainer className="overflow-x-auto">
-              <Table.Content>
+              <Table.Content className="whitespace-nowrap wrap-normal">
                 <Table.Header>
                   <Table.Column className="text-left">Name</Table.Column>
                   {TLDS.map((tld) => (

@@ -75,11 +75,11 @@ export default function QrCodeTool() {
         onDownloadSvg={handleDownloadSvg}
       />
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside className="flex h-full w-[22rem] min-w-0 shrink-0 flex-col overflow-hidden border-r border-border bg-surface">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+        <aside className="order-2 flex min-w-0 shrink-0 flex-col border-t border-border bg-surface md:order-none md:h-full md:w-[22rem] md:overflow-hidden md:border-t-0 md:border-r">
           <Form content={content} style={style} onContentChange={setContent} onStyleChange={setStyle} />
         </aside>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="order-1 flex min-w-0 shrink-0 flex-col md:order-none md:min-h-0 md:flex-1 md:shrink md:overflow-hidden">
           <Preview
             qr={encoded.qr}
             error={encoded.error}

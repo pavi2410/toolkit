@@ -90,7 +90,7 @@ export default function PdfEditorApp() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-auto p-3 sm:p-4">
         <FileList
           files={files}
           onUnlock={setLockedFileId}

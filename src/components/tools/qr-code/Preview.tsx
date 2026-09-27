@@ -41,7 +41,7 @@ export default function Preview({ qr, error, fg, bg, ecc, exportSize, bytes }: P
       <Surface className="rounded-3xl p-5 shadow-none">
         <svg
           viewBox={`0 0 ${qr.size} ${qr.size}`}
-          className="h-[min(22rem,70vw)] w-[min(22rem,70vw)]"
+          className="h-[min(22rem,60vw)] w-[min(22rem,60vw)]"
           shapeRendering="crispEdges"
           role="img"
           aria-label="Generated QR code"

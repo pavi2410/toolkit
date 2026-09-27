@@ -113,7 +113,7 @@ export default function DiffViewer({
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden bg-surface [&_.cm-mergeView]:h-full [&_.cm-mergeView]:bg-transparent [&_.cm-mergeViewEditors]:h-full [&_.cm-editor]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-merge-revert]:hidden">
+      <div className="flex-1 min-h-0 overflow-hidden bg-surface [&_.cm-mergeView]:h-full [&_.cm-mergeView]:bg-transparent [&_.cm-mergeViewEditors]:h-full [&_.cm-editor]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-merge-revert]:hidden max-md:[&_.cm-mergeViewEditors]:flex-col max-md:[&_.cm-mergeViewEditor]:min-h-0 max-md:[&_.cm-mergeViewEditor~.cm-mergeViewEditor]:border-t max-md:[&_.cm-mergeViewEditor~.cm-mergeViewEditor]:border-border">
         <CodeMirrorMerge
           className="h-full"
           orientation="a-b"
