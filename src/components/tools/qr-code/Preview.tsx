@@ -1,20 +1,15 @@
-import { Chip, Surface } from '@heroui/react'
+import { Surface } from '@heroui/react'
 import type { QrCodeGenerateResult } from 'uqr'
 import IconQrcode from '~icons/tabler/qrcode'
-import { modulePx } from './qr'
-import type { EccLevel } from './types'
 
 interface PreviewProps {
   qr: QrCodeGenerateResult | null
   error: string | null
   fg: string
   bg: string
-  ecc: EccLevel
-  exportSize: number
-  bytes: number
 }
 
-export default function Preview({ qr, error, fg, bg, ecc, exportSize, bytes }: PreviewProps) {
+export default function Preview({ qr, error, fg, bg }: PreviewProps) {
   if (error) {
     return (
       <Empty
@@ -33,12 +28,11 @@ export default function Preview({ qr, error, fg, bg, ecc, exportSize, bytes }: P
     )
   }
 
-  const dim = qr.size * modulePx(exportSize, qr.size)
   const path = modulesPath(qr.data)
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-4 lg:p-6">
-      <Surface className="rounded-3xl p-5 shadow-none">
+    <div className="flex min-h-0 flex-1 flex-col items-center justify-center p-4 lg:p-6">
+      <Surface className="rounded-3xl p-5 shadow-none" style={{ backgroundColor: bg }}>
         <svg
           viewBox={`0 0 ${qr.size} ${qr.size}`}
           className="h-[min(22rem,60vw)] w-[min(22rem,60vw)]"
@@ -50,21 +44,6 @@ export default function Preview({ qr, error, fg, bg, ecc, exportSize, bytes }: P
           <path d={path} fill={fg} />
         </svg>
       </Surface>
-
-      <div className="flex flex-wrap justify-center gap-2">
-        <Chip color="default" variant="soft" size="sm">
-          <Chip.Label>Version {qr.version}</Chip.Label>
-        </Chip>
-        <Chip color="default" variant="soft" size="sm">
-          <Chip.Label>{dim}×{dim} px</Chip.Label>
-        </Chip>
-        <Chip color="default" variant="soft" size="sm">
-          <Chip.Label>ECC {ecc}</Chip.Label>
-        </Chip>
-        <Chip color="default" variant="soft" size="sm">
-          <Chip.Label>{bytes} bytes</Chip.Label>
-        </Chip>
-      </div>
     </div>
   )
 }

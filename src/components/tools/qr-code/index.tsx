@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from 'react'
 import type { QrCodeGenerateResult } from 'uqr'
-import Form from './Form'
+import Form from './form'
 import Preview from './Preview'
+import StatusBar from './StatusBar'
 import Toolbar from './Toolbar'
 import { buildPayload, exampleContent } from './payload'
 import { downloadBlob, encodeQr, qrPngBlob, qrSvg } from './qr'
@@ -26,10 +27,6 @@ export default function QrCodeTool() {
 
   const handleLoadExample = useCallback(() => {
     setContent((prev) => ({ ...prev, ...exampleContent(prev.kind) }))
-  }, [])
-
-  const handleInvert = useCallback(() => {
-    setStyle((prev) => ({ ...prev, fg: prev.bg, bg: prev.fg }))
   }, [])
 
   const withQr = useCallback(async (run: (qr: QrCodeGenerateResult) => Promise<void> | void) => {
@@ -69,7 +66,6 @@ export default function QrCodeTool() {
         canExport={Boolean(encoded.qr)}
         copyState={copyState}
         onLoadExample={handleLoadExample}
-        onInvert={handleInvert}
         onCopy={handleCopy}
         onDownloadPng={handleDownloadPng}
         onDownloadSvg={handleDownloadSvg}
@@ -80,17 +76,11 @@ export default function QrCodeTool() {
           <Form content={content} style={style} onContentChange={setContent} onStyleChange={setStyle} />
         </aside>
         <div className="order-1 flex min-w-0 shrink-0 flex-col md:order-none md:min-h-0 md:flex-1 md:shrink md:overflow-hidden">
-          <Preview
-            qr={encoded.qr}
-            error={encoded.error}
-            fg={style.fg}
-            bg={style.bg}
-            ecc={style.ecc}
-            exportSize={style.size}
-            bytes={bytes}
-          />
+          <Preview qr={encoded.qr} error={encoded.error} fg={style.fg} bg={style.bg} />
         </div>
       </div>
+
+      <StatusBar qr={encoded.qr} ecc={style.ecc} exportSize={style.size} bytes={bytes} />
     </div>
   )
 }
