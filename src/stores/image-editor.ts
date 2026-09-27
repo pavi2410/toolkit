@@ -13,6 +13,7 @@ const STORAGE_KEY = `image-editor-state-${TAB_ID}`
 export type ImageFormat = 'png' | 'jpeg' | 'webp'
 export type RotationDegree = 0 | 90 | 180 | 270
 export type ZoomMode = 'fit' | 'fill' | 'manual'
+export type EditorPanel = 'resize' | 'crop' | 'adjust' | 'format'
 
 export const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3]
 const MIN_ZOOM = 0.05
@@ -72,7 +73,7 @@ export const $estimatedFileSize = atom<number | null>(null)
 export const $quality = atom(1)
 export const $targetFileSize = atom<number | null>(null)
 
-export const $activePanel = atom<'resize' | 'crop' | 'adjust' | 'format'>('resize')
+export const $activePanel = atom<EditorPanel | null>('resize')
 export const $isComparing = atom(false)
 export const $zoom = atom(1)
 export const $zoomMode = atom<ZoomMode>('fit')
@@ -266,7 +267,7 @@ export const actions = {
   setQuality: (q: number) => $quality.set(q),
   setTargetSize: (s: number | null) => $targetFileSize.set(s),
 
-  setPanel: (p: 'resize' | 'crop' | 'adjust' | 'format') => $activePanel.set(p),
+  setPanel: (p: EditorPanel | null) => $activePanel.set(p),
   toggleCompare: () => $isComparing.set(!$isComparing.get()),
   setZoom(z: number) {
     $zoomMode.set('manual')
