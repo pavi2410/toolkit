@@ -1,6 +1,5 @@
-import { Chip, Surface } from '@heroui/react'
-import { Link, useRouterState } from '@tanstack/react-router'
-import IconArrowRight from '~icons/tabler/arrow-right'
+import { Surface } from '@heroui/react'
+import { Link } from '@tanstack/react-router'
 import IconCode from '~icons/tabler/code'
 import IconFileTypePdf from '~icons/tabler/file-type-pdf'
 import IconGitCompare from '~icons/tabler/git-compare'
@@ -14,48 +13,36 @@ export const toolItems = [
     description: 'Compare text differences with line, word, or character-level strategies.',
     to: '/diff-checker',
     Icon: IconGitCompare,
-    tags: ['Text', 'Comparison'],
-    eyebrow: 'Review Changes',
   },
   {
     name: 'Image Editor',
     description: 'Resize, crop, and convert images fully in your browser.',
     to: '/image-editor',
     Icon: IconPhoto,
-    tags: ['Image', 'Editor'],
-    eyebrow: 'Prep Assets',
   },
   {
     name: 'Deco',
     description: 'Edit HTML, CSS, and JavaScript together with a live browser preview.',
     to: '/deco',
     Icon: IconCode,
-    tags: ['Code', 'Preview'],
-    eyebrow: 'Prototype Fast',
   },
   {
     name: 'PDF Editor',
     description: 'Merge, split, rotate, reorder, and unlock PDFs in-browser.',
     to: '/pdf-editor',
     Icon: IconFileTypePdf,
-    tags: ['PDF', 'Editor'],
-    eyebrow: 'Assemble Documents',
   },
   {
     name: 'Name Checker',
     description: 'Check project-name availability across platforms and domains.',
     to: '/name-checker',
     Icon: IconTag,
-    tags: ['Brand', 'Domain'],
-    eyebrow: 'Claim a Name',
   },
   {
     name: 'QR Code',
     description: 'Generate QR codes for URLs, text, Wi-Fi, email, and phone numbers.',
     to: '/qr-code',
     Icon: IconQrcode,
-    tags: ['Image', 'Share'],
-    eyebrow: 'Encode Anything',
   },
 ] as const
 
@@ -63,83 +50,20 @@ export function getToolByPath(pathname: string) {
   return toolItems.find(({ to }) => pathname === to || pathname.startsWith(`${to}/`))
 }
 
-interface ToolDirectoryProps {
-  layout?: 'grid' | 'list'
-}
-
-interface ToolPageShellProps {
-  children: React.ReactNode
-}
-
-export function ToolDirectory({ layout = 'grid' }: ToolDirectoryProps) {
-  const pathname = useRouterState({
-    select: (state) => state.location.pathname,
-  })
-  const isList = layout === 'list'
-
+export function ToolDirectory() {
   return (
-    <div
-      className={`grid gap-3 ${
-        isList ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-      }`}
-    >
-      {toolItems.map(({ name, description, to, Icon, tags, eyebrow }) => {
-        const isActive = pathname === to
-
-        return (
-          <Link key={to} to={to} className="group block no-underline">
-            <Surface
-              variant={isActive ? 'secondary' : 'transparent'}
-              className={[
-                'h-full space-y-3 rounded-3xl p-4 shadow-none transition-[transform,box-shadow] duration-300 ease-out group-hover:-translate-y-1',
-                isActive
-                  ? 'ring-2 ring-accent-soft'
-                  : 'glass-soft group-hover:ring-2 group-hover:ring-accent-soft',
-              ].join(' ')}
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-secondary/70">
-                  <Icon aria-hidden="true" className="h-4.5 w-4.5 text-foreground" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
-                    {eyebrow}
-                  </p>
-                  <h3 className="text-sm font-semibold text-foreground">{name}</h3>
-                </div>
-                <IconArrowRight aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5" />
-              </div>
-
-              <div className={isList ? '' : 'pb-1'}>
-                <p className="text-sm text-muted">
-                  {description}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <Chip key={tag} color="default" size="sm" variant="soft">
-                    <Chip.Label>{tag}</Chip.Label>
-                  </Chip>
-                ))}
-                {isActive && (
-                  <Chip color="accent" size="sm" variant="soft">
-                    <Chip.Label>Current</Chip.Label>
-                  </Chip>
-                )}
-              </div>
-            </Surface>
-          </Link>
-        )
-      })}
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {toolItems.map(({ name, description, to, Icon }) => (
+        <Link key={to} to={to} className="group block rounded-3xl no-underline">
+          <Surface className="h-full space-y-3 rounded-3xl p-5 transition-shadow group-hover:ring-2 group-hover:ring-accent-soft">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary">
+              <Icon aria-hidden="true" className="h-5 w-5 text-foreground" />
+            </div>
+            <h2 className="text-base font-semibold text-foreground">{name}</h2>
+            <p className="text-sm text-muted">{description}</p>
+          </Surface>
+        </Link>
+      ))}
     </div>
-  )
-}
-
-export function ToolPageShell({ children }: ToolPageShellProps) {
-  return (
-    <main className="flex-1">
-      {children}
-    </main>
   )
 }
