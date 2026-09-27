@@ -79,6 +79,13 @@
   --warning-foreground: oklch(21.03% 0.0059 76.34);
 }
 
+@layer base {
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
