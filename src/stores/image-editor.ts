@@ -12,6 +12,12 @@ const STORAGE_KEY = `image-editor-state-${TAB_ID}`
 // === Types ===
 export type ImageFormat = 'png' | 'jpeg' | 'webp'
 export type RotationDegree = 0 | 90 | 180 | 270
+export type ZoomMode = 'fit' | 'fill' | 'manual'
+
+export const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3]
+const MIN_ZOOM = 0.05
+const MAX_ZOOM = 3
+const clampZoom = (z: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z))
 
 export interface CropRect {
   x: number
@@ -69,6 +75,7 @@ export const $targetFileSize = atom<number | null>(null)
 export const $activePanel = atom<'resize' | 'crop' | 'adjust' | 'format'>('resize')
 export const $isComparing = atom(false)
 export const $zoom = atom(1)
+export const $zoomMode = atom<ZoomMode>('fit')
 export const $isCropping = atom(false)
 
 // Temporary crop selection (not committed to history until Apply)
@@ -164,7 +171,8 @@ export const actions = {
     $format.set(validFormat)
     $past.set([])
     $future.set([])
-    
+    $zoomMode.set('fit')
+
     persistState()
   },
 
@@ -260,7 +268,21 @@ export const actions = {
 
   setPanel: (p: 'resize' | 'crop' | 'adjust' | 'format') => $activePanel.set(p),
   toggleCompare: () => $isComparing.set(!$isComparing.get()),
-  setZoom: (z: number) => $zoom.set(z),
+  setZoom(z: number) {
+    $zoomMode.set('manual')
+    $zoom.set(clampZoom(z))
+  },
+  setZoomMode: (m: Exclude<ZoomMode, 'manual'>) => $zoomMode.set(m),
+  zoomIn() {
+    const z = $zoom.get()
+    actions.setZoom(ZOOM_PRESETS.find(p => p > z + 0.001) ?? MAX_ZOOM)
+  },
+  zoomOut() {
+    const z = $zoom.get()
+    actions.setZoom([...ZOOM_PRESETS].reverse().find(p => p < z - 0.001) ?? MIN_ZOOM)
+  },
+  /** Applies a computed zoom for fit/fill modes without switching to manual */
+  syncZoom: (z: number) => $zoom.set(clampZoom(z)),
   setIsCropping: (v: boolean) => $isCropping.set(v),
   
   async restoreFromStorage(): Promise<boolean> {
@@ -285,7 +307,8 @@ export const actions = {
       $quality.set(quality || 1)
       $past.set([])
       $future.set([])
-      
+      $zoomMode.set('fit')
+
       return true
     } catch (e) {
       console.warn('Failed to restore image editor state:', e)

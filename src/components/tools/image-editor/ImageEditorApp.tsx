@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useStore } from '@nanostores/react'
-import { $originalImage, $zoom, actions } from '@/stores/image-editor'
+import { $originalImage, actions } from '@/stores/image-editor'
 import { Spinner } from '@heroui/react'
 import DropZone from './DropZone'
 import Toolbar from './Toolbar'
@@ -25,8 +25,9 @@ export default function ImageEditorApp() {
       else if (isMod && e.key === 'y') { e.preventDefault(); actions.redo() }
       else if (isMod && e.key === 's') { e.preventDefault(); actions.setPanel('format') }
       else if (e.key === '0' && isMod) { e.preventDefault(); actions.setZoom(1) }
-      else if (e.key === '=' && isMod) { e.preventDefault(); actions.setZoom(Math.min(3, ($zoom.get() || 1) + 0.25)) }
-      else if (e.key === '-' && isMod) { e.preventDefault(); actions.setZoom(Math.max(0.1, ($zoom.get() || 1) - 0.25)) }
+      else if (e.code === 'Digit1' && e.shiftKey && !isMod) { e.preventDefault(); actions.setZoomMode('fit') }
+      else if (e.key === '=' && isMod) { e.preventDefault(); actions.zoomIn() }
+      else if (e.key === '-' && isMod) { e.preventDefault(); actions.zoomOut() }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)

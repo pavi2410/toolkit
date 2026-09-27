@@ -4,6 +4,7 @@ import {
   $originalImage,
   $transforms,
   $zoom,
+  $zoomMode,
   $isComparing,
   $isCropping,
   $cropSelection,
@@ -20,6 +21,8 @@ export default function ImageCanvas() {
   const originalImage = useStore($originalImage)
   const transforms = useStore($transforms)
   const zoom = useStore($zoom)
+  const zoomMode = useStore($zoomMode)
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
   const isComparing = useStore($isComparing)
   const isCropping = useStore($isCropping)
   const cropSelection = useStore($cropSelection)
@@ -62,6 +65,7 @@ export default function ImageCanvas() {
     const isRotated = transforms.rotation === 90 || transforms.rotation === 270
     canvas.width = isRotated ? height : width
     canvas.height = isRotated ? width : height
+    setCanvasSize({ width: canvas.width, height: canvas.height })
 
     ctx.save()
     ctx.translate(canvas.width / 2, canvas.height / 2)
@@ -125,8 +129,25 @@ export default function ImageCanvas() {
 
     canvas.width = originalImage.width
     canvas.height = originalImage.height
+    setCanvasSize({ width: canvas.width, height: canvas.height })
     ctx.drawImage(originalImage, 0, 0)
   }, [isComparing, originalImage])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container || zoomMode === 'manual' || !canvasSize.width || !canvasSize.height) return
+
+    const PADDING = 32
+    const update = () => {
+      const scaleX = (container.clientWidth - PADDING) / canvasSize.width
+      const scaleY = (container.clientHeight - PADDING) / canvasSize.height
+      actions.syncZoom(zoomMode === 'fit' ? Math.min(scaleX, scaleY) : Math.max(scaleX, scaleY))
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [zoomMode, canvasSize])
 
   // Crop overlay mouse handlers
   const handleCropMouseDown = (e: React.MouseEvent, mode: 'move' | 'resize') => {
@@ -179,9 +200,7 @@ export default function ImageCanvas() {
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault()
-      const delta = e.deltaY > 0 ? -0.1 : 0.1
-      const newZoom = Math.max(0.1, Math.min(3, zoom + delta))
-      actions.setZoom(newZoom)
+      actions.setZoom(zoom + (e.deltaY > 0 ? -0.1 : 0.1))
     }
   }, [zoom])
 
@@ -190,7 +209,7 @@ export default function ImageCanvas() {
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-auto flex items-center justify-center p-4"
+      className="flex flex-1 overflow-auto p-4"
       onWheel={handleWheel}
       style={{
         backgroundColor: 'var(--canvas-bg, #f3f4f6)',
@@ -207,11 +226,13 @@ export default function ImageCanvas() {
         ['--checker-color' as string]: 'color-mix(in srgb, rgb(31 41 55) 100%, transparent)',
       }}
     >
-      <div className="relative" style={{ transform: `scale(${zoom})`, transformOrigin: 'center' }}>
+      <div className="relative m-auto shrink-0">
         <canvas
           ref={canvasRef}
-          className="shadow-lg"
+          className="block shadow-lg"
           style={{
+            width: canvasSize.width * zoom,
+            height: canvasSize.height * zoom,
             imageRendering: zoom > 1 ? 'pixelated' : 'auto',
           }}
         />

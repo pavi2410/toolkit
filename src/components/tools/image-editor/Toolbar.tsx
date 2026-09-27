@@ -4,8 +4,10 @@ import {
   $canRedo,
   $hasChanges,
   $zoom,
+  $zoomMode,
   $isComparing,
   $originalMeta,
+  ZOOM_PRESETS,
   actions,
 } from '@/stores/image-editor'
 import { Button, ButtonGroup, Separator, Select, ListBox, Toolbar as HuiToolbar } from '@heroui/react'
@@ -17,14 +19,15 @@ import IconZoomIn from '~icons/tabler/zoom-in'
 import IconZoomOut from '~icons/tabler/zoom-out'
 import IconEye from '~icons/tabler/eye'
 import IconX from '~icons/tabler/x'
-
-const ZOOM_OPTIONS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3]
-
 export default function Toolbar() {
   const canUndo = useStore($canUndo)
   const canRedo = useStore($canRedo)
   const hasChanges = useStore($hasChanges)
   const zoom = useStore($zoom)
+  const zoomMode = useStore($zoomMode)
+  const zoomKey = zoomMode === 'manual'
+    ? ZOOM_PRESETS.includes(zoom) ? String(zoom) : null
+    : zoomMode
   const isComparing = useStore($isComparing)
   const meta = useStore($originalMeta)
 
@@ -55,16 +58,20 @@ export default function Toolbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button isIconOnly size="sm" variant="tertiary" onPress={() => actions.setZoom(Math.max(0.1, zoom - 0.25))} aria-label="Zoom out">
+          <Button isIconOnly size="sm" variant="tertiary" onPress={actions.zoomOut} aria-label="Zoom out">
             <IconZoomOut className="w-4 h-4" />
           </Button>
 
           <Select
-            value={String(zoom)}
-            onChange={k => k && actions.setZoom(parseFloat(k as string))}
+            value={zoomKey}
+            placeholder={`${Math.round(zoom * 100)}%`}
+            onChange={k => {
+              if (k === 'fit' || k === 'fill') actions.setZoomMode(k)
+              else if (k) actions.setZoom(parseFloat(k as string))
+            }}
             aria-label="Zoom level"
             variant="secondary"
-            className="w-24"
+            className="w-28"
           >
             <Select.Trigger>
               <Select.Value />
@@ -72,15 +79,16 @@ export default function Toolbar() {
             </Select.Trigger>
             <Select.Popover>
               <ListBox>
-                <ListBox.Item id="1">Fit</ListBox.Item>
-                {ZOOM_OPTIONS.map(z => (
+                <ListBox.Item id="fit" textValue="Fit">Fit</ListBox.Item>
+                <ListBox.Item id="fill" textValue="Fill">Fill</ListBox.Item>
+                {ZOOM_PRESETS.map(z => (
                   <ListBox.Item key={z} id={String(z)}>{Math.round(z * 100)}%</ListBox.Item>
                 ))}
               </ListBox>
             </Select.Popover>
           </Select>
 
-          <Button isIconOnly size="sm" variant="tertiary" onPress={() => actions.setZoom(Math.min(3, zoom + 0.25))} aria-label="Zoom in">
+          <Button isIconOnly size="sm" variant="tertiary" onPress={actions.zoomIn} aria-label="Zoom in">
             <IconZoomIn className="w-4 h-4" />
           </Button>
 
