@@ -3,12 +3,14 @@ import { buttonVariants } from '@heroui/styles'
 import { Link } from '@tanstack/react-router'
 import IconArrowLeft from '~icons/tabler/arrow-left'
 import ThemeToggle from './ThemeToggle'
+import ShortcutsButton from './shortcuts/ShortcutsButton'
 
 interface ToolHeaderProps {
   title: string
+  toolPath?: string
 }
 
-export default function ToolHeader({ title }: ToolHeaderProps) {
+export default function ToolHeader({ title, toolPath }: ToolHeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-transparent px-3 pt-3 pb-2 sm:px-4">
       <a
@@ -40,7 +42,9 @@ export default function ToolHeader({ title }: ToolHeaderProps) {
           </Toolbar>
         </div>
 
-        <Toolbar isAttached aria-label="Tool page settings" className="shrink-0 px-2">
+        <Toolbar isAttached aria-label="Tool page settings" className="flex shrink-0 items-center gap-1 px-1">
+          <ShortcutsButton toolPath={toolPath} toolName={title} />
+          <Separator orientation="vertical" className="h-5" />
           <ThemeToggle />
         </Toolbar>
       </div>

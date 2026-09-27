@@ -14,7 +14,7 @@ function ToolLayout() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-surface-secondary">
-      <ToolHeader title={activeTool?.name ?? 'Toolkit'} />
+      <ToolHeader title={activeTool?.name ?? 'Toolkit'} toolPath={activeTool?.to} />
 
       <main id="main-content" className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden [&>*]:min-h-0 [&>*]:w-full [&>*]:flex-1">
