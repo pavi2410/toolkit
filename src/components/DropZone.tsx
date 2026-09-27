@@ -21,6 +21,8 @@ interface DropZoneProps {
   onFiles: (files: FileList) => void
   /** Controlled error message; null / undefined hides the alert */
   error?: string | null
+  /** Extra controls rendered below the drop target */
+  actions?: ReactNode
 }
 
 export default function DropZone({
@@ -33,6 +35,7 @@ export default function DropZone({
   supportsPaste = false,
   onFiles,
   error,
+  actions,
 }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -140,6 +143,8 @@ export default function DropZone({
               </Chip>
             </div>
           </button>
+
+          {actions && <div className="flex flex-wrap justify-center gap-2">{actions}</div>}
         </div>
       </Surface>
 
