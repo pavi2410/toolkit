@@ -5,6 +5,7 @@ import IconFileTypePdf from '~icons/tabler/file-type-pdf'
 import IconGitCompare from '~icons/tabler/git-compare'
 import IconPhoto from '~icons/tabler/photo'
 import IconQrcode from '~icons/tabler/qrcode'
+import IconReceipt from '~icons/tabler/receipt-2'
 import IconTag from '~icons/tabler/tag'
 
 export const toolItems = [
@@ -43,6 +44,12 @@ export const toolItems = [
     description: 'Generate QR codes for URLs, text, Wi-Fi, email, and phone numbers.',
     to: '/qr-code',
     Icon: IconQrcode,
+  },
+  {
+    name: 'Split',
+    description: 'Split shared expenses and see who owes whom.',
+    to: '/split',
+    Icon: IconReceipt,
   },
 ] as const
 
