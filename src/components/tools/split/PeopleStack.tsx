@@ -1,9 +1,9 @@
-import { Button } from '@heroui/react'
+import { Avatar, AvatarGroup, Button } from '@heroui/react'
 import IconUsers from '~icons/tabler/users'
-import PersonAvatar from './PersonAvatar'
+import { avatarUri } from './PersonAvatar'
 import type { Person } from './types'
 
-const MAX = 5
+const MAX = 3
 
 interface PeopleStackProps {
   people: Person[]
@@ -33,16 +33,14 @@ export default function PeopleStack({ people, onPress }: PeopleStackProps) {
         onClick={onPress}
         className="hidden items-center rounded-full p-0.5 outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-focus sm:flex"
       >
-        {people.slice(0, MAX).map((p) => (
-          <span key={p.id} className="-ml-2 rounded-full ring-2 ring-surface first:ml-0">
-            <PersonAvatar person={p} />
-          </span>
-        ))}
-        {people.length > MAX && (
-          <span className="-ml-2 flex h-8 min-w-8 items-center justify-center rounded-full bg-surface-secondary px-1 text-xs text-muted ring-2 ring-surface">
-            +{people.length - MAX}
-          </span>
-        )}
+        <AvatarGroup size="sm" max={MAX} overlap="ring">
+          {people.map((p) => (
+            <Avatar key={p.id}>
+              <Avatar.Image src={avatarUri(p.name.trim().toLowerCase())} alt="" />
+              <Avatar.Fallback>{p.name.slice(0, 1).toUpperCase()}</Avatar.Fallback>
+            </Avatar>
+          ))}
+        </AvatarGroup>
       </button>
     </>
   )

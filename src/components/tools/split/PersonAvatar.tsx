@@ -6,7 +6,7 @@ import type { Person } from './types'
 const style = new Style(critters)
 const cache = new Map<string, string>()
 
-function avatarUri(seed: string) {
+export function avatarUri(seed: string) {
   let uri = cache.get(seed)
   if (!uri) {
     uri = new DiceAvatar(style, { seed }).toDataUri()
