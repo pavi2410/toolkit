@@ -25,7 +25,7 @@ export default function Balances({ people, expenses }: BalancesProps) {
               <li key={p.id} className="flex justify-between">
                 <span>{p.name}</span>
                 <span className={`tabular-nums ${v > 0 ? 'text-success' : v < 0 ? 'text-danger' : 'text-muted'}`}>
-                  {v > 0 ? '+' : ''}{fmt(v)}
+                  {v > 0 ? `gets ${fmt(v)}` : v < 0 ? `owes ${fmt(-v)}` : 'settled'}
                 </span>
               </li>
             )
