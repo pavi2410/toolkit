@@ -9,6 +9,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
+import { SITE_DESCRIPTION, seo } from '../utils/seo'
 
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -28,11 +29,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
-      {
-        title: 'Toolkit | pavi2410',
-      },
+      { name: 'theme-color', content: '#f5f5f7' },
+      // site-wide defaults; routes override these via seo()
+      ...seo({ title: 'Toolkit | pavi2410', description: SITE_DESCRIPTION, path: '/' }).meta,
     ],
     links: [
+      { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+      { rel: 'icon', href: '/favicon.ico', sizes: '48x48' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      { rel: 'manifest', href: '/manifest.json' },
       {
         rel: 'stylesheet',
         href: appCss,

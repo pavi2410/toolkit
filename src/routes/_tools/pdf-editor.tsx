@@ -1,17 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import PdfEditorTool from '#/components/tools/pdf-editor'
+import { seo } from '#/utils/seo'
 
 export const Route = createFileRoute('/_tools/pdf-editor')({
   ssr: false,
-  head: () => ({
-    meta: [
-      { title: 'PDF Editor | Toolkit' },
-      {
-        name: 'description',
-        content:
-          'Merge, split, rotate, reorder, and unlock PDF files directly in your browser.',
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: 'PDF Editor | Toolkit',
+      description:
+        'Merge, split, rotate, reorder, and unlock PDF files directly in your browser.',
+      path: '/pdf-editor',
+    }),
   component: PdfEditorTool,
 })

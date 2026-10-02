@@ -2,8 +2,12 @@ import { createFileRoute } from '@tanstack/react-router'
 import Footer from '#/components/Footer'
 import Header from '#/components/Header'
 import { ToolDirectory } from '#/components/ToolDirectory'
+import { SITE_DESCRIPTION, seo } from '#/utils/seo'
 
-export const Route = createFileRoute('/')({ component: HomePage })
+export const Route = createFileRoute('/')({
+  head: () => seo({ title: 'Toolkit | pavi2410', description: SITE_DESCRIPTION, path: '/' }),
+  component: HomePage,
+})
 
 function HomePage() {
   return (
