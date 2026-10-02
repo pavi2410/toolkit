@@ -1,4 +1,6 @@
 import { Button } from '@heroui/react'
+import IconArrowBackUp from '~icons/tabler/arrow-back-up'
+import IconPencil from '~icons/tabler/pencil'
 import IconTrash from '~icons/tabler/trash'
 import { fmt } from './calc'
 import type { Expense, Person } from './types'
@@ -6,10 +8,11 @@ import type { Expense, Person } from './types'
 interface ExpenseListProps {
   people: Person[]
   expenses: Expense[]
+  onEdit: (e: Expense) => void
   onRemove: (id: string) => void
 }
 
-export default function ExpenseList({ people, expenses, onRemove }: ExpenseListProps) {
+export default function ExpenseList({ people, expenses, onEdit, onRemove }: ExpenseListProps) {
   const name = (id: string) => people.find((p) => p.id === id)?.name ?? '?'
 
   return (
@@ -27,10 +30,23 @@ export default function ExpenseList({ people, expenses, onRemove }: ExpenseListP
                   : `${name(e.paidBy)} paid · split ${Object.keys(e.shares).length} way`}
               </p>
             </div>
-            <span className="text-sm tabular-nums">{fmt(e.amount)}</span>
-            <Button isIconOnly size="sm" variant="ghost" aria-label={`Delete ${e.title}`} onPress={() => onRemove(e.id)}>
-              <IconTrash className="h-4 w-4" />
-            </Button>
+            <span className="w-20 shrink-0 text-right text-sm tabular-nums">{fmt(e.amount)}</span>
+            <div className="flex w-[4.5rem] shrink-0 justify-end">
+              {!e.settlement && (
+                <Button isIconOnly size="sm" variant="ghost" aria-label={`Edit ${e.title}`} onPress={() => onEdit(e)}>
+                  <IconPencil className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                isIconOnly
+                size="sm"
+                variant="ghost"
+                aria-label={`${e.settlement ? 'Revert' : 'Delete'} ${e.title}`}
+                onPress={() => onRemove(e.id)}
+              >
+                {e.settlement ? <IconArrowBackUp className="h-4 w-4" /> : <IconTrash className="h-4 w-4" />}
+              </Button>
+            </div>
           </li>
         ))}
       </ul>

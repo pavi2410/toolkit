@@ -76,6 +76,10 @@ export function useSplit() {
     setState((s) => ({ ...s, expenses: [{ ...e, id: crypto.randomUUID() }, ...s.expenses] }))
   }, [setState])
 
+  const updateExpense = useCallback((id: string, e: Omit<Expense, 'id'>) => {
+    setState((s) => ({ ...s, expenses: s.expenses.map((x) => (x.id === id ? { ...e, id } : x)) }))
+  }, [setState])
+
   const settle = useCallback((t: Transfer) => {
     addExpense({
       title: 'Settlement',
@@ -92,5 +96,5 @@ export function useSplit() {
 
   const reset = useCallback(() => setState((s) => (s.people.length || s.expenses.length ? EMPTY : s)), [setState])
 
-  return { ...state, canUndo: past.length > 0, canRedo: future.length > 0, undo, redo, addPeople, removePerson, addExpense, settle, removeExpense, reset }
+  return { ...state, canUndo: past.length > 0, canRedo: future.length > 0, undo, redo, addPeople, removePerson, addExpense, updateExpense, settle, removeExpense, reset }
 }

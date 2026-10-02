@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Balances from './Balances'
+import type { Expense } from './types'
 import ExpenseForm from './ExpenseForm'
 import ExpenseList from './ExpenseList'
 import People from './People'
@@ -7,8 +8,9 @@ import Toolbar from './Toolbar'
 import { useSplit } from './useSplit'
 
 export default function SplitTool() {
-  const { people, expenses, addPeople, removePerson, addExpense, settle, removeExpense, reset, canUndo, canRedo, undo, redo } = useSplit()
-  const [adding, setAdding] = useState(false)
+  const { people, expenses, addPeople, removePerson, addExpense, updateExpense, settle, removeExpense, reset, canUndo, canRedo, undo, redo } = useSplit()
+  // undefined = closed, null = new expense, Expense = editing
+  const [editing, setEditing] = useState<Expense | null | undefined>(undefined)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -30,11 +32,11 @@ export default function SplitTool() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-surface-secondary">
-      <Toolbar canAdd={people.length > 1} onAdd={() => setAdding(true)} canReset={people.length > 0 || expenses.length > 0} onReset={reset} canUndo={canUndo} canRedo={canRedo} onUndo={undo} onRedo={redo} />
+      <Toolbar canAdd={people.length > 1} onAdd={() => setEditing(null)} canReset={people.length > 0 || expenses.length > 0} onReset={reset} canUndo={canUndo} canRedo={canRedo} onUndo={undo} onRedo={redo} />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
         <div className="min-w-0 space-y-6 bg-surface p-4 md:w-1/2 md:overflow-y-auto md:border-r md:border-border">
-          <ExpenseList people={people} expenses={expenses} onRemove={removeExpense} />
+          <ExpenseList people={people} expenses={expenses} onEdit={setEditing} onRemove={removeExpense} />
         </div>
         <div className="min-w-0 space-y-6 p-4 md:w-1/2 md:overflow-y-auto">
           <People people={people} expenses={expenses} onAdd={addPeople} onRemove={removePerson} />
@@ -42,7 +44,13 @@ export default function SplitTool() {
         </div>
       </div>
 
-      <ExpenseForm isOpen={adding} people={people} onAdd={addExpense} onClose={() => setAdding(false)} />
+      <ExpenseForm
+        isOpen={editing !== undefined}
+        people={people}
+        expense={editing ?? undefined}
+        onSave={(e) => (editing ? updateExpense(editing.id, e) : addExpense(e))}
+        onClose={() => setEditing(undefined)}
+      />
     </div>
   )
 }

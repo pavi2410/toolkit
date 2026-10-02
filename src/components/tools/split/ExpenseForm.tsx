@@ -6,17 +6,19 @@ import type { Expense, Person } from './types'
 interface ExpenseFormProps {
   isOpen: boolean
   people: Person[]
-  onAdd: (e: Omit<Expense, 'id'>) => void
+  /** expense being edited; omit to create */
+  expense?: Expense
+  onSave: (e: Omit<Expense, 'id'>) => void
   onClose: () => void
 }
 
-export default function ExpenseForm({ isOpen, people, onAdd, onClose }: ExpenseFormProps) {
+export default function ExpenseForm({ isOpen, people, expense, onSave, onClose }: ExpenseFormProps) {
   return (
     <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Modal.Backdrop isDismissable>
         <Modal.Container size="md">
           <Modal.Dialog>
-            <Fields people={people} onAdd={onAdd} onClose={onClose} />
+            <Fields people={people} expense={expense} onSave={onSave} onClose={onClose} />
           </Modal.Dialog>
         </Modal.Container>
       </Modal.Backdrop>
@@ -24,13 +26,22 @@ export default function ExpenseForm({ isOpen, people, onAdd, onClose }: ExpenseF
   )
 }
 
-function Fields({ people, onAdd, onClose }: Omit<ExpenseFormProps, 'isOpen'>) {
-  const [title, setTitle] = useState('')
-  const [amount, setAmount] = useState('')
-  const [paidBy, setPaidBy] = useState('')
-  const [picked, setPicked] = useState<string[] | null>(null) // null = everyone
-  const [custom, setCustom] = useState(false)
-  const [amounts, setAmounts] = useState<Record<string, string>>({})
+function isCustom(e: Expense) {
+  const eq = equalShares(e.amount, Object.keys(e.shares))
+  return Object.entries(e.shares).some(([id, v]) => eq[id] !== v)
+}
+
+function Fields({ people, expense, onSave, onClose }: Omit<ExpenseFormProps, 'isOpen'>) {
+  const [title, setTitle] = useState(expense?.title ?? '')
+  const [amount, setAmount] = useState(expense ? fmt(expense.amount) : '')
+  const [paidBy, setPaidBy] = useState(expense?.paidBy ?? '')
+  const [picked, setPicked] = useState<string[] | null>(expense ? Object.keys(expense.shares) : null) // null = everyone
+  const [custom, setCustom] = useState(expense ? isCustom(expense) : false)
+  const [amounts, setAmounts] = useState<Record<string, string>>(
+    expense && isCustom(expense)
+      ? Object.fromEntries(Object.entries(expense.shares).map(([id, v]) => [id, fmt(v)]))
+      : {},
+  )
   const [tried, setTried] = useState(false)
 
   const payer = people.some((p) => p.id === paidBy) ? paidBy : (people[0]?.id ?? '')
@@ -61,14 +72,14 @@ function Fields({ people, onAdd, onClose }: Omit<ExpenseFormProps, 'isOpen'>) {
     const shares = custom
       ? Object.fromEntries(ids.map((id) => [id, toCents(amounts[id] ?? '')]))
       : equal
-    onAdd({ title: title.trim(), amount: total, paidBy: payer, shares })
+    onSave({ title: title.trim(), amount: total, paidBy: payer, shares })
     onClose()
   }
 
   return (
     <form onSubmit={submit} className="contents">
       <Modal.Header>
-        <Modal.Heading>New expense</Modal.Heading>
+        <Modal.Heading>{expense ? 'Edit expense' : 'New expense'}</Modal.Heading>
       </Modal.Header>
       <Modal.Body className="space-y-4">
         <div className="flex gap-2">
@@ -152,7 +163,7 @@ function Fields({ people, onAdd, onClose }: Omit<ExpenseFormProps, 'isOpen'>) {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onPress={onClose}>Cancel</Button>
-        <Button type="submit" variant="primary">Add expense</Button>
+        <Button type="submit" variant="primary">{expense ? 'Save' : 'Add expense'}</Button>
       </Modal.Footer>
     </form>
   )
