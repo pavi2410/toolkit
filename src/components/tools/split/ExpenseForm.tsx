@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button, Checkbox, CheckboxGroup, Input, Label, ListBox, Modal, Select, Switch } from '@heroui/react'
 import { equalShares, fmt, toCents } from './calc'
+import PersonAvatar from './PersonAvatar'
 import type { Expense, Person } from './types'
 
 interface ExpenseFormProps {
@@ -114,7 +115,7 @@ function Fields({ people, expense, onSave, onClose }: Omit<ExpenseFormProps, 'is
           </Select.Trigger>
           <Select.Popover>
             <ListBox items={people}>
-              {(p) => <ListBox.Item id={p.id} textValue={p.name}>{p.name}<ListBox.ItemIndicator /></ListBox.Item>}
+              {(p) => <ListBox.Item id={p.id} textValue={p.name}><span className="flex items-center gap-2"><PersonAvatar person={p} />{p.name}</span><ListBox.ItemIndicator /></ListBox.Item>}
             </ListBox>
           </Select.Popover>
         </Select>
@@ -135,6 +136,7 @@ function Fields({ people, expense, onSave, onClose }: Omit<ExpenseFormProps, 'is
                 <Checkbox value={p.id} className="min-w-0 flex-1">
                   <Checkbox.Content className="flex items-center gap-2">
                     <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                    <PersonAvatar person={p} />
                     <span className="truncate text-sm">{p.name}</span>
                   </Checkbox.Content>
                 </Checkbox>

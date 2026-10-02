@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Button } from '@heroui/react'
 import IconCheck from '~icons/tabler/check'
 import { balances, fmt, settle } from './calc'
+import PersonAvatar from './PersonAvatar'
 import type { Expense, Person, Transfer } from './types'
 
 interface BalancesProps {
@@ -16,7 +17,7 @@ export default function Balances({ people, expenses, onSettle }: BalancesProps) 
     return { bal, transfers: settle(bal) }
   }, [expenses])
   const due = transfers.reduce((s, t) => s + t.amount, 0)
-  const name = (id: string) => people.find((p) => p.id === id)?.name ?? '?'
+  const person = (id: string) => people.find((p) => p.id === id)
 
   return (
     <section className="space-y-4">
@@ -27,7 +28,7 @@ export default function Balances({ people, expenses, onSettle }: BalancesProps) 
             const v = bal[p.id] ?? 0
             return (
               <li key={p.id} className="flex justify-between">
-                <span>{p.name}</span>
+                <span className="flex items-center gap-2"><PersonAvatar person={p} />{p.name}</span>
                 <span className={`tabular-nums ${v > 0 ? 'text-success' : v < 0 ? 'text-danger' : 'text-muted'}`}>
                   {v > 0 ? `gets ${fmt(v)}` : v < 0 ? `owes ${fmt(-v)}` : 'settled'}
                 </span>
@@ -48,7 +49,9 @@ export default function Balances({ people, expenses, onSettle }: BalancesProps) 
           <ul className="space-y-1 text-sm">
             {transfers.map((t) => (
               <li key={`${t.from}-${t.to}`} className="flex items-center gap-2">
-                <span className="min-w-0 flex-1 truncate">{name(t.from)} → {name(t.to)}</span>
+                <span className="flex min-w-0 flex-1 items-center gap-1.5 truncate">
+                  <Who p={person(t.from)} /> → <Who p={person(t.to)} />
+                </span>
                 <span className="w-20 shrink-0 text-right tabular-nums">{fmt(t.amount)}</span>
                 <Button size="sm" variant="tertiary" onPress={() => onSettle(t)}>
                   <IconCheck className="h-4 w-4" />
@@ -60,5 +63,16 @@ export default function Balances({ people, expenses, onSettle }: BalancesProps) 
         )}
       </div>
     </section>
+  )
+}
+
+function Who({ p }: { p?: Person }) {
+  return p ? (
+    <span className="flex items-center gap-1.5">
+      <PersonAvatar person={p} />
+      {p.name}
+    </span>
+  ) : (
+    <span>?</span>
   )
 }
