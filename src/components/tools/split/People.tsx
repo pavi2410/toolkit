@@ -25,7 +25,7 @@ export default function People({ people, expenses, onAdd, onRemove }: PeopleProp
     <section className="space-y-3">
       <h2 className="text-sm font-semibold text-foreground">People</h2>
       <form onSubmit={submit} className="flex gap-2">
-        <Input aria-label="Name" placeholder="Add person" value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1" />
+        <Input aria-label="Name" placeholder="Add people (comma-separated)" value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 flex-1" />
         <Button type="submit" size="sm" variant="primary" isDisabled={!name.trim()}>
           Add
         </Button>

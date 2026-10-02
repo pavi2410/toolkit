@@ -19,10 +19,13 @@ export function useSplit() {
     localStorage.setItem(KEY, JSON.stringify(state))
   }, [state])
 
-  const addPerson = useCallback((name: string) => {
-    const n = name.trim()
-    if (!n) return
-    setState((s) => ({ ...s, people: [...s.people, { id: crypto.randomUUID(), name: n }] }))
+  const addPeople = useCallback((input: string) => {
+    const names = input.split(',').map((n) => n.trim()).filter(Boolean)
+    if (!names.length) return
+    setState((s) => ({
+      ...s,
+      people: [...s.people, ...names.map((name) => ({ id: crypto.randomUUID(), name }))],
+    }))
   }, [])
 
   const removePerson = useCallback((id: string) => {
@@ -43,5 +46,5 @@ export function useSplit() {
 
   const reset = useCallback(() => setState(EMPTY), [])
 
-  return { ...state, addPerson, removePerson, addExpense, removeExpense, reset }
+  return { ...state, addPeople, removePerson, addExpense, removeExpense, reset }
 }
