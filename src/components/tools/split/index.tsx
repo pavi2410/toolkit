@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import Balances from './Balances'
 import type { Expense } from './types'
 import ExpenseForm from './ExpenseForm'
 import ExpenseList from './ExpenseList'
 import PeopleModal from './PeopleModal'
+import Summary from './Summary'
 import Toolbar from './Toolbar'
 import { useSplit } from './useSplit'
 
@@ -51,11 +51,11 @@ export default function SplitTool() {
       />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
-        <div className="min-w-0 space-y-6 bg-surface p-4 md:w-1/2 md:overflow-y-auto md:border-r md:border-border">
-          <ExpenseList people={people} expenses={expenses} onEdit={setEditing} onRemove={removeExpense} />
+        <div className="min-w-0 p-4 md:w-1/2 md:overflow-y-auto">
+          <Summary people={people} expenses={expenses} onSettle={settle} />
         </div>
-        <div className="min-w-0 space-y-6 p-4 md:w-1/2 md:overflow-y-auto">
-          <Balances people={people} expenses={expenses} onSettle={settle} />
+        <div className="min-w-0 bg-surface p-4 md:w-1/2 md:overflow-y-auto md:border-l md:border-border">
+          <ExpenseList people={people} expenses={expenses} onEdit={setEditing} onRemove={removeExpense} />
         </div>
       </div>
 

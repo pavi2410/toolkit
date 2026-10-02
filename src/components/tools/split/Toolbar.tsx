@@ -38,9 +38,9 @@ export default function Toolbar({ people, onPeople, canAdd, canReset, canUndo, c
           <Button isIconOnly size="sm" variant="tertiary" aria-label="Redo" onPress={onRedo} isDisabled={!canRedo}>
             <IconArrowForwardUp className="h-4 w-4" />
           </Button>
-          <Button size="sm" variant="tertiary" onPress={onReset} isDisabled={!canReset}>
+          <Button size="sm" variant="tertiary" aria-label="Reset" onPress={onReset} isDisabled={!canReset}>
             <IconTrash className="h-4 w-4" />
-            Reset
+            <span className="hidden sm:inline">Reset</span>
           </Button>
         </div>
       </HuiToolbar>
