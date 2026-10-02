@@ -15,7 +15,7 @@ export default function ExpenseList({ people, expenses, onRemove }: ExpenseListP
   return (
     <section className="space-y-2">
       <h2 className="text-sm font-semibold text-foreground">Expenses</h2>
-      {expenses.length === 0 && <p className="text-sm text-muted">No expenses yet.</p>}
+      {expenses.length === 0 && <p className="text-sm text-muted">No expenses yet. Add at least two people, then add an expense.</p>}
       <ul className="divide-y divide-border">
         {expenses.map((e) => (
           <li key={e.id} className="flex items-center gap-3 py-2">

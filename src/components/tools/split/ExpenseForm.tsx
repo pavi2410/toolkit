@@ -1,14 +1,30 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Input } from '@heroui/react'
+import { Button, Input, Modal } from '@heroui/react'
 import { equalShares, fmt, toCents } from './calc'
 import type { Expense, Person } from './types'
 
 interface ExpenseFormProps {
+  isOpen: boolean
   people: Person[]
   onAdd: (e: Omit<Expense, 'id'>) => void
+  onClose: () => void
 }
 
-export default function ExpenseForm({ people, onAdd }: ExpenseFormProps) {
+export default function ExpenseForm({ isOpen, people, onAdd, onClose }: ExpenseFormProps) {
+  return (
+    <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Modal.Backdrop isDismissable>
+        <Modal.Container size="md">
+          <Modal.Dialog>
+            <Fields people={people} onAdd={onAdd} onClose={onClose} />
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
+  )
+}
+
+function Fields({ people, onAdd, onClose }: Omit<ExpenseFormProps, 'isOpen'>) {
   const [title, setTitle] = useState('')
   const [amount, setAmount] = useState('')
   const [paidBy, setPaidBy] = useState('')
@@ -32,20 +48,17 @@ export default function ExpenseForm({ people, onAdd }: ExpenseFormProps) {
       ? Object.fromEntries(ids.map((id) => [id, toCents(amounts[id] ?? '')]))
       : equalShares(total, ids)
     onAdd({ title: title.trim(), amount: total, paidBy: payer, shares })
-    setTitle('')
-    setAmount('')
-    setAmounts({})
-  }
-
-  if (people.length < 2) {
-    return <p className="text-sm text-muted">Add at least two people to start adding expenses.</p>
+    onClose()
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3">
-      <h2 className="text-sm font-semibold text-foreground">New expense</h2>
+    <form onSubmit={submit} className="contents">
+      <Modal.Header>
+        <Modal.Heading>New expense</Modal.Heading>
+      </Modal.Header>
+      <Modal.Body className="space-y-3">
       <div className="flex gap-2">
-        <Input aria-label="Description" placeholder="Description" value={title} onChange={(e) => setTitle(e.target.value)} className="min-w-0 flex-1" />
+        <Input aria-label="Description" placeholder="Description" autoFocus value={title} onChange={(e) => setTitle(e.target.value)} className="min-w-0 flex-1" />
         <Input aria-label="Amount" placeholder="0.00" type="number" min="0" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-28" />
       </div>
 
@@ -97,9 +110,11 @@ export default function ExpenseForm({ people, onAdd }: ExpenseFormProps) {
         )}
       </div>
 
-      <Button type="submit" variant="primary" isDisabled={!valid}>
-        Add expense
-      </Button>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onPress={onClose}>Cancel</Button>
+        <Button type="submit" variant="primary" isDisabled={!valid}>Add expense</Button>
+      </Modal.Footer>
     </form>
   )
 }
