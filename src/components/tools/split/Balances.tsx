@@ -15,6 +15,7 @@ export default function Balances({ people, expenses, onSettle }: BalancesProps) 
     const bal = balances(expenses)
     return { bal, transfers: settle(bal) }
   }, [expenses])
+  const due = transfers.reduce((s, t) => s + t.amount, 0)
   const name = (id: string) => people.find((p) => p.id === id)?.name ?? '?'
 
   return (
@@ -37,7 +38,10 @@ export default function Balances({ people, expenses, onSettle }: BalancesProps) 
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-sm font-semibold text-foreground">Settle up</h2>
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-foreground">Settle up</h2>
+          {due > 0 && <span className="text-sm text-muted">Total due <span className="font-medium text-foreground tabular-nums">{fmt(due)}</span></span>}
+        </div>
         {transfers.length === 0 ? (
           <p className="text-sm text-muted">All settled.</p>
         ) : (

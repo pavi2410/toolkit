@@ -13,11 +13,15 @@ interface ExpenseListProps {
 }
 
 export default function ExpenseList({ people, expenses, onEdit, onRemove }: ExpenseListProps) {
+  const total = expenses.reduce((s, e) => (e.settlement ? s : s + e.amount), 0)
   const name = (id: string) => people.find((p) => p.id === id)?.name ?? '?'
 
   return (
     <section className="space-y-2">
-      <h2 className="text-sm font-semibold text-foreground">Expenses</h2>
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-sm font-semibold text-foreground">Expenses</h2>
+        {total > 0 && <span className="text-sm text-muted">Total <span className="font-medium text-foreground tabular-nums">{fmt(total)}</span></span>}
+      </div>
       {expenses.length === 0 && <p className="text-sm text-muted">No expenses yet. Add at least two people, then add an expense.</p>}
       <ul className="divide-y divide-border">
         {expenses.map((e) => (
