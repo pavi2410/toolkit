@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Input } from '@heroui/react'
-import IconX from '~icons/tabler/x'
+import { Button, Input, Tag, TagGroup } from '@heroui/react'
 import type { Expense, Person } from './types'
 
 interface PeopleProps {
@@ -30,23 +29,18 @@ export default function People({ people, expenses, onAdd, onRemove }: PeopleProp
           Add
         </Button>
       </form>
-      <ul className="flex flex-wrap gap-2">
-        {people.map((p) => (
-          <li key={p.id} className="flex items-center gap-1 rounded-full bg-surface-secondary py-1 pl-3 pr-1 text-sm">
-            {p.name}
-            <Button
-              isIconOnly
-              size="sm"
-              variant="ghost"
-              aria-label={`Remove ${p.name}`}
-              isDisabled={inUse(p.id)}
-              onPress={() => onRemove(p.id)}
-            >
-              <IconX className="h-3 w-3" />
-            </Button>
-          </li>
-        ))}
-      </ul>
+      <TagGroup
+        aria-label="People"
+        disabledKeys={people.filter((p) => inUse(p.id)).map((p) => p.id)}
+        onRemove={(keys) => keys.forEach((k) => onRemove(String(k)))}
+      >
+        <TagGroup.List items={people}>
+          {(p) => <Tag id={p.id}>{p.name}</Tag>}
+        </TagGroup.List>
+      </TagGroup>
+      {people.some((p) => inUse(p.id)) && (
+        <p className="text-xs text-muted">People in an expense can't be removed. Delete their expenses first.</p>
+      )}
     </section>
   )
 }
