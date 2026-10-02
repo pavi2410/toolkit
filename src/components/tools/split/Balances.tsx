@@ -1,13 +1,16 @@
 import { useMemo } from 'react'
+import { Button } from '@heroui/react'
+import IconCheck from '~icons/tabler/check'
 import { balances, fmt, settle } from './calc'
-import type { Expense, Person } from './types'
+import type { Expense, Person, Transfer } from './types'
 
 interface BalancesProps {
   people: Person[]
   expenses: Expense[]
+  onSettle: (t: Transfer) => void
 }
 
-export default function Balances({ people, expenses }: BalancesProps) {
+export default function Balances({ people, expenses, onSettle }: BalancesProps) {
   const { bal, transfers } = useMemo(() => {
     const bal = balances(expenses)
     return { bal, transfers: settle(bal) }
@@ -40,9 +43,13 @@ export default function Balances({ people, expenses }: BalancesProps) {
         ) : (
           <ul className="space-y-1 text-sm">
             {transfers.map((t) => (
-              <li key={`${t.from}-${t.to}`} className="flex justify-between">
-                <span>{name(t.from)} → {name(t.to)}</span>
+              <li key={`${t.from}-${t.to}`} className="flex items-center gap-2">
+                <span className="min-w-0 flex-1 truncate">{name(t.from)} → {name(t.to)}</span>
                 <span className="tabular-nums">{fmt(t.amount)}</span>
+                <Button size="sm" variant="tertiary" onPress={() => onSettle(t)}>
+                  <IconCheck className="h-4 w-4" />
+                  Mark paid
+                </Button>
               </li>
             ))}
           </ul>

@@ -7,7 +7,7 @@ import Toolbar from './Toolbar'
 import { useSplit } from './useSplit'
 
 export default function SplitTool() {
-  const { people, expenses, addPeople, removePerson, addExpense, removeExpense, reset } = useSplit()
+  const { people, expenses, addPeople, removePerson, addExpense, settle, removeExpense, reset } = useSplit()
   const [adding, setAdding] = useState(false)
 
   return (
@@ -20,7 +20,7 @@ export default function SplitTool() {
         </div>
         <div className="min-w-0 space-y-6 p-4 md:w-1/2 md:overflow-y-auto">
           <People people={people} expenses={expenses} onAdd={addPeople} onRemove={removePerson} />
-          <Balances people={people} expenses={expenses} />
+          <Balances people={people} expenses={expenses} onSettle={settle} />
         </div>
       </div>
 

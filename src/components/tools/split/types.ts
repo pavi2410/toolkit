@@ -11,6 +11,8 @@ export interface Expense {
   paidBy: string
   /** personId -> cents owed */
   shares: Record<string, number>
+  /** payment between two people, not a shared cost */
+  settlement?: boolean
 }
 
 export interface SplitState {

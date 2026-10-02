@@ -20,9 +20,11 @@ export default function ExpenseList({ people, expenses, onRemove }: ExpenseListP
         {expenses.map((e) => (
           <li key={e.id} className="flex items-center gap-3 py-2">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{e.title}</p>
+              <p className={`truncate text-sm font-medium ${e.settlement ? 'text-success' : ''}`}>{e.title}</p>
               <p className="truncate text-xs text-muted">
-                {name(e.paidBy)} paid · split {Object.keys(e.shares).length} way
+                {e.settlement
+                  ? `${name(e.paidBy)} paid ${name(Object.keys(e.shares)[0])}`
+                  : `${name(e.paidBy)} paid · split ${Object.keys(e.shares).length} way`}
               </p>
             </div>
             <span className="text-sm tabular-nums">{fmt(e.amount)}</span>

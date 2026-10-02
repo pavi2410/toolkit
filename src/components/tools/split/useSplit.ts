@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Expense, SplitState } from './types'
+import type { Expense, SplitState, Transfer } from './types'
 
 const KEY = 'split:state'
 const EMPTY: SplitState = { people: [], expenses: [] }
@@ -40,11 +40,21 @@ export function useSplit() {
     setState((s) => ({ ...s, expenses: [{ ...e, id: crypto.randomUUID() }, ...s.expenses] }))
   }, [])
 
+  const settle = useCallback((t: Transfer) => {
+    addExpense({
+      title: 'Settlement',
+      amount: t.amount,
+      paidBy: t.from,
+      shares: { [t.to]: t.amount },
+      settlement: true,
+    })
+  }, [addExpense])
+
   const removeExpense = useCallback((id: string) => {
     setState((s) => ({ ...s, expenses: s.expenses.filter((e) => e.id !== id) }))
   }, [])
 
   const reset = useCallback(() => setState(EMPTY), [])
 
-  return { ...state, addPeople, removePerson, addExpense, removeExpense, reset }
+  return { ...state, addPeople, removePerson, addExpense, settle, removeExpense, reset }
 }
