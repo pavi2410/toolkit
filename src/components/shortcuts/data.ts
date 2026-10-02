@@ -50,6 +50,15 @@ const toolShortcuts: Record<string, ShortcutGroup[]> = {
       ],
     },
   ],
+  '/split': [
+    {
+      title: 'Editing',
+      items: [
+        { label: 'Undo', combos: [['mod', 'Z']] },
+        { label: 'Redo', combos: [['mod', 'shift', 'Z'], ['mod', 'Y']] },
+      ],
+    },
+  ],
   '/diff-checker': [editor],
   '/deco': [
     {
