@@ -94,7 +94,9 @@ export function useSplit() {
     setState((s) => ({ ...s, expenses: s.expenses.filter((e) => e.id !== id) }))
   }, [setState])
 
+  const loadState = useCallback((s: SplitState) => setState(() => s), [setState])
+
   const reset = useCallback(() => setState((s) => (s.people.length || s.expenses.length ? EMPTY : s)), [setState])
 
-  return { ...state, canUndo: past.length > 0, canRedo: future.length > 0, undo, redo, addPeople, removePerson, addExpense, updateExpense, settle, removeExpense, reset }
+  return { ...state, canUndo: past.length > 0, canRedo: future.length > 0, undo, redo, addPeople, removePerson, addExpense, updateExpense, settle, removeExpense, reset, load: loadState }
 }

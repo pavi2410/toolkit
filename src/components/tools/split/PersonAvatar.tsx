@@ -18,7 +18,7 @@ function avatarUri(seed: string) {
 export default function PersonAvatar({ person, size = 'sm' }: { person: Person; size?: 'sm' | 'md' }) {
   return (
     <Avatar size={size} className="shrink-0">
-      <Avatar.Image src={avatarUri(person.id)} alt="" />
+      <Avatar.Image src={avatarUri(person.name.trim().toLowerCase())} alt="" />
       <Avatar.Fallback>{person.name.slice(0, 1).toUpperCase()}</Avatar.Fallback>
     </Avatar>
   )
